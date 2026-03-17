@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 # specify name of the project and specify which language to compile for
 project(crossing-road LANGUAGES CXX C)
