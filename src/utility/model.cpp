@@ -1,8 +1,8 @@
 #include "model.hpp"
 #include "assimp/material.h"
-#include "core/mesh.hpp"
-#include "core/texture_manager.hpp"
 #include "glm/fwd.hpp"
+#include "utility/mesh.hpp"
+#include "utility/texture_manager.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

@@ -4,9 +4,8 @@
 #include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "core/geometry.hpp"
-#include "core/shader_manager.hpp"
 #include "glm/fwd.hpp"
+#include "utility/shader_manager.hpp"
 
 // StaticElement
 StaticElement::StaticElement(std::string name, UIHitbox box, glm::vec4 color)

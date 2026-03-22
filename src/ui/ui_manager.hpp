@@ -8,6 +8,11 @@
 #include <string>
 #include <vector>
 
+struct UIVertex {
+  glm::vec2 pos;
+  glm::vec2 uv;
+};
+
 struct UIHitbox {
   float x, y, w, h;
 

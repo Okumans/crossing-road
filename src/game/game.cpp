@@ -1,7 +1,8 @@
 #include "game.hpp"
-#include "core/shader_manager.hpp"
+#include "GLFW/glfw3.h"
 #include "glad/gl.h"
-#include "glm/fwd.hpp"
+#include "utility/shader_manager.hpp"
+#include <cmath>
 
 void Game::update(double delta_time) { ; }
 
@@ -17,10 +18,12 @@ void Game::render(double delta_time, Camera &camera) {
   camera_shader.setMat4("projection", projection);
   camera_shader.setMat4("view", view);
 
+  float time = std::cos(glfwGetTime()) * 0.5;
+
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(
       model,
-      glm::vec3(0.0f, -0.5f,
+      glm::vec3(0.0f, time,
                 -2.0f)); // translate it down so it's at the center of the scene
   model = glm::scale(
       model,

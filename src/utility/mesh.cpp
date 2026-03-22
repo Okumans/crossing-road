@@ -1,6 +1,6 @@
 #include "mesh.hpp"
-#include "core/texture_manager.hpp"
 #include "glad/gl.h"
+#include "utility/texture_manager.hpp"
 #include <cstdint>
 #include <memory>
 #include <utility>

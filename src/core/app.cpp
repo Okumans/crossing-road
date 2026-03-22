@@ -1,8 +1,8 @@
 #include "core/app.hpp"
 #include "GLFW/glfw3.h"
-#include "core/shader_manager.hpp"
 #include "glad/gl.h"
 #include "ui/ui_manager.hpp"
+#include "utility/shader_manager.hpp"
 
 #ifdef EMBED_SHADER
 #include "ui.frag.glsl.h"
