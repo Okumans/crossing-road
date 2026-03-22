@@ -1,7 +1,6 @@
 #pragma once
 
 #include "camera.h"
-#include "core/camera_controller.hpp"
 #include "game/game.hpp"
 #include "ui/ui_manager.hpp"
 #include <GLFW/glfw3.h>
@@ -35,8 +34,6 @@ private:
   GLFWwindow *m_window;
 
   Camera m_camera;
-  CameraController m_camera_controller;
-
   Game m_game;
 
   AppState m_appState;

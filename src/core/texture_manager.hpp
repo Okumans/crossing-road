@@ -4,38 +4,55 @@
 #include <memory>
 #include <unordered_map>
 
-enum class TextureType {};
+struct TextureName {
+  std::string name;
+
+  TextureName(const char *name) : name(name) {}
+  TextureName(std::string &&name) : name(name) {}
+
+  bool operator==(const TextureName &) const = default;
+};
+
+enum class TextureType : uint8_t { DIFFUSE, SPECULAR };
 
 class Texture {
 private:
-  GLuint m_texID;
   bool m_ownTex;
+  TextureType m_type;
+  GLuint m_texID;
 
 public:
-  Texture(const char *path, bool flip = false);
-  Texture(GLuint tex_id, bool own = false);
+  Texture(const char *path, TextureType type, bool flip_vertical = false);
+  Texture(GLuint tex_id, TextureType type, bool own = false);
   ~Texture();
+
   Texture(const Texture &) = delete;
   Texture &operator=(const Texture &) = delete;
 
-  Texture(Texture &&other) noexcept
-      : m_texID(other.m_texID), m_ownTex(other.m_ownTex) {
-    other.m_ownTex = false;
-    other.m_texID = 0;
-  }
+  Texture(Texture &&other) noexcept;
 
   GLuint getTexID() const { return m_texID; };
+  TextureType getType() const { return m_type; };
 
 private:
-  GLuint _load_texture(const char *path, bool flip);
+  GLuint _loadTexture(const char *path, bool flip_vertical);
 };
 
 class TextureManager {
 public:
-  static std::unordered_map<TextureType, std::unique_ptr<Texture>> textures;
+  static std::unordered_map<TextureName, std::shared_ptr<Texture>> textures;
 
-  static Texture &loadTexture(TextureType type, const char *texture_path,
-                              bool flip = false);
+  static std::shared_ptr<Texture> loadTexture(TextureName name,
+                                              TextureType type,
+                                              const char *texture_path,
+                                              bool flip_vertical = false);
 
-  static Texture &getTexture(TextureType type);
+  static Texture loadTexture(TextureType type, const char *texture_path,
+                             bool flip_vertical = false);
+
+  static std::shared_ptr<Texture> getTexture(TextureName name);
+
+  static Texture &getTextureRef(TextureName name);
+
+  static bool exists(TextureName name);
 };

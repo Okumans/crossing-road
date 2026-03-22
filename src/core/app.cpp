@@ -1,6 +1,5 @@
 #include "core/app.hpp"
 #include "GLFW/glfw3.h"
-#include "core/camera_controller.hpp"
 #include "core/shader_manager.hpp"
 #include "glad/gl.h"
 #include "ui/ui_manager.hpp"
@@ -16,7 +15,6 @@ static std::string arr_to_str(unsigned char *arr, unsigned int len) {
 
 void App::render(double delta_time) {
   _handleProcessInput(delta_time);
-  m_camera_controller.update(delta_time);
 
   if (m_appState.gameStarted) {
     m_game.update(delta_time);
@@ -30,8 +28,7 @@ void App::render(double delta_time) {
 }
 
 App::App(GLFWwindow *window)
-    : m_window(window), m_camera(glm::vec3(0.0f, 10.0f, 30.0f)),
-      m_camera_controller(m_camera) {
+    : m_window(window), m_camera(glm::vec3(0.0f, 0.0f, 3.0f)) {
   glfwSetWindowUserPointer(m_window, (void *)this);
 
   glfwSetKeyCallback(m_window, _glfwKeyCallback);
@@ -47,7 +44,6 @@ App::App(GLFWwindow *window)
   glfwGetWindowSize(m_window, &width, &height);
 
   m_camera.UpdateSceneSize(width, height);
-  m_camera_controller.setPreset(CameraPreset::FRONT);
 }
 
 App::~App() = default;
@@ -60,6 +56,9 @@ void App::_setupResources() {
 #else
   ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
                             UI_FRAGMENT_SHADER_PATH);
+  ShaderManager::loadShader(ShaderType::CAMERA,
+                            SHADER_PATH "/model_loading.vert.glsl",
+                            SHADER_PATH "/model_loading.frag.glsl");
 #endif
 
   m_font.loadDefaultFont();
@@ -104,6 +103,7 @@ void App::_glfwKeyCallback(GLFWwindow *window, int key, int scancode,
     app->_handleKeyCallback(key, scancode, action, mods);
   }
 }
+
 void App::_glfwMouseMoveCallback(GLFWwindow *window, double x_pos,
                                  double y_pos) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));

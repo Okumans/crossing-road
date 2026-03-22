@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-enum class ShaderType { UI };
+enum class ShaderType { CAMERA, UI };
 
 class ShaderManager {
 public:

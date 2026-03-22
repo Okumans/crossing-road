@@ -34,14 +34,14 @@ public:
       if (!vertexShaderFile.is_open()) {
         std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: Vertex Shader "
                      "File \""
-                  << geometryShaderPath << "\" isn't successfully open!\n";
+                  << vertexShaderPath << "\" isn't successfully open!\n";
         return Shader(0);
       }
 
       if (!fragmentShaderFile.is_open()) {
         std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: Fragment "
                      "Shader File \""
-                  << geometryShaderPath << "\" isn't successfully open!\n";
+                  << fragmentShaderPath << "\" isn't successfully open!\n";
         return Shader(0);
       }
 
@@ -126,7 +126,7 @@ public:
 
   ~Shader() {
     if (ID)
-      glDeleteShader(ID);
+      glDeleteProgram(ID);
   }
   Shader(const Shader &) = delete;
   Shader &operator=(const Shader &) = delete;
