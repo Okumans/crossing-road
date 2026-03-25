@@ -23,7 +23,6 @@ void App::render(double delta_time) {
   _updateUIElements();
 
   m_game.render(delta_time, m_camera);
-
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
 }
 

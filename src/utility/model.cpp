@@ -24,8 +24,10 @@ void Model::draw(Shader &shader) {
 
 void Model::_loadModel(const char *path, bool flip_vertical) {
   Assimp::Importer import;
-  const aiScene *scene =
-      import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+  const aiScene *scene = import.ReadFile(
+      path, aiProcess_Triangulate | aiProcess_FlipUVs |
+                aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices |
+                aiProcess_PreTransformVertices);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
@@ -58,6 +60,9 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
   std::vector<uint32_t> indices;
   std::vector<std::shared_ptr<Texture>> textures;
 
+  // Color fallback if texture don't exists
+  aiColor3D baseColor(1.0f, 1.0f, 1.0f);
+
   vertices.reserve(mesh->mNumVertices);
   indices.reserve(mesh->mNumFaces);
 
@@ -89,6 +94,18 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
   if (mesh->mMaterialIndex >= 0) {
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
+    // No diffuse texture, fall back to white static texture
+    if (material->GetTextureCount(aiTextureType_DIFFUSE) <= 0) {
+      if (!TextureManager::exists(STATIC_WHITE_TEXTURE))
+        textures.push_back(TextureManager::manage(
+            STATIC_WHITE_TEXTURE,
+            TextureManager::generateStaticWhiteTexture()));
+      else
+        textures.push_back(TextureManager::getTexture(STATIC_WHITE_TEXTURE));
+
+      material->Get(AI_MATKEY_COLOR_DIFFUSE, baseColor);
+    }
+
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_DIFFUSE,
                                TextureType::DIFFUSE, flip_vertical)) {
@@ -102,7 +119,8 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
     }
   }
 
-  return Mesh(vertices, indices, textures);
+  return Mesh(vertices, indices, textures,
+              glm::vec3(baseColor.r, baseColor.g, baseColor.b));
 }
 
 std::generator<std::shared_ptr<Texture>>

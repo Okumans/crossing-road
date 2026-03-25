@@ -5,13 +5,15 @@
 #include <unordered_map>
 
 struct TextureName {
-  std::string name;
+  const std::string name;
 
-  TextureName(const char *name) : name(name) {}
-  TextureName(std::string &&name) : name(name) {}
+  constexpr TextureName(const char *name) : name(name) {}
+  constexpr TextureName(std::string &&name) : name(name) {}
 
   bool operator==(const TextureName &) const = default;
 };
+
+const TextureName STATIC_WHITE_TEXTURE = TextureName("STATIC_WHITE_TEXTURE");
 
 enum class TextureType : uint8_t { DIFFUSE, SPECULAR };
 
@@ -50,9 +52,13 @@ public:
   static Texture loadTexture(TextureType type, const char *texture_path,
                              bool flip_vertical = false);
 
+  static std::shared_ptr<Texture> manage(TextureName name, Texture &&texture);
+
   static std::shared_ptr<Texture> getTexture(TextureName name);
 
   static Texture &getTextureRef(TextureName name);
+
+  static Texture generateStaticWhiteTexture();
 
   static bool exists(TextureName name);
 };

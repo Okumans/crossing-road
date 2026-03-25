@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "glm/fwd.hpp"
 #include "shader.h"
 #include "texture_manager.hpp"
 
@@ -21,15 +22,17 @@ private:
   std::vector<uint32_t> m_indices;
   std::vector<std::shared_ptr<Texture>> m_textures;
 
+  glm::vec3 m_baseColor;
+
   // render data
   GLuint m_vao, m_vbo, m_ebo;
 
 public:
   Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices,
-       std::vector<std::shared_ptr<Texture>> textures);
+       std::vector<std::shared_ptr<Texture>> textures, glm::vec3 color);
 
   Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
-       std::vector<std::shared_ptr<Texture>> &&textures);
+       std::vector<std::shared_ptr<Texture>> &&textures, glm::vec3 color);
 
   ~Mesh();
 
@@ -43,6 +46,7 @@ public:
   const std::vector<std::shared_ptr<Texture>> &getTextures() const {
     return m_textures;
   }
+  const glm::vec3 &getBaseColor() const { return m_baseColor; }
 
   void draw(Shader &shader);
 

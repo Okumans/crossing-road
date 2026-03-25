@@ -1,10 +1,12 @@
 #include "texture_manager.hpp"
+#include <cstdint>
 #include <glad/gl.h>
 #include <memory>
 #include <print>
 #include <unordered_map>
 
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "external/stb_image.h"
 
 namespace std {
@@ -87,6 +89,32 @@ std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
 Texture TextureManager::loadTexture(TextureType type, const char *texture_path,
                                     bool flip_vertical) {
   return Texture(texture_path, type, flip_vertical);
+}
+
+std::shared_ptr<Texture> TextureManager::manage(TextureName name,
+                                                Texture &&texture) {
+  textures[name] = std::make_shared<Texture>(std::move(texture));
+  return TextureManager::textures.at(name);
+}
+
+Texture TextureManager::generateStaticWhiteTexture() {
+  GLuint white_texture;
+
+  glCreateTextures(GL_TEXTURE_2D, 1, &white_texture);
+
+  // 1 mip level, RGBA8 format, 1x1 size
+  glTextureStorage2D(white_texture, 1, GL_RGBA8, 1, 1);
+
+  const uint8_t white[] = {0xFF, 0xFF, 0xFF, 0xFF};
+  glTextureSubImage2D(white_texture, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+                      white);
+
+  glTextureParameteri(white_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(white_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTextureParameteri(white_texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteri(white_texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  return Texture(white_texture, TextureType::DIFFUSE, false);
 }
 
 Texture &TextureManager::getTextureRef(TextureName name) {

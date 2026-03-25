@@ -16,8 +16,11 @@ private:
   Model m_model;
 
 public:
-  Game() : m_model(Model(ASSETS_PATH "/objects/backpack/backpack.obj", true)) {}
+  Game() : m_model(Model(ASSETS_PATH "/objects/chicken/chicken.glb")) {}
 
   void update(double delta_time);
   void render(double delta_time, Camera &camera);
 };
+
+// TODO: integrated light source helpers
+// TODO: integrated world position helpers
