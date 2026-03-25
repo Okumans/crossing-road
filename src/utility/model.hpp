@@ -17,6 +17,12 @@ private:
 
 public:
   Model(const char *path, bool flip_vertical = false);
+
+  Model(const Model &) = delete;
+  Model &operator=(Model &) const = delete;
+
+  Model(Model &&) noexcept;
+
   void draw(Shader &shader);
 
 private:

@@ -2,6 +2,7 @@
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
 #include "ui/ui_manager.hpp"
+#include "utility/model_manager.hpp"
 #include "utility/shader_manager.hpp"
 
 #ifdef EMBED_SHADER
@@ -59,6 +60,8 @@ void App::_setupResources() {
                             SHADER_PATH "/model_loading.vert.glsl",
                             SHADER_PATH "/model_loading.frag.glsl");
 #endif
+
+  ModelManager::loadModel("chicken", ASSETS_PATH "/objects/chicken/chicken.glb");
 
   m_font.loadDefaultFont();
 }

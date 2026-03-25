@@ -11,9 +11,16 @@
 #include <memory>
 #include <print>
 #include <string_view>
+#include <utility>
 
 Model::Model(const char *path, bool flip_vertical) {
   _loadModel(path, flip_vertical);
+}
+
+Model::Model(Model &&other) noexcept
+    : m_meshes(std::move(other.m_meshes)), m_directory(other.m_directory) {
+  other.m_meshes.clear();
+  m_directory = "";
 }
 
 void Model::draw(Shader &shader) {
