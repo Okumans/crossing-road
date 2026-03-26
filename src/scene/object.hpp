@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model.hpp"
+#include "graphics/model.hpp"
 
 #include <glm/glm.hpp>
 

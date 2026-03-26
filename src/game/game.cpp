@@ -1,10 +1,11 @@
 #include "game.hpp"
+#include "resource/model_manager.hpp"
+#include "resource/shader_manager.hpp"
+
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
 #include "glm/ext/scalar_constants.hpp"
 #include "glm/fwd.hpp"
-#include "utility/model_manager.hpp"
-#include "utility/shader_manager.hpp"
 #include <memory>
 
 Game::Game() : m_player(nullptr) {}

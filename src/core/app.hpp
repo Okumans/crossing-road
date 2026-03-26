@@ -1,8 +1,9 @@
 #pragma once
 
-#include "camera.h"
 #include "game/game.hpp"
+#include "graphics/camera.hpp"
 #include "ui/ui_manager.hpp"
+
 #include <GLFW/glfw3.h>
 
 #ifndef SHADER_PATH

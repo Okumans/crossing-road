@@ -1,8 +1,7 @@
 #pragma once
 
-#include "shader.h"
-#include "utility/mesh.hpp"
-#include "utility/texture_manager.hpp"
+#include "graphics/shader.hpp"
+#include "mesh.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

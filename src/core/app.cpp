@@ -1,9 +1,9 @@
 #include "core/app.hpp"
 #include "GLFW/glfw3.h"
 #include "glad/gl.h"
+#include "resource/model_manager.hpp"
+#include "resource/shader_manager.hpp"
 #include "ui/ui_manager.hpp"
-#include "utility/model_manager.hpp"
-#include "utility/shader_manager.hpp"
 
 #ifdef EMBED_SHADER
 #include "ui.frag.glsl.h"
@@ -61,7 +61,8 @@ void App::_setupResources() {
                             SHADER_PATH "/model_loading.frag.glsl");
 #endif
 
-  ModelManager::loadModel("chicken", ASSETS_PATH "/objects/chicken/chicken.glb");
+  ModelManager::loadModel("chicken",
+                          ASSETS_PATH "/objects/chicken/chicken.glb");
 
   m_font.loadDefaultFont();
 }

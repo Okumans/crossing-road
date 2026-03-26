@@ -1,6 +1,8 @@
 #include "texture_manager.hpp"
-#include <cstdint>
+
 #include <glad/gl.h>
+
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 

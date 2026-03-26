@@ -1,11 +1,11 @@
 #include "ui_manager.hpp"
+#include "resource/shader_manager.hpp"
 
-#include "glad/gl.h"
-#include <algorithm>
+#include <glad/gl.h>
+#include <glm/fwd.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "glm/fwd.hpp"
-#include "utility/shader_manager.hpp"
+#include <algorithm>
 
 // StaticElement
 StaticElement::StaticElement(std::string name, UIHitbox box, glm::vec4 color)

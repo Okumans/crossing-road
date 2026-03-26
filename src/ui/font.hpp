@@ -2,7 +2,6 @@
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>
-#include <map>
 #include <string>
 
 struct Character {

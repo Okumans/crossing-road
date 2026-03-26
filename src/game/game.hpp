@@ -1,7 +1,7 @@
 #pragma once
 
-#include "camera.h"
-#include "utility/object.hpp"
+#include "graphics/camera.hpp"
+#include "scene/object.hpp"
 
 #ifndef SHADER_PATH
 #define SHADER_PATH ASSETS_PATH "/shaders"

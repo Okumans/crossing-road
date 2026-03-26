@@ -1,13 +1,14 @@
 #pragma once
 
+#include "graphics/shader.hpp"
+#include "texture.hpp"
+
 #include <glad/gl.h>
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+
 #include <memory>
 #include <vector>
-
-#include "glm/fwd.hpp"
-#include "shader.h"
-#include "texture_manager.hpp"
 
 struct Vertex {
   glm::vec3 position;

@@ -1,17 +1,16 @@
 #include "model.hpp"
-#include "assimp/material.h"
-#include "glm/fwd.hpp"
-#include "utility/mesh.hpp"
-#include "utility/texture_manager.hpp"
+#include "resource/texture_manager.hpp"
 
 #include <assimp/Importer.hpp>
+#include <assimp/material.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <glm/fwd.hpp>
+
 #include <generator>
 #include <memory>
 #include <print>
 #include <string_view>
-#include <utility>
 
 Model::Model(const char *path, bool flip_vertical) {
   _loadModel(path, flip_vertical);

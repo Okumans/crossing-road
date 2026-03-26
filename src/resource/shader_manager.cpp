@@ -1,4 +1,5 @@
 #include "shader_manager.hpp"
+
 #include <memory>
 #include <unordered_map>
 
