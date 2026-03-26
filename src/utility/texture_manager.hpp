@@ -1,7 +1,11 @@
 #pragma once
 
+#include "texture.hpp"
+
 #include <glad/gl.h>
+
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 struct TextureName {
@@ -14,31 +18,6 @@ struct TextureName {
 };
 
 const TextureName STATIC_WHITE_TEXTURE = TextureName("STATIC_WHITE_TEXTURE");
-
-enum class TextureType : uint8_t { DIFFUSE, SPECULAR };
-
-class Texture {
-private:
-  bool m_ownTex;
-  TextureType m_type;
-  GLuint m_texID;
-
-public:
-  Texture(const char *path, TextureType type, bool flip_vertical = false);
-  Texture(GLuint tex_id, TextureType type, bool own = false);
-  ~Texture();
-
-  Texture(const Texture &) = delete;
-  Texture &operator=(const Texture &) = delete;
-
-  Texture(Texture &&other) noexcept;
-
-  GLuint getTexID() const { return m_texID; };
-  TextureType getType() const { return m_type; };
-
-private:
-  GLuint _loadTexture(const char *path, bool flip_vertical);
-};
 
 class TextureManager {
 public:
