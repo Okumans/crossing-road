@@ -62,12 +62,17 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::CAMERA,
                             SHADER_PATH "/model_loading.vert.glsl",
                             SHADER_PATH "/model_loading.frag.glsl");
-  ShaderManager::loadShader(ShaderType::GRID, SHADER_PATH "/grid.vert.glsl",
-                            SHADER_PATH "/grid.frag.glsl");
 #endif
 
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
+
+  TextureManager::loadTexture(TextureName("grass"), TextureType::DIFFUSE,
+                              ASSETS_PATH "/textures/grass.jpg");
+  TextureManager::loadTexture(TextureName("road"), TextureType::DIFFUSE,
+                              ASSETS_PATH "/textures/road.jpg");
+  TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
+                              ASSETS_PATH "/textures/water.jpg");
 
   m_font.loadDefaultFont();
 }

@@ -27,7 +27,7 @@ void Object::draw(Shader &shader) {
 
   model = glm::scale(model, m_scale);
 
-  shader.setMat4("model", model);
+  shader.setMat4("u_Model", model);
   m_model->draw(shader);
 }
 

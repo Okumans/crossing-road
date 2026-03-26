@@ -1,7 +1,7 @@
 #pragma once
 
 #include "graphics/camera.hpp"
-#include "graphics/grid.hpp"
+#include "map_manager.hpp"
 #include "scene/object.hpp"
 
 #ifndef SHADER_PATH
@@ -15,7 +15,7 @@
 class Game {
 private:
   std::unique_ptr<Object> m_player;
-  std::unique_ptr<Grid> m_grid;
+  MapManager m_map;
 
 public:
   Game();

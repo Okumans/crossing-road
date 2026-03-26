@@ -7,7 +7,16 @@
 #include "glm/fwd.hpp"
 #include <memory>
 
-Game::Game() : m_player(nullptr), m_grid(std::make_unique<Grid>()) {}
+Game::Game() : m_player(nullptr) {
+  // Initial map setup
+  m_map.addRow(RowType::GRASS);
+  m_map.addRow(RowType::ROAD);
+  m_map.addRow(RowType::ROAD);
+  m_map.addRow(RowType::GRASS);
+  m_map.addRow(RowType::WATER);
+  m_map.addRow(RowType::WATER);
+  m_map.addRow(RowType::GRASS);
+}
 
 void Game::update(double delta_time) { ; }
 
@@ -17,26 +26,26 @@ void Game::render(double delta_time, Camera &camera) {
   glm::mat4 projection = camera.getProjectionMatrix();
   glm::mat4 view = camera.getViewMatrix();
 
-  // Draw grid
-  Shader &grid_shader = ShaderManager::getShader(ShaderType::GRID);
-  m_grid->draw(camera, grid_shader);
+  Shader &camera_shader = ShaderManager::getShader(ShaderType::CAMERA);
+  camera_shader.use();
+  camera_shader.setMat4("u_Projection", projection);
+  camera_shader.setMat4("u_View", view);
+
+  // Draw Map
+  m_map.draw(camera_shader);
 
   if (!m_player) {
     if (ModelManager::exists(ModelName::CHICKEN)) {
       m_player =
           std::make_unique<Object>(ModelManager::getModel(ModelName::CHICKEN));
-      m_player->setPosition({0, 0, 0.25f});
       m_player->setRotation({0, glm::radians(-90.0f), 0});
+
+      // Center of 0.5x0.5 cell at 0.25, 0.25
+      m_player->setPosition({0.25f, 0.0f, 0.25f});
     } else {
       return;
     }
   }
-
-  Shader &camera_shader = ShaderManager::getShader(ShaderType::CAMERA);
-  camera_shader.use();
-
-  camera_shader.setMat4("projection", projection);
-  camera_shader.setMat4("view", view);
 
   m_player->draw(camera_shader);
 
