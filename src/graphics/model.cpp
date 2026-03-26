@@ -86,7 +86,19 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
                                           mesh->mTextureCoords[0][i].y)
                               : glm::vec2(0.0f);
 
-    vertices.emplace_back(position, normal, texCoords);
+    glm::vec3 tangent = (mesh->mTangents)
+                            ? glm::vec3(mesh->mTangents[i].x,
+                                        mesh->mTangents[i].y,
+                                        mesh->mTangents[i].z)
+                            : glm::vec3(0.0f);
+
+    glm::vec3 bitangent = (mesh->mBitangents)
+                              ? glm::vec3(mesh->mBitangents[i].x,
+                                          mesh->mBitangents[i].y,
+                                          mesh->mBitangents[i].z)
+                              : glm::vec3(0.0f);
+
+    vertices.emplace_back(position, normal, texCoords, tangent, bitangent);
   }
 
   for (size_t i = 0; i < mesh->mNumFaces; ++i) {
@@ -112,20 +124,43 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
       material->Get(AI_MATKEY_COLOR_DIFFUSE, baseColor);
     }
 
+    // Albedo/Diffuse
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_DIFFUSE,
                                TextureType::DIFFUSE, flip_vertical)) {
       textures.push_back(texture);
     }
 
+    // Normal
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_SPECULAR,
-                               TextureType::SPECULAR, flip_vertical)) {
+         _loadMaterialTextures(material, aiTextureType_NORMALS,
+                               TextureType::NORMAL, flip_vertical)) {
+      textures.push_back(texture);
+    }
+
+    // Metallic
+    for (std::shared_ptr<Texture> &&texture :
+         _loadMaterialTextures(material, aiTextureType_METALNESS,
+                               TextureType::METALLIC, flip_vertical)) {
+      textures.push_back(texture);
+    }
+
+    // Roughness
+    for (std::shared_ptr<Texture> &&texture :
+         _loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS,
+                               TextureType::ROUGHNESS, flip_vertical)) {
+      textures.push_back(texture);
+    }
+
+    // Ambient Occlusion
+    for (std::shared_ptr<Texture> &&texture :
+         _loadMaterialTextures(material, aiTextureType_AMBIENT_OCCLUSION,
+                               TextureType::AO, flip_vertical)) {
       textures.push_back(texture);
     }
   }
 
-  return Mesh(vertices, indices, textures,
+  return Mesh(std::move(vertices), std::move(indices), std::move(textures),
               glm::vec3(baseColor.r, baseColor.g, baseColor.b));
 }
 

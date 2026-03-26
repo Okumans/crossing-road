@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <print>
 #include <unordered_map>
 
 namespace std {
@@ -22,12 +23,20 @@ std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
                                                      const char *texture_path,
                                                      bool flip_vertical) {
   textures[name] = std::make_shared<Texture>(texture_path, type, flip_vertical);
+
   return TextureManager::textures.at(name);
 }
 
 Texture TextureManager::loadTexture(TextureType type, const char *texture_path,
                                     bool flip_vertical) {
   return Texture(texture_path, type, flip_vertical);
+}
+
+std::shared_ptr<Texture>
+TextureManager::loadCubemap(TextureName name,
+                            const std::vector<std::string> &faces) {
+  TextureManager::textures[name] = std::make_shared<Texture>(faces);
+  return TextureManager::textures.at(name);
 }
 
 std::shared_ptr<Texture> TextureManager::manage(TextureName name,
@@ -38,15 +47,16 @@ std::shared_ptr<Texture> TextureManager::manage(TextureName name,
 
 Texture TextureManager::generateStaticWhiteTexture() {
   GLuint white_texture;
+  int size = 16;
 
   glCreateTextures(GL_TEXTURE_2D, 1, &white_texture);
 
-  // 1 mip level, RGBA8 format, 1x1 size
-  glTextureStorage2D(white_texture, 1, GL_RGBA8, 1, 1);
+  // 1 mip level, RGBA8 format, size x size
+  glTextureStorage2D(white_texture, 1, GL_RGBA8, size, size);
 
-  const uint8_t white[] = {0xFF, 0xFF, 0xFF, 0xFF};
-  glTextureSubImage2D(white_texture, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                      white);
+  std::vector<uint8_t> white_data(size * size * 4, 0xFF);
+  glTextureSubImage2D(white_texture, 0, 0, 0, size, size, GL_RGBA,
+                      GL_UNSIGNED_BYTE, white_data.data());
 
   glTextureParameteri(white_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTextureParameteri(white_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -61,6 +71,10 @@ Texture &TextureManager::getTextureRef(TextureName name) {
 }
 
 std::shared_ptr<Texture> TextureManager::getTexture(TextureName name) {
+  if (!TextureManager::textures.contains(name)) {
+    std::println("{} don't exists!?", name.name);
+  }
+
   return TextureManager::textures.at(name);
 }
 

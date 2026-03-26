@@ -5,6 +5,42 @@
 
 #include "external/stb_image.h"
 
+Texture::Texture(const std::vector<std::string>& faces)
+    : m_ownTex(true), m_type(TextureType::HDR_CUBEMAP) {
+  glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_texID);
+
+  int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(false); // Cubemaps should NOT be flipped
+  
+  for (unsigned int i = 0; i < faces.size(); i++) {
+    // Force 4 channels (RGBA) to ensure consistency
+    unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+    if (data) {
+      if (i == 0) {
+         // Allocate immutable storage for 6 faces
+         glTextureStorage2D(m_texID, 1, GL_RGBA8, width, height);
+      }
+      
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+      
+      stbi_image_free(data);
+    } else {
+      std::println(stderr, "Cubemap texture failed to load at path: {}", faces[i]);
+    }
+  }
+
+  glTextureParameteri(m_texID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTextureParameteri(m_texID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTextureParameteri(m_texID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTextureParameteri(m_texID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTextureParameteri(m_texID, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  // Generate mipmaps
+  glGenerateTextureMipmap(m_texID);
+}
+
 Texture::Texture(const char *path, TextureType type, bool flip_vertical)
     : m_ownTex(true), m_type(type) {
   m_texID = _loadTexture(path, flip_vertical);

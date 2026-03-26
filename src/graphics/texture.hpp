@@ -1,8 +1,18 @@
 #pragma once
 
 #include <glad/gl.h>
+#include <string>
+#include <vector>
 
-enum class TextureType : uint8_t { DIFFUSE, SPECULAR };
+enum class TextureType : uint8_t {
+  DIFFUSE,
+  SPECULAR,
+  NORMAL,
+  METALLIC,
+  ROUGHNESS,
+  AO,
+  HDR_CUBEMAP
+};
 
 class Texture {
 private:
@@ -11,6 +21,7 @@ private:
   GLuint m_texID;
 
 public:
+  Texture(const std::vector<std::string>& faces);
   Texture(const char *path, TextureType type, bool flip_vertical = false);
   Texture(GLuint tex_id, TextureType type, bool own = false);
   ~Texture();

@@ -31,6 +31,9 @@ public:
   static Texture loadTexture(TextureType type, const char *texture_path,
                              bool flip_vertical = false);
 
+  static std::shared_ptr<Texture> loadCubemap(TextureName name,
+                                             const std::vector<std::string>& faces);
+
   static std::shared_ptr<Texture> manage(TextureName name, Texture &&texture);
 
   static std::shared_ptr<Texture> getTexture(TextureName name);

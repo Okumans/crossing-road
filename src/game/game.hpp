@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/camera.hpp"
+#include "graphics/skybox.hpp"
 #include "map_manager.hpp"
 #include "scene/object.hpp"
 
@@ -16,12 +17,15 @@ class Game {
 private:
   std::unique_ptr<Object> m_player;
   MapManager m_map;
+  std::unique_ptr<Skybox> m_skybox;
 
 public:
   Game();
 
   void update(double delta_time);
   void render(double delta_time, Camera &camera);
+
+  void setup();
 
   void moveForward();
   void moveLeft(double delta_time);

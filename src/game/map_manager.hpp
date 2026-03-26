@@ -7,10 +7,11 @@
 
 class MapManager {
 public:
-  MapManager();
+    MapManager();
 
-  void addRow(RowType type);
-  void draw(Shader &shader);
+    void addRow(RowType type, const std::vector<std::shared_ptr<Texture>>& textures);
+    void draw(Shader& shader);
+
 
   const std::vector<std::unique_ptr<Row>> &getRows() const { return m_rows; }
 

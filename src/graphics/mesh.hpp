@@ -14,6 +14,8 @@ struct Vertex {
   glm::vec3 position;
   glm::vec3 normal;
   glm::vec2 texCoords;
+  glm::vec3 tangent;
+  glm::vec3 bitangent;
 };
 
 class Mesh {
@@ -29,9 +31,6 @@ private:
   GLuint m_vao, m_vbo, m_ebo;
 
 public:
-  Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices,
-       std::vector<std::shared_ptr<Texture>> textures, glm::vec3 color);
-
   Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
        std::vector<std::shared_ptr<Texture>> &&textures, glm::vec3 color);
 

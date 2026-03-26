@@ -3,6 +3,7 @@
 #include "glad/gl.h"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
+#include "resource/texture_manager.hpp"
 #include "ui/ui_manager.hpp"
 
 #ifdef EMBED_SHADER
@@ -43,6 +44,8 @@ App::App(GLFWwindow *window) : m_window(window), m_camera(glm::vec3(8.0f)) {
   _setupResources();
   _setupUIElements();
 
+  m_game.setup();
+
   int width, height;
   glfwGetWindowSize(m_window, &width, &height);
 
@@ -62,18 +65,35 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::CAMERA,
                             SHADER_PATH "/model_loading.vert.glsl",
                             SHADER_PATH "/model_loading.frag.glsl");
-#endif
+  ShaderManager::loadShader(ShaderType::PBR,
+                            SHADER_PATH "/pbr.vert.glsl",
+                            SHADER_PATH "/pbr.frag.glsl");
+  ShaderManager::loadShader(ShaderType::SKYBOX,
+                            SHADER_PATH "/skybox.vert.glsl",
+                            SHADER_PATH "/skybox.frag.glsl");
+  #endif
+
 
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
 
   TextureManager::loadTexture(TextureName("grass"), TextureType::DIFFUSE,
                               ASSETS_PATH "/textures/grass.jpg");
-  TextureManager::loadTexture(TextureName("road"), TextureType::DIFFUSE,
+
+  TextureManager::loadTexture(TextureName("road_diffuse"), TextureType::DIFFUSE,
                               ASSETS_PATH "/textures/road.jpg");
+  TextureManager::loadTexture(TextureName("road_normal"), TextureType::NORMAL,
+                              ASSETS_PATH "/textures/road_normal.jpg");
+  TextureManager::loadTexture(TextureName("road_ao"), TextureType::AO,
+                              ASSETS_PATH "/textures/road_ao.jpg");
+  TextureManager::loadTexture(TextureName("road_roughness"),
+                              TextureType::ROUGHNESS,
+                              ASSETS_PATH "/textures/road_roughness.jpg");
+
   TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
                               ASSETS_PATH "/textures/water.jpg");
 
+  m_game.setup();
   m_font.loadDefaultFont();
 }
 

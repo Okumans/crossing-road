@@ -6,17 +6,10 @@
 #include <memory>
 #include <utility>
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices,
-           std::vector<std::shared_ptr<Texture>> textures, glm::vec3 color)
-    : m_vertices(vertices), m_indices(indices), m_textures(textures),
-      m_baseColor(color) {
-  _setupMesh();
-}
-
 Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
            std::vector<std::shared_ptr<Texture>> &&textures, glm::vec3 color)
-    : m_vertices(vertices), m_indices(indices), m_textures(textures),
-      m_baseColor(color) {
+    : m_vertices(std::move(vertices)), m_indices(std::move(indices)),
+      m_textures(std::move(textures)), m_baseColor(color) {
   _setupMesh();
 }
 
@@ -74,11 +67,27 @@ void Mesh::_setupMesh() {
   glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE,
                             offsetof(Vertex, texCoords));
   glVertexArrayAttribBinding(m_vao, 2, 0);
+
+  // Tangent vec3
+  glEnableVertexArrayAttrib(m_vao, 3);
+  glVertexArrayAttribFormat(m_vao, 3, 3, GL_FLOAT, GL_FALSE,
+                            offsetof(Vertex, tangent));
+  glVertexArrayAttribBinding(m_vao, 3, 0);
+
+  // Bitangent vec3
+  glEnableVertexArrayAttrib(m_vao, 4);
+  glVertexArrayAttribFormat(m_vao, 4, 3, GL_FLOAT, GL_FALSE,
+                            offsetof(Vertex, bitangent));
+  glVertexArrayAttribBinding(m_vao, 4, 0);
 }
 
 void Mesh::draw(Shader &shader) {
-  uint32_t diffuse_n = 1;
-  uint32_t specular_n = 1;
+  uint32_t diffuse_n = 0;
+  uint32_t specular_n = 0;
+  uint32_t normal_n = 0;
+  uint32_t metallic_n = 0;
+  uint32_t roughness_n = 0;
+  uint32_t ao_n = 0;
 
   char name_buffer[34]; // 2 (fixed) + 11 (type_name) + 20 (max i
                         // digits) + 1 (\0)
@@ -87,19 +96,26 @@ void Mesh::draw(Shader &shader) {
     const char *type_name;
     uint32_t *counter;
 
-    if (TextureType type = m_textures[i]->getType();
-        type == TextureType::DIFFUSE) {
+    TextureType type = m_textures[i]->getType();
+    if (type == TextureType::DIFFUSE) {
       type_name = "Diffuse";
       counter = &diffuse_n;
-    }
-
-    else if (type == TextureType::SPECULAR) {
+    } else if (type == TextureType::SPECULAR) {
       type_name = "Specular";
       counter = &specular_n;
-    }
-
-    else {
-      // Unreachable
+    } else if (type == TextureType::NORMAL) {
+      type_name = "Normal";
+      counter = &normal_n;
+    } else if (type == TextureType::METALLIC) {
+      type_name = "Metallic";
+      counter = &metallic_n;
+    } else if (type == TextureType::ROUGHNESS) {
+      type_name = "Roughness";
+      counter = &roughness_n;
+    } else if (type == TextureType::AO) {
+      type_name = "AO";
+      counter = &ao_n;
+    } else {
       std::unreachable();
     }
 

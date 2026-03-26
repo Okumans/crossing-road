@@ -1,74 +1,80 @@
 #include "row.hpp"
+#include "graphics/mesh.hpp"
+#include "resource/texture_manager.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <memory>
 #include <vector>
 
-Row::Row(float zPos, RowType type) : m_zPos(zPos), m_type(type) {
-  _setupMesh();
+Row::Row(float zPos, RowType type,
+         const std::vector<std::shared_ptr<Texture>> &textures)
+    : m_zPos(zPos), m_type(type) {
+  _setupMesh(textures);
 }
 
-Row::~Row() {
-  glDeleteBuffers(1, &m_vbo);
-  glDeleteVertexArrays(1, &m_vao);
-}
-
-void Row::_setupMesh() {
+void Row::_setupMesh(const std::vector<std::shared_ptr<Texture>> &textures) {
   float width = 20.0f;
   float depth = 0.5f;
   float halfWidth = width / 2.0f;
   float uMax = width / 2.0f;
   float vMax = depth / 2.0f;
 
-  std::vector<float> vertices = {// Position (x, y, z)          // UV (u, v)
-                                 -halfWidth, 0.0f, m_zPos,         0.0f, 0.0f,
-                                 halfWidth,  0.0f, m_zPos,         uMax, 0.0f,
-                                 halfWidth,  0.0f, m_zPos - depth, uMax, vMax,
+  glm::vec3 n(0, 1, 0);
+  glm::vec3 t(1, 0, 0);
+  glm::vec3 b(0, 0, 1);
 
-                                 -halfWidth, 0.0f, m_zPos,         0.0f, 0.0f,
-                                 halfWidth,  0.0f, m_zPos - depth, uMax, vMax,
-                                 -halfWidth, 0.0f, m_zPos - depth, 0.0f, vMax};
+  std::vector<Vertex> vertices = {
+      // Position             Normal  UV          Tangent Bitangent
+      {{-halfWidth, 0, m_zPos}, n, {0.0f, 0.0f}, t, b},
+      {{halfWidth, 0, m_zPos}, n, {uMax, 0.0f}, t, b},
+      {{halfWidth, 0, m_zPos - depth}, n, {uMax, vMax}, t, b},
+      {{-halfWidth, 0, m_zPos - depth}, n, {0.0f, vMax}, t, b}};
 
-  glCreateVertexArrays(1, &m_vao);
-  glCreateBuffers(1, &m_vbo);
+  std::vector<uint32_t> indices = {0, 1, 2, 0, 2, 3};
 
-  glNamedBufferStorage(m_vbo, vertices.size() * sizeof(float), vertices.data(),
-                       0);
+  // Copy the textures vector
+  std::vector<std::shared_ptr<Texture>> meshTextures = textures;
 
-  glVertexArrayVertexBuffer(m_vao, 0, m_vbo, 0, 5 * sizeof(float));
+  // Add default fallbacks for common PBR maps if not provided
+  bool hasNormal = false, hasRoughness = false, hasMetallic = false,
+       hasAO = false;
+  for (const auto &tex : textures) {
+    if (tex->getType() == TextureType::NORMAL)
+      hasNormal = true;
+    if (tex->getType() == TextureType::ROUGHNESS)
+      hasRoughness = true;
+    if (tex->getType() == TextureType::METALLIC)
+      hasMetallic = true;
+    if (tex->getType() == TextureType::AO)
+      hasAO = true;
+  }
 
-  // Position
-  glEnableVertexArrayAttrib(m_vao, 0);
-  glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, 0);
-  glVertexArrayAttribBinding(m_vao, 0, 0); // Bind to Binding Point 0
+  auto white = TextureManager::getTexture(STATIC_WHITE_TEXTURE);
+  if (!hasNormal)
+    meshTextures.push_back(
+        std::make_shared<Texture>(white->getTexID(), TextureType::NORMAL));
+  if (!hasRoughness)
+    meshTextures.push_back(
+        std::make_shared<Texture>(white->getTexID(), TextureType::ROUGHNESS));
+  if (!hasMetallic)
+    meshTextures.push_back(
+        std::make_shared<Texture>(white->getTexID(), TextureType::METALLIC));
+  if (!hasAO)
+    meshTextures.push_back(
+        std::make_shared<Texture>(white->getTexID(), TextureType::AO));
 
-  // TexCoords
-  glEnableVertexArrayAttrib(m_vao, 2);
-  glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
-  glVertexArrayAttribBinding(m_vao, 2, 0); // Bind to Binding Point 0
+  m_mesh = std::make_unique<Mesh>(std::move(vertices), std::move(indices),
+                                  std::move(meshTextures), glm::vec3(1.0f));
 }
 
 void Row::draw(Shader &shader) {
-  auto tex = _getTexture();
-  if (tex) {
-    glBindTextureUnit(0, tex->getTexID());
-    shader.setInt("u_DiffuseTex0", 0);
-    shader.setVec3("u_BaseColor0", glm::vec3(1.0f));
-  }
-
+  // Identity model matrix since vertices are in world space
   shader.setMat4("u_Model", glm::mat4(1.0f));
 
-  glBindVertexArray(m_vao);
-  glDrawArrays(GL_TRIANGLES, 0, 6);
-  glBindVertexArray(0);
-}
+  // Static factors for simple row materials
+  shader.setFloat("u_MetallicFactor", 0.0f);
+  shader.setFloat("u_RoughnessFactor", 1.0f);
 
-std::shared_ptr<Texture> Row::_getTexture() {
-  switch (m_type) {
-  case RowType::GRASS:
-    return TextureManager::getTexture(TextureName("grass"));
-  case RowType::ROAD:
-    return TextureManager::getTexture(TextureName("road"));
-  case RowType::WATER:
-    return TextureManager::getTexture(TextureName("water"));
-  }
-  return nullptr;
+  m_mesh->draw(shader);
 }
