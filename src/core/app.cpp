@@ -27,8 +27,11 @@ void App::render(double delta_time) {
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
 }
 
-App::App(GLFWwindow *window)
-    : m_window(window), m_camera(glm::vec3(0.0f, 0.0f, 3.0f)) {
+App::App(GLFWwindow *window) : m_window(window), m_camera(glm::vec3(8.0f)) {
+
+  m_camera.setPitch(-35.264f);
+  m_camera.setYaw(-107.25f);
+
   glfwSetWindowUserPointer(m_window, (void *)this);
 
   glfwSetKeyCallback(m_window, _glfwKeyCallback);
@@ -59,6 +62,8 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::CAMERA,
                             SHADER_PATH "/model_loading.vert.glsl",
                             SHADER_PATH "/model_loading.frag.glsl");
+  ShaderManager::loadShader(ShaderType::GRID, SHADER_PATH "/grid.vert.glsl",
+                            SHADER_PATH "/grid.frag.glsl");
 #endif
 
   ModelManager::loadModel(ModelName::CHICKEN,
@@ -71,9 +76,24 @@ void App::_setupUIElements() { ; }
 
 void App::_updateUIElements() { ; }
 
-void App::_handleProcessInput(double delta_time) {}
+void App::_handleProcessInput(double delta_time) {
+  if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {
+    m_game.moveLeft(delta_time);
+  }
 
-void App::_handleKeyCallback(int key, int scancode, int action, int mods) {}
+  if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS) {
+    m_game.moveRight(delta_time);
+  }
+}
+
+void App::_handleKeyCallback(int key, int scancode, int action, int mods) {
+  if (action != GLFW_PRESS)
+    return;
+
+  if (key == GLFW_KEY_SPACE) {
+    m_game.moveForward();
+  }
+}
 
 // internal event handler
 void App::_handleMouseMoveCallback(double pos_x, double pos_y) {
