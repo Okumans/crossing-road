@@ -3,17 +3,10 @@
 #include "graphics/model.hpp"
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 
-struct ModelName {
-  const std::string name;
-
-  constexpr ModelName(const char *name) : name(name) {}
-  constexpr ModelName(std::string &&name) : name(name) {}
-
-  bool operator==(const ModelName &) const = default;
-};
+// Define model names here
+enum class ModelName { CHICKEN };
 
 class ModelManager {
 public:

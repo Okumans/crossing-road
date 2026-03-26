@@ -2,14 +2,6 @@
 #include <memory>
 #include <unordered_map>
 
-namespace std {
-template <> struct hash<ModelName> {
-  std::size_t operator()(const ModelName &k) const noexcept {
-    return std::hash<std::string>{}(k.name);
-  }
-};
-} // namespace std
-
 std::unordered_map<ModelName, std::shared_ptr<Model>> ModelManager::models;
 
 std::shared_ptr<Model> ModelManager::loadModel(ModelName name,

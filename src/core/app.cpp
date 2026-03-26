@@ -61,7 +61,7 @@ void App::_setupResources() {
                             SHADER_PATH "/model_loading.frag.glsl");
 #endif
 
-  ModelManager::loadModel("chicken",
+  ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
 
   m_font.loadDefaultFont();

@@ -16,8 +16,9 @@ void Game::render(double delta_time, Camera &camera) {
   glEnable(GL_DEPTH_TEST);
 
   if (!m_player) {
-    if (ModelManager::exists("chicken")) {
-      m_player = std::make_unique<Object>(ModelManager::getModel("chicken"));
+    if (ModelManager::exists(ModelName::CHICKEN)) {
+      m_player =
+          std::make_unique<Object>(ModelManager::getModel(ModelName::CHICKEN));
     } else {
       return;
     }
