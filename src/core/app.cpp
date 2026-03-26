@@ -43,7 +43,7 @@ App::App(GLFWwindow *window)
   int width, height;
   glfwGetWindowSize(m_window, &width, &height);
 
-  m_camera.UpdateSceneSize(width, height);
+  m_camera.updateSceneSize(width, height);
 }
 
 App::~App() = default;
@@ -94,7 +94,7 @@ void App::_handleFramebufferSizeCallback(int width, int height) {
   glViewport(0, 0, width, height);
   m_appState.windowWidth = width;
   m_appState.windowHeight = height;
-  m_camera.UpdateSceneSize(width, height);
+  m_camera.updateSceneSize(width, height);
 }
 
 // GLFW static callbacks adapters

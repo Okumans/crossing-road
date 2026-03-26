@@ -29,7 +29,7 @@ public:
 
 public:
   virtual ~UIBase() = default;
-  virtual void draw(const class Shader &shader) = 0;
+  virtual void draw(class Shader &shader) = 0;
 };
 
 class StaticElement : public UIBase {
@@ -41,7 +41,7 @@ public:
 public:
   StaticElement(std::string name, UIHitbox box, glm::vec4 color);
   StaticElement(std::string name, UIHitbox box, GLuint tex_id);
-  void draw(const class Shader &shader) override;
+  void draw(class Shader &shader) override;
 };
 
 class InteractiveElement : public StaticElement {
@@ -67,7 +67,7 @@ public:
 public:
   TextElement(std::string name, UIHitbox box, std::string text,
               const BitmapFont &font, glm::vec4 color, float scale = 1.0f);
-  void draw(const class Shader &shader) override;
+  void draw(class Shader &shader) override;
 };
 
 class UIManager {

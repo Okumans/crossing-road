@@ -20,7 +20,7 @@ StaticElement::StaticElement(std::string name, UIHitbox box, GLuint tex_id)
   this->bounds = box;
 }
 
-void StaticElement::draw(const Shader &shader) {
+void StaticElement::draw(Shader &shader) {
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(bounds.x, bounds.y, 0.0f));
   model = glm::scale(model, glm::vec3(bounds.w, bounds.h, 1.0f));
@@ -56,7 +56,7 @@ TextElement::TextElement(std::string name, UIHitbox box, std::string text,
   this->bounds = box;
 }
 
-void TextElement::draw(const Shader &shader) {
+void TextElement::draw(Shader &shader) {
   shader.setVec4("u_color", color);
   shader.setBool("u_hasTexture", true);
 

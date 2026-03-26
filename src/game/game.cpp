@@ -23,8 +23,8 @@ void Game::render(double delta_time, Camera &camera) {
     }
   }
 
-  glm::mat4 projection = camera.GetProjectionMatrix();
-  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 projection = camera.getProjectionMatrix();
+  glm::mat4 view = camera.getViewMatrix();
 
   Shader &camera_shader = ShaderManager::getShader(ShaderType::CAMERA);
   camera_shader.use();
