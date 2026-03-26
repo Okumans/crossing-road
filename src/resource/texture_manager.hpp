@@ -18,6 +18,8 @@ struct TextureName {
 };
 
 const TextureName STATIC_WHITE_TEXTURE = TextureName("STATIC_WHITE_TEXTURE");
+const TextureName STATIC_BLACK_TEXTURE = TextureName("STATIC_BLACK_TEXTURE");
+const TextureName STATIC_NORMAL_TEXTURE = TextureName("STATIC_NORMAL_TEXTURE");
 
 class TextureManager {
 public:
@@ -41,6 +43,8 @@ public:
   static Texture &getTextureRef(TextureName name);
 
   static Texture generateStaticWhiteTexture();
+  static Texture generateStaticBlackTexture();
+  static Texture generateStaticNormalTexture();
 
   static bool exists(TextureName name);
 };

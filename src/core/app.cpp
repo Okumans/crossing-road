@@ -65,23 +65,43 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::CAMERA,
                             SHADER_PATH "/model_loading.vert.glsl",
                             SHADER_PATH "/model_loading.frag.glsl");
-  ShaderManager::loadShader(ShaderType::PBR,
-                            SHADER_PATH "/pbr.vert.glsl",
+  ShaderManager::loadShader(ShaderType::PBR, SHADER_PATH "/pbr.vert.glsl",
                             SHADER_PATH "/pbr.frag.glsl");
-  ShaderManager::loadShader(ShaderType::SKYBOX,
-                            SHADER_PATH "/skybox.vert.glsl",
+  ShaderManager::loadShader(ShaderType::SKYBOX, SHADER_PATH "/skybox.vert.glsl",
                             SHADER_PATH "/skybox.frag.glsl");
-  #endif
+#endif
+  if (!TextureManager::exists(STATIC_BLACK_TEXTURE))
+    TextureManager::manage(STATIC_BLACK_TEXTURE,
+                           TextureManager::generateStaticBlackTexture());
 
+  if (!TextureManager::exists(STATIC_WHITE_TEXTURE))
+    TextureManager::manage(STATIC_WHITE_TEXTURE,
+                           TextureManager::generateStaticWhiteTexture());
 
+  if (!TextureManager::exists(STATIC_NORMAL_TEXTURE))
+    TextureManager::manage(STATIC_NORMAL_TEXTURE,
+
+                           TextureManager::generateStaticNormalTexture());
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
 
-  TextureManager::loadTexture(TextureName("grass"), TextureType::DIFFUSE,
-                              ASSETS_PATH "/textures/grass.jpg");
+  TextureManager::loadTexture(TextureName("grass_diffuse"),
+                              TextureType::DIFFUSE,
+                              ASSETS_PATH "/textures/grass_diffuse.jpg");
+  TextureManager::loadTexture(TextureName("grass_height"), TextureType::HEIGHT,
+                              ASSETS_PATH "/textures/grass_height.jpg");
+  TextureManager::loadTexture(TextureName("grass_normal"), TextureType::NORMAL,
+                              ASSETS_PATH "/textures/grass_normal.jpg");
+  TextureManager::loadTexture(TextureName("grass_ao"), TextureType::AO,
+                              ASSETS_PATH "/textures/grass_ao.jpg");
+  TextureManager::loadTexture(TextureName("grass_roughness"),
+                              TextureType::ROUGHNESS,
+                              ASSETS_PATH "/textures/grass_roughness.jpg");
 
   TextureManager::loadTexture(TextureName("road_diffuse"), TextureType::DIFFUSE,
                               ASSETS_PATH "/textures/road.jpg");
+  TextureManager::loadTexture(TextureName("road_height"), TextureType::HEIGHT,
+                              ASSETS_PATH "/textures/road_height.jpg");
   TextureManager::loadTexture(TextureName("road_normal"), TextureType::NORMAL,
                               ASSETS_PATH "/textures/road_normal.jpg");
   TextureManager::loadTexture(TextureName("road_ao"), TextureType::AO,

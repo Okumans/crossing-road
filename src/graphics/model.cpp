@@ -1,10 +1,13 @@
 #include "model.hpp"
+#include "graphics/material.hpp"
+#include "graphics/texture.hpp"
 #include "resource/texture_manager.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/material.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <cassert>
 #include <glm/fwd.hpp>
 
 #include <generator>
@@ -64,7 +67,6 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
                          bool flip_vertical) {
   std::vector<Vertex> vertices;
   std::vector<uint32_t> indices;
-  std::vector<std::shared_ptr<Texture>> textures;
 
   // Color fallback if texture don't exists
   aiColor3D baseColor(1.0f, 1.0f, 1.0f);
@@ -86,17 +88,16 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
                                           mesh->mTextureCoords[0][i].y)
                               : glm::vec2(0.0f);
 
-    glm::vec3 tangent = (mesh->mTangents)
-                            ? glm::vec3(mesh->mTangents[i].x,
-                                        mesh->mTangents[i].y,
-                                        mesh->mTangents[i].z)
-                            : glm::vec3(0.0f);
+    glm::vec3 tangent = (mesh->mTangents) ? glm::vec3(mesh->mTangents[i].x,
+                                                      mesh->mTangents[i].y,
+                                                      mesh->mTangents[i].z)
+                                          : glm::vec3(1.0f, 0.0f, 0.0f);
 
-    glm::vec3 bitangent = (mesh->mBitangents)
-                              ? glm::vec3(mesh->mBitangents[i].x,
-                                          mesh->mBitangents[i].y,
-                                          mesh->mBitangents[i].z)
-                              : glm::vec3(0.0f);
+    glm::vec3 bitangent =
+        (mesh->mBitangents)
+            ? glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y,
+                        mesh->mBitangents[i].z)
+            : glm::vec3(0.0f, 1.0f, 0.0f);
 
     vertices.emplace_back(position, normal, texCoords, tangent, bitangent);
   }
@@ -109,58 +110,57 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
     }
   }
 
+  MaterialBuilder mat_builder = Material::builder();
+
   if (mesh->mMaterialIndex >= 0) {
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    // No diffuse texture, fall back to white static texture
-    if (material->GetTextureCount(aiTextureType_DIFFUSE) <= 0) {
-      if (!TextureManager::exists(STATIC_WHITE_TEXTURE))
-        textures.push_back(TextureManager::manage(
-            STATIC_WHITE_TEXTURE,
-            TextureManager::generateStaticWhiteTexture()));
-      else
-        textures.push_back(TextureManager::getTexture(STATIC_WHITE_TEXTURE));
-
-      material->Get(AI_MATKEY_COLOR_DIFFUSE, baseColor);
-    }
-
-    // Albedo/Diffuse
+    // Diffuse
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_DIFFUSE,
                                TextureType::DIFFUSE, flip_vertical)) {
-      textures.push_back(texture);
-    }
-
-    // Normal
-    for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_NORMALS,
-                               TextureType::NORMAL, flip_vertical)) {
-      textures.push_back(texture);
+      mat_builder.setDiffuse(texture);
     }
 
     // Metallic
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_METALNESS,
                                TextureType::METALLIC, flip_vertical)) {
-      textures.push_back(texture);
+      mat_builder.setMetallic(texture);
     }
 
     // Roughness
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS,
                                TextureType::ROUGHNESS, flip_vertical)) {
-      textures.push_back(texture);
+      mat_builder.setRoughness(texture);
     }
 
     // Ambient Occlusion
     for (std::shared_ptr<Texture> &&texture :
          _loadMaterialTextures(material, aiTextureType_AMBIENT_OCCLUSION,
                                TextureType::AO, flip_vertical)) {
-      textures.push_back(texture);
+      mat_builder.setAO(texture);
+    }
+
+    // Normal
+    for (std::shared_ptr<Texture> &&texture :
+         _loadMaterialTextures(material, aiTextureType_NORMALS,
+                               TextureType::NORMAL, flip_vertical)) {
+      mat_builder.setNormal(texture);
+    }
+
+    // Height
+    for (std::shared_ptr<Texture> &&texture :
+         _loadMaterialTextures(material, aiTextureType_HEIGHT,
+                               TextureType::HEIGHT, flip_vertical)) {
+      mat_builder.setHeight(texture);
     }
   }
 
-  return Mesh(std::move(vertices), std::move(indices), std::move(textures),
+  Material material = mat_builder.create();
+
+  return Mesh(std::move(vertices), std::move(indices), std::move(material),
               glm::vec3(baseColor.r, baseColor.g, baseColor.b));
 }
 

@@ -1,19 +1,18 @@
 #include "row.hpp"
+#include "graphics/material.hpp"
 #include "graphics/mesh.hpp"
-#include "resource/texture_manager.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <memory>
 #include <vector>
 
-Row::Row(float zPos, RowType type,
-         const std::vector<std::shared_ptr<Texture>> &textures)
+Row::Row(float zPos, RowType type, const Material &material)
     : m_zPos(zPos), m_type(type) {
-  _setupMesh(textures);
+  _setupMesh(material);
 }
 
-void Row::_setupMesh(const std::vector<std::shared_ptr<Texture>> &textures) {
+void Row::_setupMesh(const Material &material) {
   float width = 20.0f;
   float depth = 0.5f;
   float halfWidth = width / 2.0f;
@@ -33,39 +32,8 @@ void Row::_setupMesh(const std::vector<std::shared_ptr<Texture>> &textures) {
 
   std::vector<uint32_t> indices = {0, 1, 2, 0, 2, 3};
 
-  // Copy the textures vector
-  std::vector<std::shared_ptr<Texture>> meshTextures = textures;
-
-  // Add default fallbacks for common PBR maps if not provided
-  bool hasNormal = false, hasRoughness = false, hasMetallic = false,
-       hasAO = false;
-  for (const auto &tex : textures) {
-    if (tex->getType() == TextureType::NORMAL)
-      hasNormal = true;
-    if (tex->getType() == TextureType::ROUGHNESS)
-      hasRoughness = true;
-    if (tex->getType() == TextureType::METALLIC)
-      hasMetallic = true;
-    if (tex->getType() == TextureType::AO)
-      hasAO = true;
-  }
-
-  auto white = TextureManager::getTexture(STATIC_WHITE_TEXTURE);
-  if (!hasNormal)
-    meshTextures.push_back(
-        std::make_shared<Texture>(white->getTexID(), TextureType::NORMAL));
-  if (!hasRoughness)
-    meshTextures.push_back(
-        std::make_shared<Texture>(white->getTexID(), TextureType::ROUGHNESS));
-  if (!hasMetallic)
-    meshTextures.push_back(
-        std::make_shared<Texture>(white->getTexID(), TextureType::METALLIC));
-  if (!hasAO)
-    meshTextures.push_back(
-        std::make_shared<Texture>(white->getTexID(), TextureType::AO));
-
   m_mesh = std::make_unique<Mesh>(std::move(vertices), std::move(indices),
-                                  std::move(meshTextures), glm::vec3(1.0f));
+                                  material, glm::vec3(1.0f));
 }
 
 void Row::draw(Shader &shader) {

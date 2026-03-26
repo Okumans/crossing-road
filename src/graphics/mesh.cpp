@@ -1,15 +1,15 @@
 #include "mesh.hpp"
+#include "graphics/material.hpp"
 
 #include <glad/gl.h>
 
 #include <cstdint>
-#include <memory>
 #include <utility>
 
 Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
-           std::vector<std::shared_ptr<Texture>> &&textures, glm::vec3 color)
+           Material material, glm::vec3 color)
     : m_vertices(std::move(vertices)), m_indices(std::move(indices)),
-      m_textures(std::move(textures)), m_baseColor(color) {
+      m_material(material), m_baseColor(color) {
   _setupMesh();
 }
 
@@ -26,9 +26,9 @@ Mesh::~Mesh() {
 
 Mesh::Mesh(Mesh &&other) noexcept
     : m_vertices(std::move(other.m_vertices)),
-      m_indices(std::move(other.m_indices)), m_textures(other.m_textures),
-      m_baseColor(other.m_baseColor), m_vao(other.m_vao), m_vbo(other.m_vbo),
-      m_ebo(other.m_ebo) {
+      m_indices(std::move(other.m_indices)),
+      m_material(std::move(other.m_material)), m_baseColor(other.m_baseColor),
+      m_vao(other.m_vao), m_vbo(other.m_vbo), m_ebo(other.m_ebo) {
   other.m_vertices.clear();
   other.m_indices.clear();
   other.m_baseColor = glm::vec3(0.0f);
@@ -81,55 +81,99 @@ void Mesh::_setupMesh() {
   glVertexArrayAttribBinding(m_vao, 4, 0);
 }
 
+// void Mesh::draw(Shader &shader) {
+//   uint32_t diffuse_n = 0;
+//   uint32_t specular_n = 0;
+//   uint32_t normal_n = 0;
+//   uint32_t height_n = 0;
+//   uint32_t metallic_n = 0;
+//   uint32_t roughness_n = 0;
+//   uint32_t ao_n = 0;
+//
+//   char name_buffer[34]; // 2 (fixed) + 11 (type_name) + 20 (max i
+//                         // digits) + 1 (\0)
+//
+//   for (size_t i = 0; i < m_textures.size(); ++i) {
+//     const char *type_name;
+//     uint32_t *counter;
+//
+//     TextureType type = m_textures[i]->getType();
+//     if (type == TextureType::DIFFUSE) {
+//       type_name = "Diffuse";
+//       counter = &diffuse_n;
+//     } else if (type == TextureType::SPECULAR) {
+//       type_name = "Specular";
+//       counter = &specular_n;
+//     } else if (type == TextureType::NORMAL) {
+//       type_name = "Normal";
+//       counter = &normal_n;
+//     } else if (type == TextureType::HEIGHT) {
+//       type_name = "Height";
+//       counter = &height_n;
+//     } else if (type == TextureType::METALLIC) {
+//       type_name = "Metallic";
+//       counter = &metallic_n;
+//     } else if (type == TextureType::ROUGHNESS) {
+//       type_name = "Roughness";
+//       counter = &roughness_n;
+//     } else if (type == TextureType::AO) {
+//       type_name = "AO";
+//       counter = &ao_n;
+//     } else {
+//       std::unreachable();
+//     }
+//
+//     std::snprintf(name_buffer, sizeof(name_buffer), "u_%sTex%u", type_name,
+//                   (*counter)++);
+//     shader.setInt(name_buffer, i);
+//
+//     std::snprintf(name_buffer, sizeof(name_buffer), "u_BaseColor%lu", i);
+//     shader.setVec3(name_buffer, m_baseColor);
+//
+//     glBindTextureUnit(i, m_textures[i]->getTexID());
+//   }
+//
+//   char color_buffer[30];
+//
+//   glBindVertexArray(m_vao);
+//   glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+// }
+
 void Mesh::draw(Shader &shader) {
-  uint32_t diffuse_n = 0;
-  uint32_t specular_n = 0;
-  uint32_t normal_n = 0;
-  uint32_t metallic_n = 0;
-  uint32_t roughness_n = 0;
-  uint32_t ao_n = 0;
+  int counter = 0;
 
-  char name_buffer[34]; // 2 (fixed) + 11 (type_name) + 20 (max i
-                        // digits) + 1 (\0)
+  // Diffuse
+  shader.setInt("u_DiffuseTex", counter);
+  glBindTextureUnit(counter, m_material.getDiffuse()->getTexID());
+  counter++;
 
-  for (size_t i = 0; i < m_textures.size(); ++i) {
-    const char *type_name;
-    uint32_t *counter;
+  // Normal
+  shader.setInt("u_NormalTex", counter);
+  glBindTextureUnit(counter, m_material.getNormal()->getTexID());
+  counter++;
 
-    TextureType type = m_textures[i]->getType();
-    if (type == TextureType::DIFFUSE) {
-      type_name = "Diffuse";
-      counter = &diffuse_n;
-    } else if (type == TextureType::SPECULAR) {
-      type_name = "Specular";
-      counter = &specular_n;
-    } else if (type == TextureType::NORMAL) {
-      type_name = "Normal";
-      counter = &normal_n;
-    } else if (type == TextureType::METALLIC) {
-      type_name = "Metallic";
-      counter = &metallic_n;
-    } else if (type == TextureType::ROUGHNESS) {
-      type_name = "Roughness";
-      counter = &roughness_n;
-    } else if (type == TextureType::AO) {
-      type_name = "AO";
-      counter = &ao_n;
-    } else {
-      std::unreachable();
-    }
+  // Height
+  shader.setInt("u_HeightTex", counter);
+  glBindTextureUnit(counter, m_material.getHeight()->getTexID());
+  counter++;
 
-    std::snprintf(name_buffer, sizeof(name_buffer), "u_%sTex%u", type_name,
-                  (*counter)++);
-    shader.setInt(name_buffer, i);
+  // Metallic
+  shader.setInt("u_MetallicTex", counter);
+  glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
+  counter++;
 
-    std::snprintf(name_buffer, sizeof(name_buffer), "u_BaseColor%lu", i);
-    shader.setVec3(name_buffer, m_baseColor);
+  // Roughness
+  shader.setInt("u_RoughnessTex", counter);
+  glBindTextureUnit(counter, m_material.getRoughness()->getTexID());
+  counter++;
 
-    glBindTextureUnit(i, m_textures[i]->getTexID());
-  }
+  // AO
+  shader.setInt("u_AOTex", counter);
+  glBindTextureUnit(counter, m_material.getAO()->getTexID());
+  counter++;
 
-  char color_buffer[30];
+  // Base Color (Make sure to pass BaseColor to match the shader)
+  shader.setVec3("u_BaseColor", m_baseColor);
 
   glBindVertexArray(m_vao);
   glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);

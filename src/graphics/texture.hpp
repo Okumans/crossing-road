@@ -8,10 +8,12 @@ enum class TextureType : uint8_t {
   DIFFUSE,
   SPECULAR,
   NORMAL,
+  HEIGHT,
   METALLIC,
   ROUGHNESS,
   AO,
-  HDR_CUBEMAP
+  HDR_CUBEMAP,
+  UNDEFINED
 };
 
 class Texture {

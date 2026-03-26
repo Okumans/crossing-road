@@ -63,7 +63,40 @@ Texture TextureManager::generateStaticWhiteTexture() {
   glTextureParameteri(white_texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTextureParameteri(white_texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  return Texture(white_texture, TextureType::DIFFUSE, false);
+  return Texture(white_texture, TextureType::DIFFUSE, true);
+}
+
+Texture TextureManager::generateStaticBlackTexture() {
+  GLuint black_texture;
+  int size = 16;
+  glCreateTextures(GL_TEXTURE_2D, 1, &black_texture);
+  glTextureStorage2D(black_texture, 1, GL_RGBA8, size, size);
+  std::vector<uint8_t> black_data(size * size * 4, 0x00);
+  glTextureSubImage2D(black_texture, 0, 0, 0, size, size, GL_RGBA,
+                      GL_UNSIGNED_BYTE, black_data.data());
+  glTextureParameteri(black_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(black_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  return Texture(black_texture, TextureType::DIFFUSE, true);
+}
+
+Texture TextureManager::generateStaticNormalTexture() {
+  GLuint normal_texture;
+  int size = 16;
+  glCreateTextures(GL_TEXTURE_2D, 1, &normal_texture);
+  glTextureStorage2D(normal_texture, 1, GL_RGBA8, size, size);
+  // Flat normal map color is (0.5, 0.5, 1.0), which is 0x80, 0x80, 0xFF
+  std::vector<uint8_t> normal_data(size * size * 4);
+  for (size_t i = 0; i < size * size; ++i) {
+    normal_data[i * 4 + 0] = 0x80;
+    normal_data[i * 4 + 1] = 0x80;
+    normal_data[i * 4 + 2] = 0xFF;
+    normal_data[i * 4 + 3] = 0xFF;
+  }
+  glTextureSubImage2D(normal_texture, 0, 0, 0, size, size, GL_RGBA,
+                      GL_UNSIGNED_BYTE, normal_data.data());
+  glTextureParameteri(normal_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(normal_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  return Texture(normal_texture, TextureType::NORMAL, true);
 }
 
 Texture &TextureManager::getTextureRef(TextureName name) {

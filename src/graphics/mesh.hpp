@@ -1,13 +1,12 @@
 #pragma once
 
+#include "graphics/material.hpp"
 #include "graphics/shader.hpp"
-#include "texture.hpp"
 
 #include <glad/gl.h>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 
-#include <memory>
 #include <vector>
 
 struct Vertex {
@@ -23,7 +22,7 @@ private:
   // mesh data
   std::vector<Vertex> m_vertices;
   std::vector<uint32_t> m_indices;
-  std::vector<std::shared_ptr<Texture>> m_textures;
+  Material m_material;
 
   glm::vec3 m_baseColor;
 
@@ -32,7 +31,7 @@ private:
 
 public:
   Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
-       std::vector<std::shared_ptr<Texture>> &&textures, glm::vec3 color);
+       Material material, glm::vec3 color);
 
   ~Mesh();
 
@@ -43,9 +42,7 @@ public:
 
   const std::vector<Vertex> &getVertices() const { return m_vertices; }
   const std::vector<uint32_t> &getIndices() const { return m_indices; }
-  const std::vector<std::shared_ptr<Texture>> &getTextures() const {
-    return m_textures;
-  }
+  const Material &getMaterial() const { return m_material; }
   const glm::vec3 &getBaseColor() const { return m_baseColor; }
 
   void draw(Shader &shader);
