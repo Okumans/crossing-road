@@ -30,7 +30,15 @@ public:
                                               const char *texture_path,
                                               bool flip_vertical = false);
 
+  static std::shared_ptr<Texture> loadTexture(TextureName name,
+                                              TextureType type,
+                                              const void *data, size_t size,
+                                              bool flip_vertical = false);
+
   static Texture loadTexture(TextureType type, const char *texture_path,
+                             bool flip_vertical = false);
+
+  static Texture loadTexture(TextureType type, const void *data, size_t size,
                              bool flip_vertical = false);
 
   static std::shared_ptr<Texture> loadCubemap(TextureName name,

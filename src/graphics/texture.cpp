@@ -5,29 +5,32 @@
 
 #include "external/stb_image.h"
 
-Texture::Texture(const std::vector<std::string>& faces)
+Texture::Texture(const std::vector<std::string> &faces)
     : m_ownTex(true), m_type(TextureType::HDR_CUBEMAP) {
   glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_texID);
 
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(false); // Cubemaps should NOT be flipped
-  
+
   for (unsigned int i = 0; i < faces.size(); i++) {
     // Force 4 channels (RGBA) to ensure consistency
-    unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+    unsigned char *data = stbi_load(faces[i].c_str(), &width, &height,
+                                    &nrChannels, STBI_rgb_alpha);
     if (data) {
       if (i == 0) {
-         // Allocate immutable storage for 6 faces
-         glTextureStorage2D(m_texID, 1, GL_RGBA8, width, height);
+        // Allocate immutable storage for 6 faces
+        glTextureStorage2D(m_texID, 1, GL_RGBA8, width, height);
       }
-      
+
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGBA,
+                          GL_UNSIGNED_BYTE, data);
       glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-      
+
       stbi_image_free(data);
     } else {
-      std::println(stderr, "Cubemap texture failed to load at path: {}", faces[i]);
+      std::println(stderr, "Cubemap texture failed to load at path: {}",
+                   faces[i]);
     }
   }
 
@@ -44,6 +47,12 @@ Texture::Texture(const std::vector<std::string>& faces)
 Texture::Texture(const char *path, TextureType type, bool flip_vertical)
     : m_ownTex(true), m_type(type) {
   m_texID = _loadTexture(path, flip_vertical);
+}
+
+Texture::Texture(const void *data, size_t size, TextureType type,
+                 bool flip_vertical)
+    : m_ownTex(true), m_type(type) {
+  m_texID = _loadTextureFromMemory(data, size, flip_vertical);
 }
 
 Texture::Texture(GLuint tex_id, TextureType type, bool own)
@@ -72,6 +81,32 @@ GLuint Texture::_loadTexture(const char *path, bool flip_vertical) {
     return 0;
   }
 
+  GLuint textureID = _createTexture(data, width, height, nrComponents);
+  stbi_image_free(data);
+  return textureID;
+}
+
+GLuint Texture::_loadTextureFromMemory(const void *data, size_t size,
+                                       bool flip_vertical) {
+  int width, height, nrComponents;
+
+  stbi_set_flip_vertically_on_load(flip_vertical);
+  unsigned char *pixels = stbi_load_from_memory(
+      static_cast<const stbi_uc *>(data), static_cast<int>(size), &width,
+      &height, &nrComponents, 0);
+
+  if (!pixels) {
+    std::println(stderr, "ERROR::TEXTURE::LOAD_FROM_MEMORY_FAILED");
+    return 0;
+  }
+
+  GLuint textureID = _createTexture(pixels, width, height, nrComponents);
+  stbi_image_free(pixels);
+  return textureID;
+}
+
+GLuint Texture::_createTexture(unsigned char *data, int width, int height,
+                               int nrComponents) {
   // 1. Determine Formats
   GLenum internalFormat, dataFormat;
   if (nrComponents == 1) {
@@ -118,6 +153,5 @@ GLuint Texture::_loadTexture(const char *path, bool flip_vertical) {
                       GL_NEAREST_MIPMAP_LINEAR);
   glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  stbi_image_free(data);
   return textureID;
 }

@@ -68,6 +68,9 @@ public:
 
   void updateSceneSize(float width, float height);
 
+  float getSceneWidth() const { return m_sceneWidth; }
+  float getSceneHeight() const { return m_sceneHeight; }
+
 private:
   // Internal update logic
   void _updateCameraVectors();

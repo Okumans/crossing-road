@@ -27,9 +27,24 @@ std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
   return TextureManager::textures.at(name);
 }
 
+std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
+                                                     TextureType type,
+                                                     const void *data,
+                                                     size_t size,
+                                                     bool flip_vertical) {
+  textures[name] = std::make_shared<Texture>(data, size, type, flip_vertical);
+
+  return TextureManager::textures.at(name);
+}
+
 Texture TextureManager::loadTexture(TextureType type, const char *texture_path,
                                     bool flip_vertical) {
   return Texture(texture_path, type, flip_vertical);
+}
+
+Texture TextureManager::loadTexture(TextureType type, const void *data,
+                                    size_t size, bool flip_vertical) {
+  return Texture(data, size, type, flip_vertical);
 }
 
 std::shared_ptr<Texture>

@@ -4,6 +4,8 @@
 #include "graphics/skybox.hpp"
 #include "map_manager.hpp"
 #include "scene/object.hpp"
+#include <glad/gl.h>
+#include <glm/glm.hpp>
 
 #ifndef SHADER_PATH
 #define SHADER_PATH ASSETS_PATH "/shaders"
@@ -19,8 +21,15 @@ private:
   MapManager m_map;
   std::unique_ptr<Skybox> m_skybox;
 
+  // Shadow mapping
+  GLuint m_shadowMapFBO;
+  GLuint m_shadowMapTex;
+  const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+  glm::mat4 m_lightSpaceMatrix;
+
 public:
   Game();
+  ~Game();
 
   void update(double delta_time);
   void render(double delta_time, Camera &camera);

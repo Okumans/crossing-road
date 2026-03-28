@@ -29,6 +29,6 @@ private:
   void _processNode(aiNode *node, const aiScene *scene, bool flip_vertical);
   Mesh _processMesh(aiMesh *mesh, const aiScene *scene, bool flip_vertical);
   std::generator<std::shared_ptr<Texture>>
-  _loadMaterialTextures(aiMaterial *mat, aiTextureType type,
+  _loadMaterialTextures(aiMaterial *mat, const aiScene *scene, aiTextureType type,
                         TextureType typeName, bool flip_vertical);
 };

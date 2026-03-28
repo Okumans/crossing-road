@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 // Define model names here
-enum class ModelName { CHICKEN };
+enum class ModelName { CHICKEN, TREE_1 };
 
 class ModelManager {
 public:

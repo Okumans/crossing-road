@@ -117,42 +117,42 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 
     // Diffuse
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_DIFFUSE,
+         _loadMaterialTextures(material, scene, aiTextureType_DIFFUSE,
                                TextureType::DIFFUSE, flip_vertical)) {
       mat_builder.setDiffuse(texture);
     }
 
     // Metallic
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_METALNESS,
+         _loadMaterialTextures(material, scene, aiTextureType_METALNESS,
                                TextureType::METALLIC, flip_vertical)) {
       mat_builder.setMetallic(texture);
     }
 
     // Roughness
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS,
+         _loadMaterialTextures(material, scene, aiTextureType_DIFFUSE_ROUGHNESS,
                                TextureType::ROUGHNESS, flip_vertical)) {
       mat_builder.setRoughness(texture);
     }
 
     // Ambient Occlusion
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_AMBIENT_OCCLUSION,
+         _loadMaterialTextures(material, scene, aiTextureType_AMBIENT_OCCLUSION,
                                TextureType::AO, flip_vertical)) {
       mat_builder.setAO(texture);
     }
 
     // Normal
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_NORMALS,
+         _loadMaterialTextures(material, scene, aiTextureType_NORMALS,
                                TextureType::NORMAL, flip_vertical)) {
       mat_builder.setNormal(texture);
     }
 
     // Height
     for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, aiTextureType_HEIGHT,
+         _loadMaterialTextures(material, scene, aiTextureType_HEIGHT,
                                TextureType::HEIGHT, flip_vertical)) {
       mat_builder.setHeight(texture);
     }
@@ -165,10 +165,9 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
 }
 
 std::generator<std::shared_ptr<Texture>>
-Model::_loadMaterialTextures(aiMaterial *mat, aiTextureType type,
-                             TextureType typeName, bool flip_vertical) {
-  std::vector<std::shared_ptr<Texture>> textures;
-
+Model::_loadMaterialTextures(aiMaterial *mat, const aiScene *scene,
+                             aiTextureType type, TextureType typeName,
+                             bool flip_vertical) {
   for (size_t i = 0; i < mat->GetTextureCount(type); ++i) {
     aiString path;
     mat->GetTexture(type, i, &path);
@@ -176,11 +175,33 @@ Model::_loadMaterialTextures(aiMaterial *mat, aiTextureType type,
     TextureName texture_name(path.C_Str());
 
     if (!TextureManager::exists(texture_name)) {
-      std::string texture_path =
-          std::format("{}/{}", m_directory, path.C_Str());
+      std::shared_ptr<Texture> texture;
+      // Handle embedded textures
+      if (path.C_Str()[0] == '*') {
+        int index = std::stoi(path.C_Str() + 1);
+        aiTexture *aiTex = scene->mTextures[index];
 
-      std::shared_ptr<Texture> texture = TextureManager::loadTexture(
-          texture_name, typeName, texture_path.data(), flip_vertical);
+        if (aiTex->mHeight == 0) {
+          // Compressed texture (png, jpg, etc.)
+          texture = TextureManager::loadTexture(
+              texture_name, typeName, aiTex->pcData, aiTex->mWidth,
+              flip_vertical);
+        } else {
+          // Uncompressed texture (RGBA8888)
+          // We need to handle this case too, but most often it's compressed in
+          // GLB/FBX. For uncompressed, we'd need a separate loader or use
+          // stbi_load_from_memory with raw data.
+          texture = TextureManager::loadTexture(
+              texture_name, typeName, aiTex->pcData,
+              aiTex->mWidth * aiTex->mHeight * 4, flip_vertical);
+        }
+      } else {
+        std::string texture_path =
+            std::format("{}/{}", m_directory, path.C_Str());
+
+        texture = TextureManager::loadTexture(texture_name, typeName,
+                                              texture_path.data(), flip_vertical);
+      }
 
       co_yield texture;
     } else {

@@ -25,6 +25,8 @@ private:
 public:
   Texture(const std::vector<std::string>& faces);
   Texture(const char *path, TextureType type, bool flip_vertical = false);
+  Texture(const void *data, size_t size, TextureType type,
+          bool flip_vertical = false);
   Texture(GLuint tex_id, TextureType type, bool own = false);
   ~Texture();
 
@@ -38,4 +40,8 @@ public:
 
 private:
   GLuint _loadTexture(const char *path, bool flip_vertical);
+  GLuint _loadTextureFromMemory(const void *data, size_t size,
+                                bool flip_vertical);
+  GLuint _createTexture(unsigned char *data, int width, int height,
+                        int nrComponents);
 };
