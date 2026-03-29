@@ -19,6 +19,7 @@ public:
       std::optional<Material> sideMaterial = std::nullopt);
   ~Row() = default;
 
+  void update(double delta_time);
   void draw(Shader &shader);
   void drawSidePanel(Shader &shader, float nextHeight, bool isForward);
 

@@ -11,7 +11,6 @@
 #include <glm/fwd.hpp>
 
 #include <format>
-#include <generator>
 #include <memory>
 #include <print>
 #include <string_view>
@@ -114,140 +113,145 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
     }
   }
 
-  // Get material colors
+  // PBR Factors fallback
+  float metallicFactor = 0.0f;
+  float roughnessFactor = 1.0f;
+  float opacity = 1.0f;
+  float aoFactor = 1.0f;
   aiColor4D diffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-  if (mesh->mMaterialIndex >= 0) {
-    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-    if (AI_SUCCESS !=
-        aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor)) {
-      // fallback if failed
-    }
-  }
-  glm::vec3 baseColor(diffuseColor.r, diffuseColor.g, diffuseColor.b);
 
   MaterialBuilder mat_builder = Material::builder();
 
   if (mesh->mMaterialIndex >= 0) {
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-    // Diffuse / Base Color
-    auto diffuseTextures =
-        _loadMaterialTextures(material, scene, aiTextureType_DIFFUSE,
-                              TextureType::DIFFUSE, flip_vertical);
-    auto baseColorTextures =
-        _loadMaterialTextures(material, scene, aiTextureType_BASE_COLOR,
-                              TextureType::DIFFUSE, flip_vertical);
+    // Fetch Factors
+    aiGetMaterialFloat(material, AI_MATKEY_METALLIC_FACTOR, &metallicFactor);
+    aiGetMaterialFloat(material, AI_MATKEY_ROUGHNESS_FACTOR, &roughnessFactor);
+    aiGetMaterialFloat(material, AI_MATKEY_OPACITY, &opacity);
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuseColor);
 
-    bool foundDiffuse = false;
-    for (auto &&tex : diffuseTextures) {
-      mat_builder.setDiffuse(tex);
-      foundDiffuse = true;
-      break;
-    }
-    if (!foundDiffuse) {
-      for (auto &&tex : baseColorTextures) {
+    mat_builder.setMetallicFactor(metallicFactor);
+    mat_builder.setRoughnessFactor(roughnessFactor);
+    mat_builder.setAOFactor(aoFactor);
+
+    // 1. Diffuse / Base Color
+    if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_DIFFUSE,
+                                   TextureType::DIFFUSE, flip_vertical);
+          tex)
         mat_builder.setDiffuse(tex);
-        break;
-      }
     }
 
-    // Normal / Height (OBJ often uses Height for Normals)
-    auto normalTextures =
-        _loadMaterialTextures(material, scene, aiTextureType_NORMALS,
-                              TextureType::NORMAL, flip_vertical);
-    auto heightTextures =
-        _loadMaterialTextures(material, scene, aiTextureType_HEIGHT,
-                              TextureType::NORMAL, flip_vertical);
-
-    bool foundNormal = false;
-    for (auto &&tex : normalTextures) {
-      mat_builder.setNormal(tex);
-      foundNormal = true;
-      break;
+    else if (material->GetTextureCount(aiTextureType_BASE_COLOR) > 1) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_BASE_COLOR,
+                                   TextureType::DIFFUSE, flip_vertical);
+          tex)
+        mat_builder.setDiffuse(tex);
     }
-    if (!foundNormal) {
-      // Only use height as normal if it's actually intended as such (common in
-      // OBJ)
-      for (auto &&tex : heightTextures) {
+
+    // 2. Normal / Height
+    if (material->GetTextureCount(aiTextureType_NORMALS) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_NORMALS,
+                                   TextureType::NORMAL, flip_vertical);
+          tex)
         mat_builder.setNormal(tex);
-        break;
-      }
+
     }
 
-    // Metallic
-    for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, scene, aiTextureType_METALNESS,
-                               TextureType::METALLIC, flip_vertical)) {
-      mat_builder.setMetallic(texture);
+    else if (material->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_HEIGHT,
+                                   TextureType::NORMAL, flip_vertical);
+          tex)
+        mat_builder.setNormal(tex);
     }
 
-    // Roughness
-    for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, scene, aiTextureType_DIFFUSE_ROUGHNESS,
-                               TextureType::ROUGHNESS, flip_vertical)) {
-      mat_builder.setRoughness(texture);
+    // 3. Metallic-Roughness (GLTF Packed)
+    if (material->GetTextureCount(aiTextureType_UNKNOWN) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_UNKNOWN,
+                                   TextureType::METALLIC, flip_vertical);
+          tex)
+        mat_builder.setMetallic(tex);
+
     }
 
-    // Ambient Occlusion
-    for (std::shared_ptr<Texture> &&texture :
-         _loadMaterialTextures(material, scene, aiTextureType_AMBIENT_OCCLUSION,
-                               TextureType::AO, flip_vertical)) {
-      mat_builder.setAO(texture);
+    else if (material->GetTextureCount(aiTextureType_METALNESS) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_METALNESS,
+                                   TextureType::METALLIC, flip_vertical))
+        mat_builder.setMetallic(tex);
+    }
+
+    // 4. Ambient Occlusion
+    if (material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) > 0) {
+      if (auto &&tex = _loadMaterialTexture(material, scene,
+                                            aiTextureType_AMBIENT_OCCLUSION,
+                                            TextureType::AO, flip_vertical);
+          tex)
+        mat_builder.setAO(tex);
+
+    }
+
+    else if (material->GetTextureCount(aiTextureType_AMBIENT) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_AMBIENT,
+                                   TextureType::AO, flip_vertical);
+          tex)
+        mat_builder.setAO(tex);
     }
   }
 
   Material material = mat_builder.create();
+  glm::vec3 finalColor(diffuseColor.r, diffuseColor.g, diffuseColor.b);
 
   return Mesh(std::move(vertices), std::move(indices), std::move(material),
-              baseColor);
+              finalColor, opacity);
 }
 
-std::generator<std::shared_ptr<Texture>>
-Model::_loadMaterialTextures(aiMaterial *mat, const aiScene *scene,
-                             aiTextureType type, TextureType typeName,
-                             bool flip_vertical) {
+std::shared_ptr<Texture> Model::_loadMaterialTexture(aiMaterial *mat,
+                                                     const aiScene *scene,
+                                                     aiTextureType type,
+                                                     TextureType typeName,
+                                                     bool flip_vertical) {
   for (size_t i = 0; i < mat->GetTextureCount(type); ++i) {
     aiString path;
     mat->GetTexture(type, i, &path);
 
-    // Create a unique texture name to avoid collisions across different models
     std::string unique_name;
+
     if (path.C_Str()[0] == '*') {
       unique_name = std::format("{}:{}", m_path, path.C_Str());
     } else {
       unique_name = std::format("{}/{}", m_directory, path.C_Str());
     }
+
     TextureName texture_name(std::move(unique_name));
 
     if (!TextureManager::exists(texture_name)) {
-      std::shared_ptr<Texture> texture;
-      // Handle embedded textures
       if (path.C_Str()[0] == '*') {
         int index = std::stoi(path.C_Str() + 1);
         aiTexture *aiTex = scene->mTextures[index];
 
         if (aiTex->mHeight == 0) {
-          // Compressed texture (png, jpg, etc.)
-          texture =
-              TextureManager::loadTexture(texture_name, typeName, aiTex->pcData,
-                                          aiTex->mWidth, flip_vertical);
-        } else {
-          // Uncompressed texture (RGBA8888)
-          texture = TextureManager::loadTexture(
-              texture_name, typeName, aiTex->pcData,
-              aiTex->mWidth * aiTex->mHeight * 4, flip_vertical);
+          return TextureManager::loadTexture(texture_name, typeName,
+                                             aiTex->pcData, aiTex->mWidth,
+                                             flip_vertical);
         }
-      } else {
-        texture = TextureManager::loadTexture(
-            texture_name, typeName, unique_name.c_str(), flip_vertical);
+
+        return TextureManager::loadTexture(
+            texture_name, typeName, aiTex->pcData,
+            aiTex->mWidth * aiTex->mHeight * 4, flip_vertical);
       }
 
-      co_yield texture;
+      return TextureManager::loadTexture(texture_name, typeName,
+                                         unique_name.c_str(), flip_vertical);
     } else {
-      std::shared_ptr<Texture> texture =
-          TextureManager::getTexture(texture_name);
-
-      co_yield texture;
+      return TextureManager::getTexture(texture_name);
     }
   }
 }

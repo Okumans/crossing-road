@@ -11,16 +11,17 @@ in vec4 FragPosLightSpace;
 uniform sampler2D u_DiffuseTex;
 uniform sampler2D u_NormalTex;
 uniform sampler2D u_HeightTex;
-uniform sampler2D u_MetallicTex;
-uniform sampler2D u_RoughnessTex;
+uniform sampler2D u_MetallicRoughnessTex; // G = Roughness, B = Metallic
 uniform sampler2D u_AOTex;
 uniform samplerCube u_Skybox;
 uniform sampler2D u_ShadowMap;
 
-// Fallbacks
+// Fallbacks & Factors
 uniform vec3 u_BaseColor;
+uniform float u_Opacity;
 uniform float u_MetallicFactor;
 uniform float u_RoughnessFactor;
+uniform float u_AOFactor;
 uniform float u_HeightScale;
 
 // Lights
@@ -93,21 +94,17 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
-    // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
     
     if(projCoords.z > 1.0)
         return 0.0;
 
-    // get depth of current fragment from light's perspective
+    float closestDepth = texture(u_ShadowMap, projCoords.xy).r; 
     float currentDepth = projCoords.z;
     
-    // calculate bias (based on depth map resolution and slope)
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     
-    // PCF
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
     for(int x = -1; x <= 1; ++x)
@@ -126,41 +123,40 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 void main()
 {
   vec3 V = normalize(u_CameraPos - WorldPos);
-
-  // Calculate tangent space view direction for parallax mapping
   mat3 invTBN = transpose(TBN);
   vec3 tangentViewDir = normalize(invTBN * V);
 
   vec2 texCoords = ParallaxMapping(TexCoords, tangentViewDir);
 
-  // Sample textures and apply factors
   vec4 diffuseSample = texture(u_DiffuseTex, texCoords);
-  if (diffuseSample.a < 0.1)
+  float finalAlpha = diffuseSample.a * u_Opacity;
+  
+  // Very aggressive discard for "Cutout" transparency (standard for this style)
+  if (finalAlpha < 0.7)
     discard;
 
   vec3 albedo = pow(diffuseSample.rgb, vec3(2.2)) * u_BaseColor;
-  float metallic = texture(u_MetallicTex, texCoords).r * u_MetallicFactor;
-  float roughness = texture(u_RoughnessTex, texCoords).r * u_RoughnessFactor;
-  float ao = texture(u_AOTex, texCoords).r;
+  
+  vec3 mrSample = texture(u_MetallicRoughnessTex, texCoords).rgb;
+  // Add a small bias to roughness to prevent absolute mirror surfaces on foliage
+  float roughness = clamp(mrSample.g * u_RoughnessFactor, 0.05, 1.0);
+  float metallic = mrSample.b * u_MetallicFactor;
+  
+  float ao = texture(u_AOTex, texCoords).r * u_AOFactor;
 
   vec3 N = getNormalFromMap(texCoords);
-
-  // Calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 of 0.04
-  // and if it's a metal, use the albedo color as F0 (metallic workflow)
   vec3 F0 = vec3(0.04);
   F0 = mix(F0, albedo, metallic);
 
-  // Reflectance equation
   vec3 Lo = vec3(0.0);
   int numLights = min(u_NumLights, MAX_LIGHTS);
   for (int i = 0; i < numLights; ++i)
   {
-    // Calculate per-light radiance
     vec3 L;
     vec3 radiance;
     if (u_Lights[i].type == 1) // Directional
     {
-      L = normalize(-u_Lights[i].position); // position acts as direction
+      L = normalize(-u_Lights[i].position);
       radiance = u_Lights[i].color;
     }
     else // Point
@@ -172,49 +168,42 @@ void main()
     }
 
     vec3 H = normalize(V + L);
-
-    // Cook-Torrance BRDF
     float NDF = DistributionGGX(N, H, roughness);
     float G = GeometrySmith(N, V, L, roughness);
     vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
     vec3 numerator = NDF * G * F;
-    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     vec3 specular = numerator / denominator;
 
-    // kS is equal to Fresnel
     vec3 kS = F;
-    // For energy conservation, the diffuse and specular light can't
-    // be above 1.0 (unless the surface emits light); to preserve this
-    // relationship the diffuse component (kD) should equal 1.0 - kS.
     vec3 kD = vec3(1.0) - kS;
-    // Multiply kD by the inverse metalness such that only non-metals
-    // have diffuse lighting, or a linear blend if partly metal (pure metals
-    // have no diffuse light).
     kD *= 1.0 - metallic;
 
-    // Scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
-
     float shadow = 0.0;
-    if (i == 0) // Assume first light is the sun which casts shadows
-    {
-        shadow = ShadowCalculation(FragPosLightSpace, N, L);
-    }
+    if (i == 0) shadow = ShadowCalculation(FragPosLightSpace, N, L);
 
-    // Add to outgoing radiance Lo
     Lo += (1.0 - shadow) * (kD * albedo / PI + specular) * radiance * NdotL;
   }
 
-  // Ambient lighting
-  vec3 ambient = vec3(0.03) * albedo * ao;
+  // IBL / Ambient
+  vec3 kS_ambient = fresnelSchlick(max(dot(N, V), 0.0), F0);
+  vec3 kD_ambient = 1.0 - kS_ambient;
+  kD_ambient *= 1.0 - metallic;
+  vec3 ambient = (kD_ambient * albedo) * 0.03 * ao;
 
-  vec3 color = ambient + Lo;
+  vec3 R = reflect(-V, N);
+  // Specular reflection from skybox
+  vec3 reflection = textureLod(u_Skybox, R, roughness * 4.0).rgb;
+  // Attenuate reflections by AO and albedo/alpha to prevent glowing edges
+  vec3 specular_ambient = reflection * kS_ambient * ao * albedo * finalAlpha;
 
-  // HDR tonemapping
+  vec3 color = ambient + specular_ambient + Lo;
+
+  // HDR & Gamma
   color = color / (color + vec3(1.0));
-  // Gamma correct
   color = pow(color, vec3(1.0 / 2.2));
 
-  FragColor = vec4(color, 1.0);
+  FragColor = vec4(color, finalAlpha);
 }

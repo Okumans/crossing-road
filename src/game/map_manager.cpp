@@ -11,6 +11,12 @@ void MapManager::addRow(RowType type, const Material &material, float height,
   m_nextZ -= 0.5f;
 }
 
+void MapManager::update(double delta_time) {
+  for (auto &row : m_rows) {
+    row->update(delta_time);
+  }
+}
+
 void MapManager::draw(Shader &shader) {
   for (size_t i = 0; i < m_rows.size(); ++i) {
     m_rows[i]->draw(shader);

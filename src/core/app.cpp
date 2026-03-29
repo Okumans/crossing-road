@@ -19,9 +19,9 @@ static std::string arr_to_str(unsigned char *arr, unsigned int len) {
 void App::render(double delta_time) {
   _handleProcessInput(delta_time);
 
-  if (m_appState.gameStarted) {
-    m_game.update(delta_time);
-  }
+  // if (m_appState.gameStarted) {
+  m_game.update(delta_time);
+  // }
 
   _updateUIElements();
 
@@ -84,8 +84,11 @@ void App::_setupResources() {
 
   if (!TextureManager::exists(STATIC_NORMAL_TEXTURE))
     TextureManager::manage(STATIC_NORMAL_TEXTURE,
-
                            TextureManager::generateStaticNormalTexture());
+
+  if (!TextureManager::exists(STATIC_PBR_DEFAULT_TEXTURE))
+    TextureManager::manage(STATIC_PBR_DEFAULT_TEXTURE,
+                           TextureManager::generateStaticPBRDefaultTexture());
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
   ModelManager::loadModel(ModelName::TREE_1,

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <print>
 #include <vector>
 
 Row::Row(float zPos, RowType type, const Material &material, float height,
@@ -50,6 +51,12 @@ void Row::_setupMesh() {
   m_sideMesh =
       std::make_unique<Mesh>(std::move(sideVertices), std::move(sideIndices),
                              m_sideMaterial, glm::vec3(1.0f));
+}
+
+void Row::update(double delta_time) {
+  for (auto &obj : m_objects) {
+    obj->update(delta_time);
+  }
 }
 
 void Row::draw(Shader &shader) {

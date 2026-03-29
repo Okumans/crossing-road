@@ -15,7 +15,7 @@ struct AABB {
 };
 
 class Object {
-private:
+protected:
   std::shared_ptr<Model> m_model;
   glm::vec3 m_position;
   glm::vec3 m_rotation; // Added rotation in degrees
@@ -31,8 +31,10 @@ public:
   Object(Object &&other) noexcept = default;
   Object &operator=(const Object &other) = default;
   Object &operator=(Object &&other) noexcept = default;
+  virtual ~Object() = default;
 
-  void draw(Shader &shader);
+  virtual void update(double delta_time) { (void)delta_time; }
+  virtual void draw(Shader &shader);
 
   void setPosition(glm::vec3 pos) { m_position = pos; }
   void setScale(glm::vec3 scale) { m_scale = scale; };

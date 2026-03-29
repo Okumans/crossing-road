@@ -10,6 +10,7 @@
 #include "glad/gl.h"
 #include "glm/fwd.hpp"
 #include "resource/texture_manager.hpp"
+#include "scene/car.hpp"
 #include "scene/object.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
@@ -53,6 +54,9 @@ void Game::setup() {
   if (!TextureManager::exists(STATIC_NORMAL_TEXTURE))
     TextureManager::manage(STATIC_NORMAL_TEXTURE,
                            TextureManager::generateStaticNormalTexture());
+  if (!TextureManager::exists(STATIC_PBR_DEFAULT_TEXTURE))
+    TextureManager::manage(STATIC_PBR_DEFAULT_TEXTURE,
+                           TextureManager::generateStaticPBRDefaultTexture());
 
   // Load Skybox
   TextureManager::loadCubemap(
@@ -115,24 +119,23 @@ void Game::setup() {
       float chance = (float)rand() / RAND_MAX;
       glm::vec3 custom_position_offset = glm::vec3(0.0f);
 
-      if (chance > 0.92f) { // ~6% chance
+      if (chance > 0.95f) { // ~5% chance
         float subChance = (float)rand() / RAND_MAX;
         std::unique_ptr<Object> obj;
-        if (subChance > 0.8f) {
+        if (subChance > 0.6f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::TREE_1));
           obj->setScale(0.006f);
-        } else if (subChance > 0.6f) {
+        } else if (subChance > 0.4f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::BUSH_2));
           obj->setScale(0.15f);
           custom_position_offset = {0, 0.80f, -0.3};
-
-        } else if (subChance > 0.4f) {
+        } else if (subChance > 0.25f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::TREE_2));
           obj->setScale(0.4f);
-        } else if (subChance > 0.2f) {
+        } else if (subChance > 0.1f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::BUSH_1));
           obj->setScale(0.002f);
@@ -159,18 +162,24 @@ void Game::setup() {
     }
 
     if (row->getType() == RowType::ROAD) {
-      float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
-      float i = ((int)(((float)rand() / RAND_MAX) * 100) % 20) - 10;
+      // Add moving cars to roads
+      float direction = ((float)rand() / RAND_MAX > 0.5f) ? 1.0f : -1.0f;
+      float speed = (2.0f + (float)rand() / RAND_MAX * 3.0f) * direction;
 
-      std::unique_ptr<Object> obj =
-          std::make_unique<Object>(ModelManager::getModel(ModelName::CAR_1));
-
-      obj->setPosition(
-          glm::vec3((float)i + xOffset, row->getHeight(), row->getZ() - 0.25f));
-      obj->setScale(0.2f);
-      row->addObject(std::move(obj));
-
-      continue;
+      // Spawn 1-2 cars per road
+      int numCars = 1 + (rand() % 2);
+      for (int c = 0; c < numCars; ++c) {
+        float xPos = ((float)rand() / RAND_MAX - 0.5f) * 20.0f;
+        auto car = std::make_unique<Car>(
+            ModelManager::getModel(ModelName::CAR_1), speed);
+        car->setPosition(
+            glm::vec3(xPos, row->getHeight(), row->getZ() - 0.25f));
+        car->setScale(0.2f);
+        if (direction < 0.0f) {
+          car->setRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+        }
+        row->addObject(std::move(car));
+      }
     }
   }
 
@@ -199,7 +208,7 @@ void Game::setup() {
                              .color = glm::vec3(1.0f, 0.8f, 0.6f)});
 }
 
-void Game::update(double delta_time) { ; }
+void Game::update(double delta_time) { m_map.update(delta_time); }
 
 void Game::render(double delta_time, Camera &camera) {
   glEnable(GL_DEPTH_TEST);
@@ -227,6 +236,16 @@ void Game::render(double delta_time, Camera &camera) {
   glViewport(0, 0, (int)camera.getSceneWidth(), (int)camera.getSceneHeight());
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // Bind and draw Skybox first (as background)
+  auto skyboxTex = TextureManager::getTexture(TextureName("skybox"));
+  Shader &skybox_shader = ShaderManager::getShader(ShaderType::SKYBOX);
+  glDepthMask(GL_FALSE);
+  m_skybox->draw(camera, skybox_shader, *skyboxTex);
+  glDepthMask(GL_TRUE);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   glm::mat4 projection = camera.getProjectionMatrix();
   glm::mat4 view = camera.getViewMatrix();
 
@@ -237,8 +256,7 @@ void Game::render(double delta_time, Camera &camera) {
   pbr_shader.setVec3("u_CameraPos", camera.Position);
   pbr_shader.setMat4("u_LightSpaceMatrix", m_lightSpaceMatrix);
 
-  // Bind Skybox
-  auto skyboxTex = TextureManager::getTexture(TextureName("skybox"));
+  // Bind Skybox for reflections
   glBindTextureUnit(10, skyboxTex->getTexID());
   pbr_shader.setInt("u_Skybox", 10);
 
@@ -249,20 +267,15 @@ void Game::render(double delta_time, Camera &camera) {
   // Lighting setup
   LightingManager::apply(pbr_shader);
 
-  // Default PBR factors for things without textures
-  pbr_shader.setFloat("u_MetallicFactor", 1.0f);
-  pbr_shader.setFloat("u_RoughnessFactor", 1.0f);
   pbr_shader.setFloat("u_HeightScale", 0.05f);
 
   // Draw Map
   m_map.draw(pbr_shader);
 
+  // Draw Player (Last for transparency blending)
   m_player->draw(pbr_shader);
 
-  // Draw Skybox Mesh
-  Shader &skybox_shader = ShaderManager::getShader(ShaderType::SKYBOX);
-  m_skybox->draw(camera, skybox_shader, *skyboxTex);
-
+  glDisable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
 }
 

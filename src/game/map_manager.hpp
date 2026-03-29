@@ -13,6 +13,7 @@ public:
 
   void addRow(RowType type, const Material &material, float height = 0.0f,
               std::optional<Material> sideMaterial = std::nullopt);
+  void update(double delta_time);
   void draw(Shader &shader);
 
   const std::vector<std::unique_ptr<Row>> &getRows() const { return m_rows; }

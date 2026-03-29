@@ -114,6 +114,26 @@ Texture TextureManager::generateStaticNormalTexture() {
   return Texture(normal_texture, TextureType::NORMAL, true);
 }
 
+Texture TextureManager::generateStaticPBRDefaultTexture() {
+  GLuint pbr_texture;
+  int size = 16;
+  glCreateTextures(GL_TEXTURE_2D, 1, &pbr_texture);
+  glTextureStorage2D(pbr_texture, 1, GL_RGBA8, size, size);
+  // Default PBR: Roughness=1.0 (G=255), Metallic=0.0 (B=0)
+  std::vector<uint8_t> pbr_data(size * size * 4);
+  for (size_t i = 0; i < size * size; ++i) {
+    pbr_data[i * 4 + 0] = 0x00; // R
+    pbr_data[i * 4 + 1] = 0xFF; // G (Roughness)
+    pbr_data[i * 4 + 2] = 0x00; // B (Metallic)
+    pbr_data[i * 4 + 3] = 0xFF; // A
+  }
+  glTextureSubImage2D(pbr_texture, 0, 0, 0, size, size, GL_RGBA,
+                      GL_UNSIGNED_BYTE, pbr_data.data());
+  glTextureParameteri(pbr_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(pbr_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  return Texture(pbr_texture, TextureType::METALLIC, true);
+}
+
 Texture &TextureManager::getTextureRef(TextureName name) {
   return *TextureManager::textures.at(name);
 }

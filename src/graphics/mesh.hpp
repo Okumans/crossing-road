@@ -25,13 +25,14 @@ private:
   Material m_material;
 
   glm::vec3 m_baseColor;
+  float m_opacity;
 
   // render data
   GLuint m_vao, m_vbo, m_ebo;
 
 public:
   Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
-       Material material, glm::vec3 color);
+       Material material, glm::vec3 color, float opacity = 1.0f);
 
   ~Mesh();
 

@@ -7,9 +7,9 @@
 #include <utility>
 
 Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
-           Material material, glm::vec3 color)
+           Material material, glm::vec3 color, float opacity)
     : m_vertices(std::move(vertices)), m_indices(std::move(indices)),
-      m_material(material), m_baseColor(color) {
+      m_material(material), m_baseColor(color), m_opacity(opacity) {
   _setupMesh();
 }
 
@@ -28,10 +28,12 @@ Mesh::Mesh(Mesh &&other) noexcept
     : m_vertices(std::move(other.m_vertices)),
       m_indices(std::move(other.m_indices)),
       m_material(std::move(other.m_material)), m_baseColor(other.m_baseColor),
-      m_vao(other.m_vao), m_vbo(other.m_vbo), m_ebo(other.m_ebo) {
+      m_opacity(other.m_opacity), m_vao(other.m_vao), m_vbo(other.m_vbo),
+      m_ebo(other.m_ebo) {
   other.m_vertices.clear();
   other.m_indices.clear();
   other.m_baseColor = glm::vec3(0.0f);
+  other.m_opacity = 1.0f;
   other.m_vao = 0;
   other.m_vbo = 0;
   other.m_ebo = 0;
@@ -157,14 +159,9 @@ void Mesh::draw(Shader &shader) {
   glBindTextureUnit(counter, m_material.getHeight()->getTexID());
   counter++;
 
-  // Metallic
-  shader.setInt("u_MetallicTex", counter);
+  // MetallicRoughness (Packed)
+  shader.setInt("u_MetallicRoughnessTex", counter);
   glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
-  counter++;
-
-  // Roughness
-  shader.setInt("u_RoughnessTex", counter);
-  glBindTextureUnit(counter, m_material.getRoughness()->getTexID());
   counter++;
 
   // AO
@@ -172,8 +169,12 @@ void Mesh::draw(Shader &shader) {
   glBindTextureUnit(counter, m_material.getAO()->getTexID());
   counter++;
 
-  // Base Color (Make sure to pass BaseColor to match the shader)
+  // Factors
   shader.setVec3("u_BaseColor", m_baseColor);
+  shader.setFloat("u_Opacity", m_opacity);
+  shader.setFloat("u_MetallicFactor", m_material.getMetallicFactor());
+  shader.setFloat("u_RoughnessFactor", m_material.getRoughnessFactor());
+  shader.setFloat("u_AOFactor", m_material.getAOFactor());
 
   glBindVertexArray(m_vao);
   glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);

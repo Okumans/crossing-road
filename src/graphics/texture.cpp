@@ -18,8 +18,12 @@ Texture::Texture(const std::vector<std::string> &faces)
                                     &nrChannels, STBI_rgb_alpha);
     if (data) {
       if (i == 0) {
+        // Calculate mipmap levels
+        int levels =
+            static_cast<int>(std::floor(std::log2(std::max(width, height)))) +
+            1;
         // Allocate immutable storage for 6 faces
-        glTextureStorage2D(m_texID, 1, GL_RGBA8, width, height);
+        glTextureStorage2D(m_texID, levels, GL_RGBA8, width, height);
       }
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
