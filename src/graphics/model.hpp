@@ -12,7 +12,8 @@ class Model {
 private:
   // model data
   std::vector<Mesh> m_meshes;
-  std::string_view m_directory;
+  std::string m_directory;
+  std::string m_path;
 
 public:
   Model(const char *path, bool flip_vertical = false);

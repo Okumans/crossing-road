@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "game/row.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/material.hpp"
 #include "resource/lighting_manager.hpp"
@@ -12,6 +13,7 @@
 #include "scene/object.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
+#include <print>
 
 Game::Game() : m_player(nullptr), m_skybox(std::make_unique<Skybox>()) {}
 
@@ -72,18 +74,105 @@ void Game::setup() {
   auto waterTex = TextureManager::getTexture(TextureName("water"));
   const Material water_mat = Material::builder().setDiffuse(waterTex).create();
 
-  m_map.addRow(RowType::GRASS, grass_mat_1);
-  m_map.addRow(RowType::GRASS, grass_mat_2);
+  // Start with some grass
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
+  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
 
-  m_map.addRow(RowType::ROAD, road_mat_1, 0.04f);
-  m_map.addRow(RowType::ROAD, road_mat_2, 0.04f);
+  // A road
+  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
+  m_map.addRow(RowType::ROAD, road_mat_2, 0.05f);
+  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
 
-  m_map.addRow(RowType::GRASS, grass_mat_1);
+  // More grass
+  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
 
-  m_map.addRow(RowType::WATER, water_mat, -0.2f, water_mat);
+  // A river (recessed)
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
+  m_map.addRow(RowType::WATER, water_mat, -0.2f, grass_mat_1);
+  m_map.addRow(RowType::WATER, water_mat, -0.2f, grass_mat_1);
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
 
-  m_map.addRow(RowType::GRASS, grass_mat_1);
-  m_map.addRow(RowType::GRASS, grass_mat_2);
+  // A raised grass area
+  m_map.addRow(RowType::GRASS, grass_mat_2, 0.1f);
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.1f);
+  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+
+  // Another road
+  m_map.addRow(RowType::ROAD, road_mat_2, 0.05f);
+  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
+
+  // End with grass
+  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
+  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+
+  // Helper to add random greenery to a grass row (very sparse)
+  auto populateGreenery = [&](Row &row) {
+    for (int i = -10; i <= 10; ++i) {
+      if (std::abs(i) <= 1)
+        continue; // Keep center clear for player
+
+      float chance = (float)rand() / RAND_MAX;
+      glm::vec3 custom_position_offset = glm::vec3(0.0f);
+
+      if (chance > 0.92f) { // ~6% chance
+        float subChance = (float)rand() / RAND_MAX;
+        std::unique_ptr<Object> obj;
+        if (subChance > 0.8f) {
+          obj = std::make_unique<Object>(
+              ModelManager::getModel(ModelName::TREE_1));
+          obj->setScale(0.006f);
+        } else if (subChance > 0.6f) {
+          obj = std::make_unique<Object>(
+              ModelManager::getModel(ModelName::BUSH_2));
+          obj->setScale(0.15f);
+          custom_position_offset = {0, 0.80f, -0.3};
+
+        } else if (subChance > 0.4f) {
+          obj = std::make_unique<Object>(
+              ModelManager::getModel(ModelName::TREE_2));
+          obj->setScale(0.4f);
+        } else if (subChance > 0.2f) {
+          obj = std::make_unique<Object>(
+              ModelManager::getModel(ModelName::BUSH_1));
+          obj->setScale(0.002f);
+        } else {
+          obj = std::make_unique<Object>(
+              ModelManager::getModel(ModelName::ROCK_1));
+          obj->setScale(0.005f);
+        }
+
+        float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
+        obj->setPosition(
+            glm::vec3((float)i + xOffset, row.getHeight(), row.getZ() - 0.25f) +
+            custom_position_offset);
+        obj->setRotation(glm::vec3(
+            0.0f, ((float)rand() / RAND_MAX) * glm::two_pi<float>(), 0.0f));
+        row.addObject(std::move(obj));
+      }
+    }
+  };
+
+  for (auto &row : m_map.getRows()) {
+    if (row->getType() == RowType::GRASS) {
+      populateGreenery(*row);
+    }
+
+    if (row->getType() == RowType::ROAD) {
+      float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
+      float i = ((int)(((float)rand() / RAND_MAX) * 100) % 20) - 10;
+
+      std::unique_ptr<Object> obj =
+          std::make_unique<Object>(ModelManager::getModel(ModelName::CAR_1));
+
+      obj->setPosition(
+          glm::vec3((float)i + xOffset, row->getHeight(), row->getZ() - 0.25f));
+      obj->setScale(0.2f);
+      row->addObject(std::move(obj));
+
+      continue;
+    }
+  }
 
   m_player =
       std::make_unique<Object>(ModelManager::getModel(ModelName::CHICKEN));
@@ -167,11 +256,6 @@ void Game::render(double delta_time, Camera &camera) {
 
   // Draw Map
   m_map.draw(pbr_shader);
-
-  Object tree_1 = Object(ModelManager::getModel(ModelName::TREE_1));
-  tree_1.setPosition({0.25f, 0.0f, 0.25f});
-  tree_1.setScale(0.045f);
-  tree_1.draw(pbr_shader);
 
   m_player->draw(pbr_shader);
 

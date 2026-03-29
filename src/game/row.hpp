@@ -8,6 +8,9 @@
 #include <glm/glm.hpp>
 #include <optional>
 
+#include "scene/object.hpp"
+#include <vector>
+
 enum class RowType { GRASS, ROAD, WATER };
 
 class Row {
@@ -18,6 +21,8 @@ public:
 
   void draw(Shader &shader);
   void drawSidePanel(Shader &shader, float nextHeight, bool isForward);
+
+  void addObject(std::unique_ptr<Object> object);
 
   float getZ() const { return m_zPos; }
   float getHeight() const { return m_height; }
@@ -31,6 +36,7 @@ private:
   Material m_sideMaterial;
   std::unique_ptr<Mesh> m_mesh;
   std::unique_ptr<Mesh> m_sideMesh; // Reusable side quad mesh
+  std::vector<std::unique_ptr<Object>> m_objects;
 
   void _setupMesh();
 };

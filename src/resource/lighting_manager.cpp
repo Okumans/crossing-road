@@ -1,7 +1,7 @@
 #include "lighting_manager.hpp"
+#include <format>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
-#include <format>
 
 std::vector<Light> LightingManager::m_lights = {};
 
@@ -35,10 +35,27 @@ LightingManager::calculateLightSpaceMatrix(const glm::vec3 &targetPos) {
   Light shadowCaster = getShadowCaster();
   glm::vec3 lightDir = glm::normalize(shadowCaster.position);
 
-  glm::mat4 lightProjection =
-      glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 20.0f);
-  glm::mat4 lightView = glm::lookAt(targetPos - lightDir * 10.0f, targetPos,
+  float size = 20.0f; // Frustum size
+  glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, 0.1f, 30.0f);
+
+  // 1. Create a temporary view matrix centered at the target
+  glm::mat4 lightView = glm::lookAt(targetPos - lightDir * 15.0f, targetPos,
                                     glm::vec3(0.0f, 1.0f, 0.0f));
+
+  // 2. Snap the matrix to texel boundaries to prevent shadow shimmering
+  // Transform origin to light space
+  glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+  glm::vec4 shadowOrigin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+  shadowOrigin = lightSpaceMatrix * shadowOrigin;
+  shadowOrigin *= (2048.0f / 2.0f); // 2048 is shadow map resolution
+
+  glm::vec4 roundedOrigin = glm::round(shadowOrigin);
+  glm::vec4 roundOffset = roundedOrigin - shadowOrigin;
+  roundOffset = roundOffset * (2.0f / 2048.0f);
+  roundOffset.z = 0.0f;
+  roundOffset.w = 0.0f;
+
+  lightProjection[3] += roundOffset;
 
   return lightProjection * lightView;
 }

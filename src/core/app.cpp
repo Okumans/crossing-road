@@ -89,7 +89,17 @@ void App::_setupResources() {
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
   ModelManager::loadModel(ModelName::TREE_1,
-                          ASSETS_PATH "/objects/tree/tree_1.glb", true);
+                          ASSETS_PATH "/objects/tree/tree_1.glb");
+  ModelManager::loadModel(ModelName::TREE_2,
+                          ASSETS_PATH "/objects/tree/tree_2.glb");
+  ModelManager::loadModel(ModelName::BUSH_1,
+                          ASSETS_PATH "/objects/tree/bush_1.glb");
+  ModelManager::loadModel(ModelName::BUSH_2,
+                          ASSETS_PATH "/objects/tree/bush_2.glb");
+  ModelManager::loadModel(ModelName::ROCK_1,
+                          ASSETS_PATH "/objects/rock/rock_1.glb");
+  ModelManager::loadModel(ModelName::CAR_1,
+                          ASSETS_PATH "/objects/car/car_1.glb");
 
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
   loadMaterialFolder("grass_2", ASSETS_PATH "/textures/grass/2");

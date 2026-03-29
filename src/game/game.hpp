@@ -41,5 +41,4 @@ public:
   void moveRight(double delta_time);
 };
 
-// TODO: integrated light source helpers
 // TODO: integrated world position helpers

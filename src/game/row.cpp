@@ -16,7 +16,7 @@ Row::Row(float zPos, RowType type, const Material &material, float height,
 }
 
 void Row::_setupMesh() {
-  float width = 20.0f;
+  float width = 30.0f;
   float depth = 0.5f;
   float halfWidth = width / 2.0f;
   float uMax = width / 6.0f;
@@ -57,6 +57,10 @@ void Row::draw(Shader &shader) {
   shader.setFloat("u_MetallicFactor", 0.0f);
   shader.setFloat("u_RoughnessFactor", 1.0f);
   m_mesh->draw(shader);
+
+  for (auto &obj : m_objects) {
+    obj->draw(shader);
+  }
 }
 
 void Row::drawSidePanel(Shader &shader, float nextHeight, bool isForward) {
@@ -65,7 +69,6 @@ void Row::drawSidePanel(Shader &shader, float nextHeight, bool isForward) {
 
   float depth = 0.5f;
   float z = isForward ? m_zPos : m_zPos - depth;
-  float normalZ = isForward ? 1.0f : -1.0f;
 
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, glm::vec3(0.0f, nextHeight, z));
@@ -75,8 +78,9 @@ void Row::drawSidePanel(Shader &shader, float nextHeight, bool isForward) {
   shader.setFloat("u_MetallicFactor", 0.0f);
   shader.setFloat("u_RoughnessFactor", 1.0f);
 
-  // Note: Normal in side mesh is {0,0,1}. If isForward is false, we should
-  // probably rotate it or handle it. For simplicity, let's just draw it. If
-  // lighting looks wrong we'd need more quads or better normals.
   m_sideMesh->draw(shader);
+}
+
+void Row::addObject(std::unique_ptr<Object> object) {
+  m_objects.push_back(std::move(object));
 }
