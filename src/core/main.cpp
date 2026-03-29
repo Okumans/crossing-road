@@ -17,7 +17,7 @@
 #endif
 
 #ifndef SHADER_PATH
-#define SHADER_PATH ASSETS_PATH "/shader"
+#define SHADER_PATH ASSETS_PATH "/shaders"
 #endif
 
 void process_input(GLFWwindow *window) {

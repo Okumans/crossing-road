@@ -1,6 +1,8 @@
 #include "core/app.hpp"
-#include "GLFW/glfw3.h"
+
 #include "glad/gl.h"
+
+#include "GLFW/glfw3.h"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
 #include "resource/texture_manager.hpp"
@@ -57,6 +59,7 @@ App::App(GLFWwindow *window) : m_window(window), m_camera(glm::vec3(8.0f)) {
 App::~App() = default;
 
 void App::_setupResources() {
+  // Load Shader
 #ifdef EMBED_SHADER
   ShaderManager::loadShaderSource(
       ShaderType::UI, arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
@@ -74,6 +77,8 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::SHADOW, SHADER_PATH "/shadow.vert.glsl",
                             SHADER_PATH "/shadow.frag.glsl");
 #endif
+
+  // Ensure the existence of static generated textures
   if (!TextureManager::exists(STATIC_BLACK_TEXTURE))
     TextureManager::manage(STATIC_BLACK_TEXTURE,
                            TextureManager::generateStaticBlackTexture());
@@ -89,6 +94,8 @@ void App::_setupResources() {
   if (!TextureManager::exists(STATIC_PBR_DEFAULT_TEXTURE))
     TextureManager::manage(STATIC_PBR_DEFAULT_TEXTURE,
                            TextureManager::generateStaticPBRDefaultTexture());
+
+  // Load the models
   ModelManager::loadModel(ModelName::CHICKEN,
                           ASSETS_PATH "/objects/chicken/chicken.glb");
   ModelManager::loadModel(ModelName::TREE_1,
@@ -103,7 +110,13 @@ void App::_setupResources() {
                           ASSETS_PATH "/objects/rock/rock_1.glb");
   ModelManager::loadModel(ModelName::CAR_1,
                           ASSETS_PATH "/objects/car/car_1.glb");
+  ModelManager::loadModel(ModelName::TRAIN_1,
+                          ASSETS_PATH "/objects/car/train_1.glb");
+  // ModelManager::loadModel(ModelName::CAR_2,
+  //                         ASSETS_PATH "/objects/car/car_2.glb");
 
+  // Load the material & Textures, for the ground textures
+  // TODO: Use enum instead of fixed string
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
   loadMaterialFolder("grass_2", ASSETS_PATH "/textures/grass/2");
   loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/1");
@@ -112,6 +125,7 @@ void App::_setupResources() {
   TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
                               ASSETS_PATH "/textures/water.jpg");
 
+  // Load other resources
   m_game.setup();
   m_font.loadDefaultFont();
 }

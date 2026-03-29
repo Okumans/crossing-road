@@ -144,29 +144,50 @@ void Mesh::_setupMesh() {
 void Mesh::draw(Shader &shader) {
   int counter = 0;
 
-  // Diffuse
+  // 1. Diffuse/Albedo
   shader.setInt("u_DiffuseTex", counter);
-  glBindTextureUnit(counter, m_material.getDiffuse()->getTexID());
+  if (m_material.getDiffuse()) {
+    glBindTextureUnit(counter, m_material.getDiffuse()->getTexID());
+  } else {
+    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+  }
   counter++;
 
-  // Normal
+  // 2. Normal
   shader.setInt("u_NormalTex", counter);
-  glBindTextureUnit(counter, m_material.getNormal()->getTexID());
+  if (m_material.getNormal()) {
+    glBindTextureUnit(counter, m_material.getNormal()->getTexID());
+  } else {
+    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_NORMAL_TEXTURE)->getTexID());
+  }
   counter++;
 
-  // Height
+  // 3. Height/Parallax
   shader.setInt("u_HeightTex", counter);
-  glBindTextureUnit(counter, m_material.getHeight()->getTexID());
+  if (m_material.getHeight()) {
+    glBindTextureUnit(counter, m_material.getHeight()->getTexID());
+  } else {
+    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
+  }
   counter++;
 
-  // MetallicRoughness (Packed)
+  // 4. MetallicRoughness (Packed)
   shader.setInt("u_MetallicRoughnessTex", counter);
-  glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
+  if (m_material.getMetallic()) {
+    glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
+  } else {
+    // Default PBR: Roughness=1.0, Metallic=0.0
+    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_PBR_DEFAULT_TEXTURE)->getTexID());
+  }
   counter++;
 
-  // AO
+  // 5. AO
   shader.setInt("u_AOTex", counter);
-  glBindTextureUnit(counter, m_material.getAO()->getTexID());
+  if (m_material.getAO()) {
+    glBindTextureUnit(counter, m_material.getAO()->getTexID());
+  } else {
+    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+  }
   counter++;
 
   // Factors

@@ -14,7 +14,6 @@
 #include "scene/object.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
-#include <print>
 
 Game::Game() : m_player(nullptr), m_skybox(std::make_unique<Skybox>()) {}
 
@@ -62,12 +61,12 @@ void Game::setup() {
   TextureManager::loadCubemap(
       TextureName("skybox"),
       {
-          ASSETS_PATH "/textures/skybox/px.png", // Right
-          ASSETS_PATH "/textures/skybox/nx.png", // Left
-          ASSETS_PATH "/textures/skybox/py.png", // Top
-          ASSETS_PATH "/textures/skybox/ny.png", // Bottom
-          ASSETS_PATH "/textures/skybox/pz.png", // Front
-          ASSETS_PATH "/textures/skybox/nz.png"  // Back
+          ASSETS_PATH "/textures/skybox/sky_2/pz.png", // +X (Right)
+          ASSETS_PATH "/textures/skybox/sky_2/nz.png", // -X (Left)
+          ASSETS_PATH "/textures/skybox/sky_2/py.png", // +Y (Top)
+          ASSETS_PATH "/textures/skybox/sky_2/ny.png", // -Y (Bottom)
+          ASSETS_PATH "/textures/skybox/sky_2/nx.png", // +Z (Back)
+          ASSETS_PATH "/textures/skybox/sky_2/px.png"  // -Z (Front)
       });
 
   const Material &grass_mat_1 = MaterialManager::getMaterial("grass_1");
@@ -129,8 +128,8 @@ void Game::setup() {
         } else if (subChance > 0.4f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::BUSH_2));
-          obj->setScale(0.15f);
-          custom_position_offset = {0, 0.80f, -0.3};
+          obj->setScale(0.0025f);
+          custom_position_offset = {0, 0.20f, 0};
         } else if (subChance > 0.25f) {
           obj = std::make_unique<Object>(
               ModelManager::getModel(ModelName::TREE_2));
@@ -162,23 +161,36 @@ void Game::setup() {
     }
 
     if (row->getType() == RowType::ROAD) {
-      // Add moving cars to roads
       float direction = ((float)rand() / RAND_MAX > 0.5f) ? 1.0f : -1.0f;
-      float speed = (2.0f + (float)rand() / RAND_MAX * 3.0f) * direction;
 
-      // Spawn 1-2 cars per road
-      int numCars = 1 + (rand() % 2);
-      for (int c = 0; c < numCars; ++c) {
-        float xPos = ((float)rand() / RAND_MAX - 0.5f) * 20.0f;
-        auto car = std::make_unique<Car>(
-            ModelManager::getModel(ModelName::CAR_1), speed);
-        car->setPosition(
-            glm::vec3(xPos, row->getHeight(), row->getZ() - 0.25f));
-        car->setScale(0.2f);
+      if ((float)rand() / RAND_MAX < 0.2f) {
+        float speed = (6.0f + (float)rand() / RAND_MAX * 4.0f) * direction;
+        float xPos = direction > 0.0f ? -15.0f : 15.0f;
+        auto train = std::make_unique<Car>(
+            ModelManager::getModel(ModelName::TRAIN_1), speed);
+        train->setRotation({0, glm::radians(90.0f), 0});
+        train->setPosition(
+            glm::vec3(xPos, row->getHeight() + 0.3f, row->getZ() - 0.25f));
+        train->setScale(0.3f);
         if (direction < 0.0f) {
-          car->setRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+          train->setRotation(glm::vec3(0.0f, glm::radians(90.0f), 0.0f));
         }
-        row->addObject(std::move(car));
+        row->addObject(std::move(train));
+      } else {
+        float speed = (1.5f + (float)rand() / RAND_MAX * 3.0f) * direction;
+        int numCars = 1 + (rand() % 2);
+        for (int c = 0; c < numCars; ++c) {
+          float xPos = ((float)rand() / RAND_MAX - 0.5f) * 20.0f;
+          auto car = std::make_unique<Car>(
+              ModelManager::getModel(ModelName::CAR_1), speed);
+          car->setPosition(
+              glm::vec3(xPos, row->getHeight(), row->getZ() - 0.25f));
+          car->setScale(0.2f);
+          if (direction < 0.0f) {
+            car->setRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+          }
+          row->addObject(std::move(car));
+        }
       }
     }
   }
@@ -194,18 +206,18 @@ void Game::setup() {
   // 1. "Sun" Light (Directional, casts shadows)
   LightingManager::addLight({.type = LightType::DIRECTIONAL,
                              .position = glm::vec3(-0.5f, -1.0f, -0.3f),
-                             .color = glm::vec3(5.0f, 4.8f, 4.2f),
+                             .color = glm::vec3(4.0f, 3.8f, 3.5f),
                              .castsShadows = true});
 
   // 2. Sky Blue Fill Light (Directional)
   LightingManager::addLight({.type = LightType::DIRECTIONAL,
                              .position = glm::vec3(0.5f, -1.0f, 0.2f),
-                             .color = glm::vec3(0.5f, 0.7f, 1.0f)});
+                             .color = glm::vec3(0.2f, 0.3f, 0.5f)});
 
   // 3. Ground Bounce Fill (Point light)
   LightingManager::addLight({.type = LightType::POINT,
                              .position = glm::vec3(0.0f, -5.0f, 0.0f),
-                             .color = glm::vec3(1.0f, 0.8f, 0.6f)});
+                             .color = glm::vec3(0.4f, 0.3f, 0.2f)});
 }
 
 void Game::update(double delta_time) { m_map.update(delta_time); }
@@ -224,12 +236,10 @@ void Game::render(double delta_time, Camera &camera) {
   glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
   glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
   glClear(GL_DEPTH_BUFFER_BIT);
-  glCullFace(GL_FRONT);
+  glCullFace(GL_BACK); // Normal back-face culling instead of front
 
   m_map.draw(shadow_shader);
   m_player->draw(shadow_shader);
-
-  glCullFace(GL_BACK);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // 2. Main Pass
@@ -240,7 +250,9 @@ void Game::render(double delta_time, Camera &camera) {
   auto skyboxTex = TextureManager::getTexture(TextureName("skybox"));
   Shader &skybox_shader = ShaderManager::getShader(ShaderType::SKYBOX);
   glDepthMask(GL_FALSE);
+
   m_skybox->draw(camera, skybox_shader, *skyboxTex);
+
   glDepthMask(GL_TRUE);
 
   glEnable(GL_BLEND);

@@ -35,11 +35,12 @@ LightingManager::calculateLightSpaceMatrix(const glm::vec3 &targetPos) {
   Light shadowCaster = getShadowCaster();
   glm::vec3 lightDir = glm::normalize(shadowCaster.position);
 
-  float size = 20.0f; // Frustum size
-  glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, 0.1f, 30.0f);
+  float size = 40.0f; // Frustum size increased for Crossy Road
+  glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, 0.1f, 60.0f);
 
   // 1. Create a temporary view matrix centered at the target
-  glm::mat4 lightView = glm::lookAt(targetPos - lightDir * 15.0f, targetPos,
+  // Place the light camera further away to encompass more objects in the depth range
+  glm::mat4 lightView = glm::lookAt(targetPos - lightDir * 30.0f, targetPos,
                                     glm::vec3(0.0f, 1.0f, 0.0f));
 
   // 2. Snap the matrix to texel boundaries to prevent shadow shimmering

@@ -49,7 +49,7 @@ void Model::_loadModel(const char *path, bool flip_vertical) {
   std::string_view path_sv = std::string_view(path);
   auto last_slash = path_sv.find_last_of('/');
   if (last_slash != std::string_view::npos) {
-    m_directory = std::string(path_sv.substr(0, last_slash));
+    m_directory = path_sv.substr(0, last_slash);
   } else {
     m_directory = ".";
   }
@@ -254,4 +254,6 @@ std::shared_ptr<Texture> Model::_loadMaterialTexture(aiMaterial *mat,
       return TextureManager::getTexture(texture_name);
     }
   }
+
+  return nullptr;
 }

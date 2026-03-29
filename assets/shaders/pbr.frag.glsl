@@ -94,30 +94,30 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    
-    if(projCoords.z > 1.0)
-        return 0.0;
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
 
-    float closestDepth = texture(u_ShadowMap, projCoords.xy).r; 
-    float currentDepth = projCoords.z;
-    
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
+  if (projCoords.z > 1.0)
+    return 0.0;
+
+  float closestDepth = texture(u_ShadowMap, projCoords.xy).r;
+  float currentDepth = projCoords.z;
+
+  float bias = max(0.01 * (1.0 - dot(normal, lightDir)), 0.001);
+
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+  for (int x = -1; x <= 1; ++x)
+  {
+    for (int y = -1; y <= 1; ++y)
     {
-        for(int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
-        }    
+      float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+      shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
     }
-    shadow /= 9.0;
-    
-    return shadow;
+  }
+  shadow /= 9.0;
+
+  return shadow;
 }
 // ----------------------------------------------------------------------------
 void main()
@@ -130,18 +130,18 @@ void main()
 
   vec4 diffuseSample = texture(u_DiffuseTex, texCoords);
   float finalAlpha = diffuseSample.a * u_Opacity;
-  
+
   // Very aggressive discard for "Cutout" transparency (standard for this style)
   if (finalAlpha < 0.7)
     discard;
 
   vec3 albedo = pow(diffuseSample.rgb, vec3(2.2)) * u_BaseColor;
-  
+
   vec3 mrSample = texture(u_MetallicRoughnessTex, texCoords).rgb;
   // Add a small bias to roughness to prevent absolute mirror surfaces on foliage
   float roughness = clamp(mrSample.g * u_RoughnessFactor, 0.05, 1.0);
   float metallic = mrSample.b * u_MetallicFactor;
-  
+
   float ao = texture(u_AOTex, texCoords).r * u_AOFactor;
 
   vec3 N = getNormalFromMap(texCoords);
@@ -191,17 +191,24 @@ void main()
   vec3 kS_ambient = fresnelSchlick(max(dot(N, V), 0.0), F0);
   vec3 kD_ambient = 1.0 - kS_ambient;
   kD_ambient *= 1.0 - metallic;
-  vec3 ambient = (kD_ambient * albedo) * 0.03 * ao;
+
+  // Ambient Diffuse (increased slightly for better visibility in shadows)
+  vec3 ambient_diffuse = kD_ambient * albedo * 0.3 * ao;
 
   vec3 R = reflect(-V, N);
-  // Specular reflection from skybox
-  vec3 reflection = textureLod(u_Skybox, R, roughness * 4.0).rgb;
-  // Attenuate reflections by AO and albedo/alpha to prevent glowing edges
-  vec3 specular_ambient = reflection * kS_ambient * ao * albedo * finalAlpha;
+  // Specular reflection from skybox - linearize the sample
+  // We use a lower mip for rough surfaces (increased range for more blur)
+  vec3 reflection = textureLod(u_Skybox, R, roughness * 7.0).rgb;
+  reflection = pow(reflection, vec3(2.2));
 
-  vec3 color = ambient + specular_ambient + Lo;
+  // Specular Ambient (IBL Specular)
+  // For non-metals, we blend with albedo to prevent pure blue "plastic" look on grass
+  vec3 specular_ambient = reflection * kS_ambient * ao;
+  if (metallic < 0.1) {
+    specular_ambient *= albedo;
+  }
 
-  // HDR & Gamma
+  vec3 color = ambient_diffuse + specular_ambient + Lo; // HDR & Gamma
   color = color / (color + vec3(1.0));
   color = pow(color, vec3(1.0 / 2.2));
 

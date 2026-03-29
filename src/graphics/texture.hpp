@@ -23,7 +23,7 @@ private:
   GLuint m_texID;
 
 public:
-  Texture(const std::vector<std::string>& faces);
+  Texture(const std::vector<std::string> &faces);
   Texture(const char *path, TextureType type, bool flip_vertical = false);
   Texture(const void *data, size_t size, TextureType type,
           bool flip_vertical = false);
