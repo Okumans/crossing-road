@@ -45,6 +45,8 @@ public:
   const std::vector<uint32_t> &getIndices() const { return m_indices; }
   const Material &getMaterial() const { return m_material; }
   const glm::vec3 &getBaseColor() const { return m_baseColor; }
+  void setBaseColor(const glm::vec3& color) { m_baseColor = color; }
+  void setMaterial(const Material& material) { m_material = material; }
 
   void draw(Shader &shader);
 

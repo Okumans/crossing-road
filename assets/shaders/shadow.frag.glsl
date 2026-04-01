@@ -7,6 +7,7 @@ uniform float u_Opacity;
 void main()
 {
   float alpha = texture(u_DiffuseTex, TexCoords).a * u_Opacity;
-  if (alpha < 0.5)
+
+  if (alpha < 0.1)
     discard;
 }

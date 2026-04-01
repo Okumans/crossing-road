@@ -9,6 +9,8 @@
 #include <format>
 #include <string>
 
+#include <print>
+
 inline void loadMaterialFolder(const std::string &materialName,
                                const std::string &folderPath) {
   namespace fs = std::filesystem;
@@ -39,6 +41,8 @@ inline void loadMaterialFolder(const std::string &materialName,
     auto tex = TextureManager::loadTexture(
         TextureName(std::format("{}_{}", materialName, suffix)), type,
         fullPath.c_str());
+
+    std::println("loaded {}_{}", materialName, suffix);
 
     foundAny = true;
     switch (type) {

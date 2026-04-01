@@ -33,6 +33,7 @@ private:
   float m_zPos;
   float m_height;
   RowType m_type;
+  glm::vec2 m_uvOffset;
   Material m_material;
   Material m_sideMaterial;
   std::unique_ptr<Mesh> m_mesh;

@@ -23,6 +23,7 @@ public:
   Model(Model &&) noexcept;
 
   void draw(Shader &shader);
+  std::vector<Mesh>& getMeshes() { return m_meshes; }
 
 private:
   void _loadModel(const char *path, bool flip_vertical);

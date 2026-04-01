@@ -3,6 +3,7 @@
 #include "glad/gl.h"
 
 #include "GLFW/glfw3.h"
+#include "glm/fwd.hpp"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
 #include "resource/texture_manager.hpp"
@@ -21,9 +22,16 @@ static std::string arr_to_str(unsigned char *arr, unsigned int len) {
 void App::render(double delta_time) {
   _handleProcessInput(delta_time);
 
-  // if (m_appState.gameStarted) {
   m_game.update(delta_time);
   // }
+
+  // Update Camera to follow player with lerp for smoothness
+  glm::vec3 playerPos = m_game.getPlayerPosition();
+  glm::vec3 targetCameraPos =
+      glm::vec3(0, playerPos.y, playerPos.z) + glm::vec3(8.0f, 8.0f, 8.0f);
+  float lerpFactor = 5.0f;
+  m_camera.Position = glm::mix(m_camera.Position, targetCameraPos,
+                               (float)delta_time * lerpFactor);
 
   _updateUIElements();
 
@@ -31,7 +39,8 @@ void App::render(double delta_time) {
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
 }
 
-App::App(GLFWwindow *window) : m_window(window), m_camera(glm::vec3(8.0f)) {
+App::App(GLFWwindow *window)
+    : m_window(window), m_camera(glm::vec3(8.25f, 8.0f, 8.25f)) {
 
   m_camera.setPitch(-35.264f);
   m_camera.setYaw(-107.25f);
@@ -47,8 +56,6 @@ App::App(GLFWwindow *window) : m_window(window), m_camera(glm::vec3(8.0f)) {
 
   _setupResources();
   _setupUIElements();
-
-  m_game.setup();
 
   int width, height;
   glfwGetWindowSize(m_window, &width, &height);
@@ -76,6 +83,9 @@ void App::_setupResources() {
                             SHADER_PATH "/skybox.frag.glsl");
   ShaderManager::loadShader(ShaderType::SHADOW, SHADER_PATH "/shadow.vert.glsl",
                             SHADER_PATH "/shadow.frag.glsl");
+  ShaderManager::loadShader(ShaderType::IRRADIANCE,
+                            SHADER_PATH "/irradiance.vert.glsl",
+                            SHADER_PATH "/irradiance.frag.glsl");
 #endif
 
   // Ensure the existence of static generated textures
@@ -110,10 +120,10 @@ void App::_setupResources() {
                           ASSETS_PATH "/objects/rock/rock_1.glb");
   ModelManager::loadModel(ModelName::CAR_1,
                           ASSETS_PATH "/objects/car/car_1.glb");
+  ModelManager::loadModel(ModelName::CAR_2,
+                          ASSETS_PATH "/objects/car/car_2.glb");
   ModelManager::loadModel(ModelName::TRAIN_1,
                           ASSETS_PATH "/objects/car/train_1.glb");
-  // ModelManager::loadModel(ModelName::CAR_2,
-  //                         ASSETS_PATH "/objects/car/car_2.glb");
 
   // Load the material & Textures, for the ground textures
   // TODO: Use enum instead of fixed string

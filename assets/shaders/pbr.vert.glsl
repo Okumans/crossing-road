@@ -15,10 +15,11 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Projection;
 uniform mat4 u_LightSpaceMatrix;
+uniform vec2 u_UVOffset;
 
 void main()
 {
-    TexCoords = aTexCoords;
+    TexCoords = aTexCoords + u_UVOffset;
     WorldPos = vec3(u_Model * vec4(aPos, 1.0));
     Normal = mat3(transpose(inverse(u_Model))) * aNormal;
 

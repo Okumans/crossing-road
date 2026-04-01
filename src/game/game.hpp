@@ -24,7 +24,7 @@ private:
   // Shadow mapping
   GLuint m_shadowMapFBO;
   GLuint m_shadowMapTex;
-  const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+  const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
   glm::mat4 m_lightSpaceMatrix;
 
 public:
@@ -39,6 +39,8 @@ public:
   void moveForward();
   void moveLeft(double delta_time);
   void moveRight(double delta_time);
+
+  glm::vec3 getPlayerPosition() const;
 };
 
 // TODO: integrated world position helpers

@@ -2,7 +2,7 @@
 #include "graphics/material.hpp"
 #include <optional>
 
-MapManager::MapManager() : m_nextZ(0.5f) {}
+MapManager::MapManager() : m_nextZ(3.5f) {}
 
 void MapManager::addRow(RowType type, const Material &material, float height,
                         std::optional<Material> sideMaterial) {

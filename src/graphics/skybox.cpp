@@ -1,5 +1,4 @@
 #include "skybox.hpp"
-#include <vector>
 
 Skybox::Skybox() { _setupSkybox(); }
 

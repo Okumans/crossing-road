@@ -13,6 +13,7 @@ Row::Row(float zPos, RowType type, const Material &material, float height,
          std::optional<Material> sideMaterial)
     : m_zPos(zPos), m_height(height), m_type(type), m_material(material),
       m_sideMaterial(sideMaterial.value_or(material)) {
+  m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
   _setupMesh();
 }
 
@@ -61,10 +62,10 @@ void Row::update(double delta_time) {
 
 void Row::draw(Shader &shader) {
   shader.setMat4("u_Model", glm::mat4(1.0f));
-  shader.setFloat("u_MetallicFactor", 0.0f);
-  shader.setFloat("u_RoughnessFactor", 1.0f);
+  shader.setVec2("u_UVOffset", m_uvOffset);
   m_mesh->draw(shader);
 
+  shader.setVec2("u_UVOffset", glm::vec2(0.0f));
   for (auto &obj : m_objects) {
     obj->draw(shader);
   }
@@ -82,10 +83,10 @@ void Row::drawSidePanel(Shader &shader, float nextHeight, bool isForward) {
   model = glm::scale(model, glm::vec3(1.0f, m_height - nextHeight, 1.0f));
 
   shader.setMat4("u_Model", model);
-  shader.setFloat("u_MetallicFactor", 0.0f);
-  shader.setFloat("u_RoughnessFactor", 1.0f);
+  shader.setVec2("u_UVOffset", m_uvOffset);
 
   m_sideMesh->draw(shader);
+  shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 }
 
 void Row::addObject(std::unique_ptr<Object> object) {

@@ -35,27 +35,36 @@ LightingManager::calculateLightSpaceMatrix(const glm::vec3 &targetPos) {
   Light shadowCaster = getShadowCaster();
   glm::vec3 lightDir = glm::normalize(shadowCaster.position);
 
-  float size = 40.0f; // Frustum size increased for Crossy Road
-  glm::mat4 lightProjection = glm::ortho(-size, size, -size, size, 0.1f, 60.0f);
+  // 1. Tune the size to your camera view.
+  // If it's too big, shadows are blurry. If too small, they cut off.
+  float size = 25.0f;
+  float nearPlane = -100.0f;
+  float farPlane = 100.0f;
 
-  // 1. Create a temporary view matrix centered at the target
-  // Place the light camera further away to encompass more objects in the depth range
-  glm::mat4 lightView = glm::lookAt(targetPos - lightDir * 30.0f, targetPos,
-                                    glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 lightProjection =
+      glm::ortho(-size, size, -size, size, nearPlane, farPlane);
 
-  // 2. Snap the matrix to texel boundaries to prevent shadow shimmering
-  // Transform origin to light space
+  // 2. View matrix: We move the "eye" back along the light direction.
+  // Use targetPos as the center so the shadow map follows the chicken.
+  glm::vec3 lightPos = targetPos - (lightDir * 50.0f);
+  glm::mat4 lightView =
+      glm::lookAt(lightPos, targetPos, glm::vec3(0.0f, 1.0f, 0.0f));
+
   glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+  // 3. The Snap: Round the world-space origin in shadow-map texel units
+  // This prevents the "shimmering" edges when the camera/player moves.
   glm::vec4 shadowOrigin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
   shadowOrigin = lightSpaceMatrix * shadowOrigin;
-  shadowOrigin *= (2048.0f / 2.0f); // 2048 is shadow map resolution
+  shadowOrigin *= (4096.0f / 2.0f);
 
   glm::vec4 roundedOrigin = glm::round(shadowOrigin);
   glm::vec4 roundOffset = roundedOrigin - shadowOrigin;
-  roundOffset = roundOffset * (2.0f / 2048.0f);
+  roundOffset = roundOffset * (2.0f / 4096.0f);
   roundOffset.z = 0.0f;
   roundOffset.w = 0.0f;
 
+  // Apply offset to the projection's translation column
   lightProjection[3] += roundOffset;
 
   return lightProjection * lightView;

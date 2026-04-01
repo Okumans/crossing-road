@@ -13,6 +13,7 @@ enum class TextureType : uint8_t {
   ROUGHNESS,
   AO,
   HDR_CUBEMAP,
+  IRRADIANCE_MAP,
   UNDEFINED
 };
 

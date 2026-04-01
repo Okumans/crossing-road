@@ -44,8 +44,8 @@ public:
         m_aoFactor(other.m_aoFactor) {}
 
   Material(const Material &other) = default;
+  Material &operator=(const Material &other) = default;
 
-  // Getters returning const references for zero-overhead access
   const std::shared_ptr<Texture> &getDiffuse() const { return m_diffuse; }
   const std::shared_ptr<Texture> &getNormal() const { return m_normal; }
   const std::shared_ptr<Texture> &getHeight() const { return m_height; }
