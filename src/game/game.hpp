@@ -27,6 +27,8 @@ private:
   const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
   glm::mat4 m_lightSpaceMatrix;
 
+  float m_currentTime = 0.0f;
+
 public:
   Game();
   ~Game();

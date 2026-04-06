@@ -4,6 +4,8 @@
 
 #include "GLFW/glfw3.h"
 #include "glm/fwd.hpp"
+#include "graphics/material.hpp"
+#include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
 #include "resource/texture_manager.hpp"
@@ -86,6 +88,8 @@ void App::_setupResources() {
   ShaderManager::loadShader(ShaderType::IRRADIANCE,
                             SHADER_PATH "/irradiance.vert.glsl",
                             SHADER_PATH "/irradiance.frag.glsl");
+  ShaderManager::loadShader(ShaderType::WATER, SHADER_PATH "/pbr.vert.glsl",
+                            SHADER_PATH "/water.frag.glsl");
 #endif
 
   // Ensure the existence of static generated textures
@@ -129,11 +133,18 @@ void App::_setupResources() {
   // TODO: Use enum instead of fixed string
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
   loadMaterialFolder("grass_2", ASSETS_PATH "/textures/grass/2");
-  loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/1");
+  loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3");
   loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
 
-  TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
-                              ASSETS_PATH "/textures/water.jpg");
+  // TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
+  //                             ASSETS_PATH "/textures/water.jpg");
+
+  loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
+  MaterialManager::addMaterial(
+      "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
+                     .setRoughnessFactor(0.07f)
+                     .setMetallicFactor(0.0f)
+                     .create());
 
   // Load other resources
   m_game.setup();

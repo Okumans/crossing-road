@@ -3,6 +3,8 @@
 #include "graphics/material.hpp"
 #include "graphics/shader.hpp"
 
+#include "graphics/idrawable.hpp"
+
 #include <glad/gl.h>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
@@ -17,7 +19,7 @@ struct Vertex {
   glm::vec3 bitangent;
 };
 
-class Mesh {
+class Mesh : public IDrawable {
 private:
   // mesh data
   std::vector<Vertex> m_vertices;
@@ -45,10 +47,12 @@ public:
   const std::vector<uint32_t> &getIndices() const { return m_indices; }
   const Material &getMaterial() const { return m_material; }
   const glm::vec3 &getBaseColor() const { return m_baseColor; }
-  void setBaseColor(const glm::vec3& color) { m_baseColor = color; }
-  void setMaterial(const Material& material) { m_material = material; }
+  float getOpacity() const { return m_opacity; }
+  void setBaseColor(const glm::vec3 &color) { m_baseColor = color; }
+  void setOpacity(float opacity) { m_opacity = opacity; }
+  void setMaterial(const Material &material) { m_material = material; }
 
-  void draw(Shader &shader);
+  void draw(Shader &shader) override;
 
 private:
   void _setupMesh();

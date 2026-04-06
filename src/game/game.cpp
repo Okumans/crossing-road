@@ -1,7 +1,10 @@
 #include "game.hpp"
 #include "game/row.hpp"
+#include "game/rows/texture_row.hpp"
+#include "game/rows/water_row.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/material.hpp"
+#include "graphics/shader.hpp"
 #include "resource/lighting_manager.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
@@ -83,40 +86,59 @@ void Game::setup() {
   const Material &road_mat_1 = MaterialManager::getMaterial("road_1");
   const Material &road_mat_2 = MaterialManager::getMaterial("road_2");
 
-  auto waterTex = TextureManager::getTexture(TextureName("water"));
-  const Material water_mat = Material::builder().setDiffuse(waterTex).create();
+  const Material &water_mat = MaterialManager::getMaterial("water_1");
+  Shader &water_shader = ShaderManager::getShader(ShaderType::WATER);
+
+  const float default_depth = 1.0f;
 
   // Start with some grass
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
-  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.0f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+                                            default_depth, 0.0f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.0f));
 
   // A road
-  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
-  m_map.addRow(RowType::ROAD, road_mat_2, 0.05f);
-  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
-
+  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+                                            default_depth, 0.05f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
+                                            default_depth, 0.05f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+                                            default_depth, 0.05f));
   // More grass
-  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+                                            default_depth, 0.0f));
 
   // A river (recessed)
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f, road_mat_2);
-  m_map.addRow(RowType::WATER, water_mat, -0.2f);
-  m_map.addRow(RowType::WATER, water_mat, -0.2f);
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f, road_mat_2);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.0f, road_mat_2));
+  m_map.addRow(std::make_unique<WaterRow>(water_mat, water_shader,
+                                          default_depth, -0.2f));
+  m_map.addRow(std::make_unique<WaterRow>(water_mat, water_shader,
+                                          default_depth, -0.2f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.0f, road_mat_2));
 
   // A raised grass area
-  m_map.addRow(RowType::GRASS, grass_mat_2, 0.1f);
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.1f);
-  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+                                            default_depth, 0.1f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.1f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+                                            default_depth, 0.0f));
 
   // Another road
-  m_map.addRow(RowType::ROAD, road_mat_2, 0.05f);
-  m_map.addRow(RowType::ROAD, road_mat_1, 0.05f);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
+                                            default_depth, 0.05f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+                                            default_depth, 0.05f));
 
   // End with grass
-  m_map.addRow(RowType::GRASS, grass_mat_1, 0.0f);
-  m_map.addRow(RowType::GRASS, grass_mat_2, 0.0f);
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+                                            default_depth, 0.0f));
+  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+                                            default_depth, 0.0f));
 
   // Helper to add random greenery to a grass row (very sparse)
   auto populateGreenery = [&](Row &row) {
@@ -155,9 +177,9 @@ void Game::setup() {
         }
 
         float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
-        obj->setPosition(
-            glm::vec3((float)i + xOffset, row.getHeight(), row.getZ() - 0.25f) +
-            custom_position_offset);
+        obj->setPosition(glm::vec3((float)i + xOffset, row.getHeight(),
+                                   row.getZPos() - (row.getDepth() - 0.25f)) +
+                         custom_position_offset);
         obj->setRotation(glm::vec3(
             0.0f, ((float)rand() / RAND_MAX) * glm::two_pi<float>(), 0.0f));
         row.addObject(std::move(obj));
@@ -181,7 +203,8 @@ void Game::setup() {
             ModelManager::getModel(ModelName::TRAIN_1), speed);
         train->setRotation({0, glm::radians(90.0f), 0});
         train->setPosition(
-            glm::vec3(xPos, row->getHeight() + 0.3f, row->getZ() - 0.25f));
+            glm::vec3(xPos, row->getHeight() + 0.3f,
+                      row->getZPos() - (row->getDepth() - 0.25f)));
         train->setScale(0.3f);
         if (direction < 0.0f) {
           train->setRotation(glm::vec3(0.0f, glm::radians(-90.0f), 0.0f));
@@ -198,7 +221,8 @@ void Game::setup() {
             auto car = std::make_unique<Car>(
                 ModelManager::getModel(ModelName::CAR_1), speed);
             car->setPosition(
-                glm::vec3(xPos, row->getHeight(), row->getZ() - 0.25f));
+                glm::vec3(xPos, row->getHeight(),
+                          row->getZPos() - (row->getDepth() - 0.25f)));
             car->setScale(0.0030f);
             car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
 
@@ -210,7 +234,8 @@ void Game::setup() {
             auto car = std::make_unique<Car>(
                 ModelManager::getModel(ModelName::CAR_2), speed);
             car->setPosition(
-                glm::vec3(xPos, row->getHeight(), row->getZ() - 0.25f));
+                glm::vec3(xPos, row->getHeight(),
+                          row->getZPos() - (row->getDepth() - 0.25f)));
             car->setScale(0.0022f);
             car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
 
@@ -249,7 +274,20 @@ void Game::setup() {
                              .color = glm::vec3(0.15f, 0.1f, 0.05f)});
 }
 
-void Game::update(double delta_time) { m_map.update(delta_time); }
+void Game::update(double delta_time) {
+  m_currentTime += static_cast<float>(delta_time);
+  m_map.update(delta_time);
+
+  // Update sun position (first light)
+  float angle = m_currentTime * 0.5f; // speed
+  glm::vec3 sunDir = glm::vec3(cos(angle), -0.6f, sin(angle));
+
+  Light sun = {.type = LightType::DIRECTIONAL,
+               .position = sunDir,
+               .color = glm::vec3(12.0f, 11.0f, 10.0f),
+               .castsShadows = true};
+  LightingManager::setLight(0, sun);
+}
 
 void Game::render(double delta_time, Camera &camera) {
   glEnable(GL_DEPTH_TEST);
@@ -319,6 +357,23 @@ void Game::render(double delta_time, Camera &camera) {
   pbr_shader.setFloat("u_HeightScale", 0.03f);
   pbr_shader.setFloat("u_AOFactor", 1.0f);
   pbr_shader.setFloat("u_AmbientIntensity", 0.4f);
+
+  // Update water shader global uniforms
+  Shader &water_shader = ShaderManager::getShader(ShaderType::WATER);
+  water_shader.use();
+  water_shader.setMat4("u_Projection", projection);
+  water_shader.setMat4("u_View", view);
+  water_shader.setVec3("u_CameraPos", camera.Position);
+  water_shader.setMat4("u_LightSpaceMatrix", m_lightSpaceMatrix);
+  water_shader.setInt("u_Skybox", 10);
+  water_shader.setInt("u_IrradianceMap", 12);
+  water_shader.setInt("u_ShadowMap", 11);
+  water_shader.setFloat("u_Time", m_currentTime);
+  LightingManager::apply(water_shader);
+  water_shader.setFloat("u_AmbientIntensity", 0.4f);
+
+  // Return to PBR shader as default
+  pbr_shader.use();
 
   // Draw Map
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));

@@ -149,7 +149,8 @@ void Mesh::draw(Shader &shader) {
   if (m_material.getDiffuse()) {
     glBindTextureUnit(counter, m_material.getDiffuse()->getTexID());
   } else {
-    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+    glBindTextureUnit(
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
   }
   counter++;
 
@@ -158,7 +159,8 @@ void Mesh::draw(Shader &shader) {
   if (m_material.getNormal()) {
     glBindTextureUnit(counter, m_material.getNormal()->getTexID());
   } else {
-    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_NORMAL_TEXTURE)->getTexID());
+    glBindTextureUnit(
+        counter, TextureManager::getTexture(STATIC_NORMAL_TEXTURE)->getTexID());
   }
   counter++;
 
@@ -167,7 +169,8 @@ void Mesh::draw(Shader &shader) {
   if (m_material.getHeight()) {
     glBindTextureUnit(counter, m_material.getHeight()->getTexID());
   } else {
-    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
+    glBindTextureUnit(
+        counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
   }
   counter++;
 
@@ -177,7 +180,9 @@ void Mesh::draw(Shader &shader) {
     glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
   } else {
     // Default PBR: Roughness=1.0, Metallic=0.0
-    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_PBR_DEFAULT_TEXTURE)->getTexID());
+    glBindTextureUnit(
+        counter,
+        TextureManager::getTexture(STATIC_PBR_DEFAULT_TEXTURE)->getTexID());
   }
   counter++;
 
@@ -186,7 +191,8 @@ void Mesh::draw(Shader &shader) {
   if (m_material.getAO()) {
     glBindTextureUnit(counter, m_material.getAO()->getTexID());
   } else {
-    glBindTextureUnit(counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+    glBindTextureUnit(
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
   }
   counter++;
 

@@ -1,18 +1,15 @@
 #pragma once
 
-#include "graphics/material.hpp"
 #include "row.hpp"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 class MapManager {
 public:
   MapManager();
 
-  void addRow(RowType type, const Material &material, float height = 0.0f,
-              std::optional<Material> sideMaterial = std::nullopt);
+  void addRow(std::unique_ptr<Row> &&row);
   void update(double delta_time);
   void draw(Shader &shader);
 

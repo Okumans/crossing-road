@@ -1,14 +1,11 @@
 #include "map_manager.hpp"
-#include "graphics/material.hpp"
-#include <optional>
 
 MapManager::MapManager() : m_nextZ(3.5f) {}
 
-void MapManager::addRow(RowType type, const Material &material, float height,
-                        std::optional<Material> sideMaterial) {
-  m_rows.push_back(
-      std::make_unique<Row>(m_nextZ, type, material, height, sideMaterial));
-  m_nextZ -= 0.5f;
+void MapManager::addRow(std::unique_ptr<Row> &&row) {
+  row->setZPos(m_nextZ);
+  m_nextZ -= row->getDepth();
+  m_rows.push_back(std::move(row));
 }
 
 void MapManager::update(double delta_time) {
