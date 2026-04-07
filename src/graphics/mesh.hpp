@@ -1,7 +1,6 @@
 #pragma once
 
 #include "graphics/material.hpp"
-#include "graphics/shader.hpp"
 
 #include "graphics/idrawable.hpp"
 
@@ -52,7 +51,7 @@ public:
   void setOpacity(float opacity) { m_opacity = opacity; }
   void setMaterial(const Material &material) { m_material = material; }
 
-  void draw(Shader &shader) override;
+  virtual void draw(const RenderContext &ctx) override;
 
 private:
   void _setupMesh();

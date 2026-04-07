@@ -17,8 +17,8 @@ WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
                    float depth, float height)
     : WaterRow(0.0f, water_material, water_shader, depth, height) {}
 
-void WaterRow::draw(Shader &shader) {
-  if (shader.ID != ShaderManager::getShader(ShaderType::SHADOW).ID) {
+void WaterRow::draw(const RenderContext &ctx) {
+  if (ctx.shader.ID != ShaderManager::getShader(ShaderType::SHADOW).ID) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -30,21 +30,24 @@ void WaterRow::draw(Shader &shader) {
         "u_Model", glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, m_zPos}));
     m_waterShader.setVec2("u_UVOffset", m_uvOffset);
 
-    m_mesh->draw(m_waterShader);
+    m_mesh->draw({.shader = m_waterShader,
+                  .camera = ctx.camera,
+                  .deltaTime = ctx.deltaTime});
 
     m_waterShader.setVec2("u_UVOffset", glm::vec2(0.0f));
 
     glDisable(GL_BLEND);
 
-    shader.use();
+    ctx.shader.use();
   }
 
   for (auto &obj : m_objects) {
-    obj->draw(shader);
+    obj->draw(ctx);
   }
 }
 
-void WaterRow::drawSidePanel(Shader &shader, float nextHeight, bool isForward) {
+void WaterRow::drawSidePanel(const RenderContext &ctx, float nextHeight,
+                             bool isForward) {
   ;
 }
 

@@ -1,7 +1,7 @@
 #include "texture_row.hpp"
 #include "game/row.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include "resource/shader_manager.hpp"
+#include "graphics/idrawable.hpp"
 
 TextureRow::TextureRow(float z_pos, RowType type, const Material &material,
                        float depth, float height,
@@ -16,20 +16,20 @@ TextureRow::TextureRow(RowType type, const Material &material, float depth,
                        float height, std::optional<Material> sideMaterial)
     : TextureRow(0.0f, type, material, depth, height, sideMaterial) {}
 
-void TextureRow::draw(Shader &shader) {
-  shader.setMat4("u_Model",
-                 glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, m_zPos}));
-  shader.setVec2("u_UVOffset", m_uvOffset);
-  m_mesh->draw(shader);
+void TextureRow::draw(const RenderContext &ctx) {
+  ctx.shader.setMat4("u_Model",
+                     glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, m_zPos}));
+  ctx.shader.setVec2("u_UVOffset", m_uvOffset);
+  m_mesh->draw(ctx);
 
-  shader.setVec2("u_UVOffset", glm::vec2(0.0f));
+  ctx.shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 
   for (auto &obj : m_objects) {
-    obj->draw(shader);
+    obj->draw(ctx);
   }
 }
 
-void TextureRow::drawSidePanel(Shader &shader, float nextHeight,
+void TextureRow::drawSidePanel(const RenderContext &ctx, float nextHeight,
                                bool isForward) {
   if (m_height <= nextHeight)
     return;
@@ -44,11 +44,11 @@ void TextureRow::drawSidePanel(Shader &shader, float nextHeight,
   model = glm::scale(model, glm::vec3(1.0f, m_height - nextHeight, m_depth));
   // model = glm::scale(model, glm::vec3(1.0f, 3.00f, m_depth));
 
-  shader.setMat4("u_Model", model);
-  shader.setVec2("u_UVOffset", m_uvOffset);
+  ctx.shader.setMat4("u_Model", model);
+  ctx.shader.setVec2("u_UVOffset", m_uvOffset);
 
-  m_sideMesh->draw(shader);
-  shader.setVec2("u_UVOffset", glm::vec2(0.0f));
+  m_sideMesh->draw(ctx);
+  ctx.shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 }
 
 void TextureRow::_setupMesh() {

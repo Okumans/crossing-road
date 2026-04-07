@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/idrawable.hpp"
 #include "graphics/shader.hpp"
 #include "scene/object.hpp"
 #include <glad/gl.h>
@@ -7,7 +8,7 @@
 
 enum class RowType { GRASS, ROAD, WATER };
 
-class Row {
+class Row : public IDrawable {
 public:
   Row(float z_pos, RowType type, float depth = 1.0f, float height = 0.0f)
       : m_zPos(z_pos), m_type(type), m_depth(depth), m_height(height) {};
@@ -23,8 +24,8 @@ public:
       obj->update(delta_time);
     }
   }
-  virtual void draw(Shader &shader) = 0;
-  virtual void drawSidePanel(Shader &shader, float nextHeight,
+  virtual void draw(const RenderContext &ctx) = 0;
+  virtual void drawSidePanel(const RenderContext &ctx, float nextHeight,
                              bool isForward) = 0;
 
   virtual void addObject(std::unique_ptr<Object> object) {

@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include "graphics/idrawable.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -16,7 +17,7 @@ Object::Object(std::shared_ptr<Model> model, glm::vec3 pos, glm::vec3 scale,
   }
 }
 
-void Object::draw(Shader &shader) {
+void Object::draw(const RenderContext &ctx) {
   glm::mat4 model = glm::mat4(1.0f);
 
   model = glm::translate(model, m_position);
@@ -27,8 +28,8 @@ void Object::draw(Shader &shader) {
 
   model = glm::scale(model, m_scale);
 
-  shader.setMat4("u_Model", model);
-  m_model->draw(shader);
+  ctx.shader.setMat4("u_Model", model);
+  m_model->draw(ctx);
 }
 
 bool Object::collided(const Object &other) { return false; }

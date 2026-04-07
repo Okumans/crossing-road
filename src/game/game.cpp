@@ -37,8 +37,8 @@ void Game::setup() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+  float border_color[] = {1.0, 1.0, 1.0, 1.0};
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
@@ -74,12 +74,14 @@ void Game::setup() {
       });
 
   // Generate Irradiance Map
-  auto skyboxTex = TextureManager::getTexture(TextureName("skybox"));
-  auto &irradianceShader = ShaderManager::getShader(ShaderType::IRRADIANCE);
-  auto irradianceMap = IBLGenerator::generateIrradianceMap(
-      *skyboxTex, *m_skybox, irradianceShader);
+  auto skybox_tex = TextureManager::getTexture(TextureName("skybox"));
+  m_skybox->setTexture(skybox_tex);
+
+  auto &irradiance_shader = ShaderManager::getShader(ShaderType::IRRADIANCE);
+  auto irradiance_map = IBLGenerator::generateIrradianceMap(
+      *skybox_tex, *m_skybox, irradiance_shader);
   TextureManager::manage(TextureName("irradiance_map"),
-                         std::move(*irradianceMap));
+                         std::move(*irradiance_map));
 
   const Material &grass_mat_1 = MaterialManager::getMaterial("grass_1");
   const Material &grass_mat_2 = MaterialManager::getMaterial("grass_2");
@@ -305,8 +307,10 @@ void Game::render(double delta_time, Camera &camera) {
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE);
 
-  m_map.draw(shadow_shader);
-  m_player->draw(shadow_shader);
+  m_map.draw(
+      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time});
+  m_player->draw(
+      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time});
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glCullFace(GL_BACK); // Restore back-face culling
@@ -320,7 +324,11 @@ void Game::render(double delta_time, Camera &camera) {
   Shader &skybox_shader = ShaderManager::getShader(ShaderType::SKYBOX);
   glDepthMask(GL_FALSE);
 
-  m_skybox->draw(camera, skybox_shader, *skyboxTex);
+  m_skybox->draw({
+      .shader = skybox_shader,
+      .camera = camera,
+      .deltaTime = delta_time,
+  });
 
   glDepthMask(GL_TRUE);
 
@@ -377,13 +385,14 @@ void Game::render(double delta_time, Camera &camera) {
 
   // Draw Map
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
-  m_map.draw(pbr_shader);
+  m_map.draw({.shader = pbr_shader, .camera = camera, .deltaTime = delta_time});
 
   // Draw Player (Last for transparency blending)
   // Lower base color slightly to avoid "overblown" look under strong light
   pbr_shader.setVec3("u_BaseColor", glm::vec3(0.8f));
   pbr_shader.setVec2("u_UVOffset", glm::vec2(0.0f));
-  m_player->draw(pbr_shader);
+  m_player->draw(
+      {.shader = pbr_shader, .camera = camera, .deltaTime = delta_time});
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
 
   glDisable(GL_BLEND);

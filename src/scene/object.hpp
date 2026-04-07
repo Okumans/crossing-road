@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/idrawable.hpp"
 #include "graphics/model.hpp"
 
 #include <glm/glm.hpp>
@@ -14,7 +15,7 @@ struct AABB {
   bool contains(const AABB &other);
 };
 
-class Object {
+class Object : public IDrawable {
 protected:
   std::shared_ptr<Model> m_model;
   glm::vec3 m_position;
@@ -34,7 +35,7 @@ public:
   virtual ~Object() = default;
 
   virtual void update(double delta_time) { (void)delta_time; }
-  virtual void draw(Shader &shader);
+  virtual void draw(const RenderContext &ctx);
 
   void setPosition(glm::vec3 pos) { m_position = pos; }
   void setScale(glm::vec3 scale) { m_scale = scale; };

@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "graphics/idrawable.hpp"
 #include "graphics/material.hpp"
 #include "graphics/texture.hpp"
 #include "resource/texture_manager.hpp"
@@ -26,9 +27,9 @@ Model::Model(Model &&other) noexcept
   other.m_meshes.clear();
 }
 
-void Model::draw(Shader &shader) {
+void Model::draw(const RenderContext &ctx) {
   for (Mesh &mesh : m_meshes) {
-    mesh.draw(shader);
+    mesh.draw(ctx);
   }
 }
 

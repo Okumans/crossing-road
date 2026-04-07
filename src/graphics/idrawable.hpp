@@ -1,6 +1,15 @@
+#pragma once
+
+#include "graphics/camera.hpp"
 #include "shader.hpp"
+
+struct RenderContext {
+  Shader &shader;
+  const Camera &camera;
+  double deltaTime;
+};
 
 class IDrawable {
 public:
-  virtual void draw(Shader &shader) {}
+  virtual void draw(const RenderContext &ctx) = 0;
 };

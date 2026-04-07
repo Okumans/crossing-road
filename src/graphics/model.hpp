@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/shader.hpp"
+#include "graphics/idrawable.hpp"
 #include "mesh.hpp"
 
 #include <assimp/Importer.hpp>
@@ -22,7 +22,7 @@ public:
 
   Model(Model &&) noexcept;
 
-  void draw(Shader &shader) override;
+  void draw(const RenderContext &ctx) override;
   std::vector<Mesh> &getMeshes() { return m_meshes; }
 
 private:
