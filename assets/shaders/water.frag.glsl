@@ -69,6 +69,27 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
   return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+{
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  projCoords = projCoords * 0.5 + 0.5;
+  if (projCoords.z > 1.0) return 0.0;
+
+  float currentDepth = projCoords.z;
+  float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0001);
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_ShadowMap, 0);
+
+  // 16-sample PCF for smoother shadows
+  for (int x = -2; x <= 1; ++x) {
+    for (int y = -2; y <= 1; ++y) {
+      float pcfDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+      shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+  return shadow / 16.0;
+}
+
 void main()
 {
   vec3 V = normalize(u_CameraPos - WorldPos);
@@ -128,7 +149,8 @@ void main()
     float sss = pow(max(dot(V, -L), 0.0), 8.0) * 0.5;
     vec3 sssColor = albedo * radiance * sss;
 
-    Lo += (kD * albedo / PI + specular + sparkle) * radiance * NdotL + sssColor;
+    float shadow = (i == 0) ? ShadowCalculation(FragPosLightSpace, N, L) : 0.0;
+    Lo += (1 - shadow) * (kD * albedo / PI + specular + sparkle) * radiance * NdotL + sssColor;
   }
 
   // 5. AMBIENT / IBL
