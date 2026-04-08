@@ -109,10 +109,6 @@ private:
   inline static std::mt19937_64 s_engine{std::random_device{}()};
 };
 
-// auto withBase = [&](auto rule) {
-//   return rule; // Just returns a copy of the base modified by the call
-// };
-
 template <typename T, std::invocable<T &> F>
 constexpr T withBase(T base, F modifier) {
   modifier(base);

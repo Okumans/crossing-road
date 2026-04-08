@@ -64,8 +64,8 @@ public:
       // if last row == grass1 -> switch to grass2
       // if last row != grass1 -> use grass1
 
-      if (const auto texture_row = dynamic_cast<const TextureRow *>(row_before);
-          !texture_row) {
+      if (const auto texture_row =
+              dynamic_cast<const TextureRow *>(row_before)) {
         if (texture_row->getMaterial().getDiffuse()->getTexID() ==
             grass_mat_1.getDiffuse()->getTexID())
           start_grass_type = GrassMaterialType::GRASS_2;
@@ -112,13 +112,13 @@ private:
     TerrainPopulator greenery;
 
     PlacementRule base{
-        .attempts = 20, .minX = -10.0f, .maxX = 10.0f, .zOffset = 0.25f};
+        .attempts = 40, .minX = -12.0f, .maxX = 12.0f, .zOffset = 0.25f};
 
     greenery.withRule(
         RowType::GRASS,
         std::make_unique<Object>(ModelManager::getModel(ModelName::TREE_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.05f * 0.4f;
+          r.probability = 0.15f;
           r.minScale = 0.006f;
           r.maxScale = 0.006f;
         }));
@@ -127,7 +127,7 @@ private:
         RowType::GRASS,
         std::make_unique<Object>(ModelManager::getModel(ModelName::BUSH_2)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.05f * 0.2f;
+          r.probability = 0.1f;
           r.minScale = 0.0025f;
           r.maxScale = 0.0025f;
           r.yOffset = 0.20f;
@@ -137,7 +137,7 @@ private:
         RowType::GRASS,
         std::make_unique<Object>(ModelManager::getModel(ModelName::TREE_2)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.05f * 0.15f;
+          r.probability = 0.1f;
           r.minScale = 0.4f;
           r.maxScale = 0.4f;
           r.yOffset = -0.10f;
@@ -147,7 +147,7 @@ private:
         RowType::GRASS,
         std::make_unique<Object>(ModelManager::getModel(ModelName::BUSH_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.05f * 0.15f;
+          r.probability = 0.1f;
           r.minScale = 0.002f;
           r.maxScale = 0.002f;
         }));
@@ -156,7 +156,7 @@ private:
         RowType::GRASS,
         std::make_unique<Object>(ModelManager::getModel(ModelName::ROCK_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.05f * 0.1f;
+          r.probability = 0.08f;
           r.minScale = 0.005f;
           r.maxScale = 0.005f;
         }));

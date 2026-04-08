@@ -1,6 +1,7 @@
 #include "map_manager.hpp"
 #include "game/terrain.hpp"
 #include "game/terrains/grass_terrain.hpp"
+#include "game/terrains/road_terrain.hpp"
 #include "graphics/idrawable.hpp"
 #include <algorithm>
 #include <functional>
@@ -15,6 +16,11 @@ void MapManager::addTerrain(TerrainType type) {
   switch (type) {
   case TerrainType::GRASSY:
     terrain = std::make_unique<GrassyTerrain>(
+        [this](float before) { return getTerrainLastRowBefore(before); },
+        m_currZ);
+    break;
+  case TerrainType::ROAD:
+    terrain = std::make_unique<RoadTerrain>(
         [this](float before) { return getTerrainLastRowBefore(before); },
         m_currZ);
     break;
@@ -39,38 +45,23 @@ void MapManager::draw(const RenderContext &ctx) {
     terrain->draw(ctx);
   }
 
-  // for (const auto [index, row] : std::views::enumerate(getRows())) {
-  //   m_terrains[i]->draw(ctx);
+  // make sure side pandel is draw
+  // TODO: embbeded this logic into terrain draw method instead
+  float prev_height = 0.0f;
+  for (const auto [index, row] : std::views::enumerate(getRows())) {
+    float curr_height = row->getHeight();
 
-  // Check neighbors for side panels
-  // float currentHeight = m_terrains[i]->getHeight();
-  //
-  // // Check forward neighbor (i-1)
-  // if (i > 0) {
-  //   float neighborHeight = m_terrains[i - 1]->getHeight();
-  //   if (currentHeight > neighborHeight) {
-  //     m_terrains[i]->drawSidePanel(ctx, neighborHeight, true);
-  //   }
-  // } else {
-  //   // First row, draw side panel to ground level if it's above 0
-  //   if (currentHeight > 0.0f) {
-  //     m_terrains[i]->drawSidePanel(ctx, 0.0f, true);
-  //   }
-  // }
-  //
-  // // Check backward neighbor (i+1)
-  // if (i < m_terrains.size() - 1) {
-  //   float neighborHeight = m_terrains[i + 1]->getHeight();
-  //   if (currentHeight > neighborHeight) {
-  //     m_terrains[i]->drawSidePanel(ctx, neighborHeight, false);
-  //   }
-  // } else {
-  //   // Last row, draw side panel to ground level if it's above 0
-  //   if (currentHeight > 0.0f) {
-  //     m_terrains[i]->drawSidePanel(ctx, 0.0f, false);
-  //   }
-  // }
-  // }
+    if (index > 0) {
+      if (curr_height > prev_height) {
+        row->drawSidePanel(ctx, prev_height, true);
+      }
+    } else {
+      // First row, draw side panel to ground level if it's above 0
+      if (curr_height > 0.0f) {
+        row->drawSidePanel(ctx, 0.0f, true);
+      }
+    }
+  }
 }
 
 const Row *const MapManager::getTerrainLastRowBefore(float curr_z) {

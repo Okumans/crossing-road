@@ -102,6 +102,9 @@ void Game::setup() {
 
   // Start with some grass
   m_map.addTerrain(TerrainType::GRASSY);
+  m_map.addTerrain(TerrainType::ROAD);
+  m_map.addTerrain(TerrainType::GRASSY);
+  m_map.addTerrain(TerrainType::ROAD);
   m_map.addTerrain(TerrainType::GRASSY);
   // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
   //                                           default_depth, 0.0f));
