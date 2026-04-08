@@ -11,6 +11,7 @@
 enum class TerrainType {
   GRASSY,
   ROAD,
+  HILLY,
 };
 
 class MapManager : public IDrawable {

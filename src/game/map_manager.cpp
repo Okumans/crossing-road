@@ -1,6 +1,7 @@
 #include "map_manager.hpp"
 #include "game/terrain.hpp"
 #include "game/terrains/grass_terrain.hpp"
+#include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "graphics/idrawable.hpp"
 #include <algorithm>
@@ -24,6 +25,11 @@ void MapManager::addTerrain(TerrainType type) {
         [this](float before) { return getTerrainLastRowBefore(before); },
         m_currZ);
     break;
+  case TerrainType::HILLY:
+    terrain = std::make_unique<HillTerrain>(
+        [this](float before) { return getTerrainLastRowBefore(before); },
+        m_currZ);
+    break;
   }
 
   assert(terrain);
@@ -41,26 +47,30 @@ void MapManager::update(double delta_time) {
 }
 
 void MapManager::draw(const RenderContext &ctx) {
-  for (const std::unique_ptr<Terrain> &terrain : m_terrains) {
-    terrain->draw(ctx);
+  Row *prevRow = nullptr;
+
+  for (Row *row : getRows()) {
+    row->draw(ctx);
+
+    float currentHeight = row->getHeight();
+    float prevHeight = prevRow ? prevRow->getHeight() : 0.0f;
+
+    // Side panel towards previous row
+    if (currentHeight > prevHeight) {
+      row->drawSidePanel(ctx, prevHeight, true);
+    }
+
+    // Previous row side panel towards current row
+    if (prevRow && prevRow->getHeight() > currentHeight) {
+      prevRow->drawSidePanel(ctx, currentHeight, false);
+    }
+
+    prevRow = row;
   }
 
-  // make sure side pandel is draw
-  // TODO: embbeded this logic into terrain draw method instead
-  float prev_height = 0.0f;
-  for (const auto [index, row] : std::views::enumerate(getRows())) {
-    float curr_height = row->getHeight();
-
-    if (index > 0) {
-      if (curr_height > prev_height) {
-        row->drawSidePanel(ctx, prev_height, true);
-      }
-    } else {
-      // First row, draw side panel to ground level if it's above 0
-      if (curr_height > 0.0f) {
-        row->drawSidePanel(ctx, 0.0f, true);
-      }
-    }
+  // Final row side panel to ground level
+  if (prevRow && prevRow->getHeight() > 0.0f) {
+    prevRow->drawSidePanel(ctx, 0.0f, false);
   }
 }
 

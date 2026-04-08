@@ -103,8 +103,10 @@ void Game::setup() {
   // Start with some grass
   m_map.addTerrain(TerrainType::GRASSY);
   m_map.addTerrain(TerrainType::ROAD);
+  m_map.addTerrain(TerrainType::HILLY);
   m_map.addTerrain(TerrainType::GRASSY);
   m_map.addTerrain(TerrainType::ROAD);
+  m_map.addTerrain(TerrainType::HILLY);
   m_map.addTerrain(TerrainType::GRASSY);
   // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
   //                                           default_depth, 0.0f));
@@ -294,7 +296,7 @@ void Game::update(double delta_time) {
   m_map.update(delta_time);
 
   // Update sun position (first light)
-  float angle = m_currentTime * 0.5f; // speed
+  float angle = m_currentTime * 0.03f; // speed
   glm::vec3 sunDir = glm::vec3(cos(angle), -0.6f, sin(angle));
 
   Light sun = {.type = LightType::DIRECTIONAL,

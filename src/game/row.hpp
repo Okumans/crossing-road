@@ -9,7 +9,7 @@ enum class RowType { GRASS, ROAD, WATER };
 
 class Row : public IDrawable {
 public:
-  inline static const float WIDTH = 30.0f;
+  inline static const float WIDTH = 25.0f;
 
 public:
   Row(float z_pos, RowType type, float depth = 1.0f, float height = 0.0f)
