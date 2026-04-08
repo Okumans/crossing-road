@@ -10,7 +10,8 @@
 Mesh::Mesh(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices,
            Material material, glm::vec3 color, float opacity)
     : m_vertices(std::move(vertices)), m_indices(std::move(indices)),
-      m_material(material), m_baseColor(color), m_opacity(opacity) {
+      m_material(material), m_baseColor(color), m_opacity(opacity), m_vao(0),
+      m_vbo(0), m_ebo(0) {
   _setupMesh();
 }
 

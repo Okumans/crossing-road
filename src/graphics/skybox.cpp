@@ -2,7 +2,8 @@
 #include "graphics/idrawable.hpp"
 #include <print>
 
-Skybox::Skybox(std::shared_ptr<Texture> skybox_tex) : m_skyboxTex(skybox_tex) {
+Skybox::Skybox(std::shared_ptr<Texture> skybox_tex)
+    : m_skyboxTex(skybox_tex), m_vao(0), m_vbo(0) {
   _setupSkybox();
 }
 

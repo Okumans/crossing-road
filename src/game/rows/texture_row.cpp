@@ -52,7 +52,7 @@ void TextureRow::drawSidePanel(const RenderContext &ctx, float nextHeight,
 }
 
 void TextureRow::_setupMesh() {
-  const float width = 30.0f;
+  const float width = WIDTH;
   const float u_max = width / 4.0f;
   const float v_max = m_depth / 4.0f;
 

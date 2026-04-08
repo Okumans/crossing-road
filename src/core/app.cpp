@@ -62,6 +62,9 @@ App::App(GLFWwindow *window)
   int width, height;
   glfwGetWindowSize(m_window, &width, &height);
 
+  m_appState.windowWidth = width;
+  m_appState.windowHeight = height;
+
   m_camera.updateSceneSize(width, height);
 }
 

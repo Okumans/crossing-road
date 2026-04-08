@@ -5,8 +5,11 @@
 #include "resource/material_manager.hpp"
 #include "resource/texture_manager.hpp"
 
+#include <concepts>
 #include <filesystem>
 #include <format>
+#include <functional>
+#include <random>
 #include <string>
 
 inline void loadMaterialFolder(const std::string &materialName,
@@ -68,4 +71,50 @@ inline void loadMaterialFolder(const std::string &materialName,
   if (foundAny) {
     MaterialManager::addMaterial(materialName, builder.create());
   }
+}
+
+class Random {
+public:
+  Random() = delete;
+
+  /**
+   * @brief Generates a random integer in range [min, max]
+   * Constrained to integral types (int, size_t, uint32_t, etc.)
+   */
+  template <std::integral T = int> static T randInt(T min, T max) {
+    std::uniform_int_distribution<T> dist(min, max);
+    return dist(s_engine);
+  }
+
+  /**
+   * @brief Generates a random float in range [min, max]
+   * Constrained to floating point types (float, double, long double)
+   */
+  template <std::floating_point T = float> static T randFloat(T min, T max) {
+    std::uniform_real_distribution<T> dist(min, max);
+    return dist(s_engine);
+  }
+
+  /**
+   * @brief Returns true based on a probability P where 0 <= P <= 1
+   */
+  static bool randChance(std::floating_point auto prob) {
+    return randFloat<decltype(prob)>(0, 1) < prob;
+  }
+
+  static void setSeed(unsigned int seed) { s_engine.seed(seed); }
+
+private:
+  // Using mt19937_64 for better compatibility with 64-bit types like size_t
+  inline static std::mt19937_64 s_engine{std::random_device{}()};
+};
+
+// auto withBase = [&](auto rule) {
+//   return rule; // Just returns a copy of the base modified by the call
+// };
+
+template <typename T, std::invocable<T &> F>
+constexpr T withBase(T base, F modifier) {
+  modifier(base);
+  return base;
 }

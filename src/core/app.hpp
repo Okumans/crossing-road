@@ -19,13 +19,13 @@
 
 struct InputState {
   bool isFirstMouse = false;
-  float mouseLastX, mouseLastY;
+  float mouseLastX = 0.0f, mouseLastY = 0.0f;
 
   void setMousePosition(float pos_x, float pos_y) {}
 };
 
 struct AppState {
-  int windowWidth, windowHeight;
+  int windowWidth = 800, windowHeight = 600;
   InputState inputState;
   bool gameStarted = false;
 };

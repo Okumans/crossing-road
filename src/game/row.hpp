@@ -1,7 +1,6 @@
 #pragma once
 
 #include "graphics/idrawable.hpp"
-#include "graphics/shader.hpp"
 #include "scene/object.hpp"
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -9,6 +8,9 @@
 enum class RowType { GRASS, ROAD, WATER };
 
 class Row : public IDrawable {
+public:
+  inline static const float WIDTH = 30.0f;
+
 public:
   Row(float z_pos, RowType type, float depth = 1.0f, float height = 0.0f)
       : m_zPos(z_pos), m_type(type), m_depth(depth), m_height(height) {};

@@ -1,7 +1,10 @@
 #include "game.hpp"
+#include "game/map_manager.hpp"
 #include "game/row.hpp"
 #include "game/rows/texture_row.hpp"
 #include "game/rows/water_row.hpp"
+#include "game/terrain.hpp"
+#include "game/terrains/grass_terrain.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/material.hpp"
 #include "graphics/shader.hpp"
@@ -19,7 +22,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 
-Game::Game() : m_player(nullptr), m_skybox(std::make_unique<Skybox>()) {}
+Game::Game()
+    : m_player(nullptr), m_skybox(std::make_unique<Skybox>()),
+      m_shadowMapFBO(0), m_shadowMapTex(0) {}
 
 Game::~Game() {
   glDeleteFramebuffers(1, &m_shadowMapFBO);
@@ -37,7 +42,9 @@ void Game::setup() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
   float border_color[] = {1.0, 1.0, 1.0, 1.0};
+
   glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
@@ -94,162 +101,165 @@ void Game::setup() {
   const float default_depth = 1.0f;
 
   // Start with some grass
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.0f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
-                                            default_depth, 0.0f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.0f));
-
-  // A road
-  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
-                                            default_depth, 0.05f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
-                                            default_depth, 0.05f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
-                                            default_depth, 0.05f));
-  // More grass
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
-                                            default_depth, 0.0f));
-
-  // A river (recessed)
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.0f, road_mat_2));
-  m_map.addRow(std::make_unique<WaterRow>(water_mat, water_shader,
-                                          default_depth, -0.2f));
-  m_map.addRow(std::make_unique<WaterRow>(water_mat, water_shader,
-                                          default_depth, -0.2f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.0f, road_mat_2));
-
-  // A raised grass area
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
-                                            default_depth, 0.1f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.1f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
-                                            default_depth, 0.0f));
-
-  // Another road
-  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
-                                            default_depth, 0.05f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
-                                            default_depth, 0.05f));
-
-  // End with grass
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
-                                            default_depth, 0.0f));
-  m_map.addRow(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
-                                            default_depth, 0.0f));
+  m_map.addTerrain(TerrainType::GRASSY);
+  m_map.addTerrain(TerrainType::GRASSY);
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+  //                                           default_depth, 0.0f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+  //                                           default_depth, 0.0f));
+  //
+  // // A road
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+  //                                           default_depth, 0.05f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
+  //                                           default_depth, 0.05f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+  //                                           default_depth, 0.05f));
+  // // More grass
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+  //                                           default_depth, 0.0f));
+  //
+  // // A river (recessed)
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+  //                                           default_depth, 0.0f,
+  //                                           road_mat_2));
+  // m_map.addTerrain(std::make_unique<WaterRow>(water_mat, water_shader,
+  //                                         default_depth, -0.2f));
+  // m_map.addTerrain(std::make_unique<WaterRow>(water_mat, water_shader,
+  //                                         default_depth, -0.2f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+  //                                           default_depth, 0.0f,
+  //                                           road_mat_2));
+  //
+  // // A raised grass area
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+  //                                           default_depth, 0.1f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+  //                                           default_depth, 0.1f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+  //                                           default_depth, 0.0f));
+  //
+  // // Another road
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::ROAD, road_mat_2,
+  //                                           default_depth, 0.05f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::ROAD, road_mat_1,
+  //                                           default_depth, 0.05f));
+  //
+  // // End with grass
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_1,
+  //                                           default_depth, 0.0f));
+  // m_map.addTerrain(std::make_unique<TextureRow>(RowType::GRASS, grass_mat_2,
+  //                                           default_depth, 0.0f));
 
   // Helper to add random greenery to a grass row (very sparse)
-  auto populateGreenery = [&](Row &row) {
-    for (int i = -10; i <= 10; ++i) {
-      if (std::abs(i) <= 1)
-        continue; // Keep center clear for player
-
-      float chance = (float)rand() / RAND_MAX;
-      glm::vec3 custom_position_offset = glm::vec3(0.0f);
-
-      if (chance > 0.95f) { // ~5% chance
-        float subChance = (float)rand() / RAND_MAX;
-        std::unique_ptr<Object> obj;
-        if (subChance > 0.6f) {
-          obj = std::make_unique<Object>(
-              ModelManager::getModel(ModelName::TREE_1));
-          obj->setScale(0.006f);
-        } else if (subChance > 0.4f) {
-          obj = std::make_unique<Object>(
-              ModelManager::getModel(ModelName::BUSH_2));
-          obj->setScale(0.0025f);
-          custom_position_offset = {0, 0.20f, 0};
-        } else if (subChance > 0.25f) {
-          obj = std::make_unique<Object>(
-              ModelManager::getModel(ModelName::TREE_2));
-          custom_position_offset = {0, -0.10f, 0};
-          obj->setScale(0.4f);
-        } else if (subChance > 0.1f) {
-          obj = std::make_unique<Object>(
-              ModelManager::getModel(ModelName::BUSH_1));
-          obj->setScale(0.002f);
-        } else {
-          obj = std::make_unique<Object>(
-              ModelManager::getModel(ModelName::ROCK_1));
-          obj->setScale(0.005f);
-        }
-
-        float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
-        obj->setPosition(glm::vec3((float)i + xOffset, row.getHeight(),
-                                   row.getZPos() - (row.getDepth() - 0.25f)) +
-                         custom_position_offset);
-        obj->setRotation(glm::vec3(
-            0.0f, ((float)rand() / RAND_MAX) * glm::two_pi<float>(), 0.0f));
-        row.addObject(std::move(obj));
-      }
-    }
-  };
-
-  for (auto &row : m_map.getRows()) {
-    if (row->getType() == RowType::GRASS) {
-      populateGreenery(*row);
-    }
-
-    if (row->getType() == RowType::ROAD) {
-      float direction = ((float)rand() / RAND_MAX > 0.5f) ? 1.0f : -1.0f;
-
-      if ((float)rand() / RAND_MAX <
-          0.4f) { // Increased spawn chance for trains
-        float speed = (6.0f + (float)rand() / RAND_MAX * 4.0f) * direction;
-        float xPos = direction > 0.0f ? -15.0f : 15.0f;
-        auto train = std::make_unique<Car>(
-            ModelManager::getModel(ModelName::TRAIN_1), speed);
-        train->setRotation({0, glm::radians(90.0f), 0});
-        train->setPosition(
-            glm::vec3(xPos, row->getHeight() + 0.3f,
-                      row->getZPos() - (row->getDepth() - 0.25f)));
-        train->setScale(0.3f);
-        if (direction < 0.0f) {
-          train->setRotation(glm::vec3(0.0f, glm::radians(-90.0f), 0.0f));
-        }
-        row->addObject(std::move(train));
-      } else {
-        float speed = (1.5f + (float)rand() / RAND_MAX * 3.0f) * direction;
-        int numCars = 1 + (rand() % 2);
-
-        for (int c = 0; c < numCars; ++c) {
-          float xPos = ((float)rand() / RAND_MAX - 0.5f) * 20.0f;
-
-          if (rand() % 2 == 0) {
-            auto car = std::make_unique<Car>(
-                ModelManager::getModel(ModelName::CAR_1), speed);
-            car->setPosition(
-                glm::vec3(xPos, row->getHeight(),
-                          row->getZPos() - (row->getDepth() - 0.25f)));
-            car->setScale(0.0030f);
-            car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
-
-            if (direction < 0.0f) {
-              car->rotate(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
-            }
-            row->addObject(std::move(car));
-          } else {
-            auto car = std::make_unique<Car>(
-                ModelManager::getModel(ModelName::CAR_2), speed);
-            car->setPosition(
-                glm::vec3(xPos, row->getHeight(),
-                          row->getZPos() - (row->getDepth() - 0.25f)));
-            car->setScale(0.0022f);
-            car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
-
-            if (direction < 0.0f) {
-              car->rotate(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
-            }
-            row->addObject(std::move(car));
-          }
-        }
-      }
-    }
-  }
+  // auto populateGreenery = [&](Row &row) {
+  //   for (int i = -10; i <= 10; ++i) {
+  //     if (std::abs(i) <= 1)
+  //       continue; // Keep center clear for player
+  //
+  //     float chance = (float)rand() / RAND_MAX;
+  //     glm::vec3 custom_position_offset = glm::vec3(0.0f);
+  //
+  //     if (chance > 0.95f) { // ~5% chance
+  //       float subChance = (float)rand() / RAND_MAX;
+  //       std::unique_ptr<Object> obj;
+  //       if (subChance > 0.6f) {
+  //         obj = std::make_unique<Object>(
+  //             ModelManager::getModel(ModelName::TREE_1));
+  //         obj->setScale(0.006f);
+  //       } else if (subChance > 0.4f) {
+  //         obj = std::make_unique<Object>(
+  //             ModelManager::getModel(ModelName::BUSH_2));
+  //         obj->setScale(0.0025f);
+  //         custom_position_offset = {0, 0.20f, 0};
+  //       } else if (subChance > 0.25f) {
+  //         obj = std::make_unique<Object>(
+  //             ModelManager::getModel(ModelName::TREE_2));
+  //         custom_position_offset = {0, -0.10f, 0};
+  //         obj->setScale(0.4f);
+  //       } else if (subChance > 0.1f) {
+  //         obj = std::make_unique<Object>(
+  //             ModelManager::getModel(ModelName::BUSH_1));
+  //         obj->setScale(0.002f);
+  //       } else {
+  //         obj = std::make_unique<Object>(
+  //             ModelManager::getModel(ModelName::ROCK_1));
+  //         obj->setScale(0.005f);
+  //       }
+  //
+  //       float xOffset = ((float)rand() / RAND_MAX - 0.5f) * 0.5f;
+  //       obj->setPosition(glm::vec3((float)i + xOffset, row.getHeight(),
+  //                                  row.getZPos() - (row.getDepth() - 0.25f))
+  //                                  +
+  //                        custom_position_offset);
+  //       obj->setRotation(glm::vec3(
+  //           0.0f, ((float)rand() / RAND_MAX) * glm::two_pi<float>(), 0.0f));
+  //       row.addObject(std::move(obj));
+  //     }
+  //   }
+  // };
+  //
+  // for (Row *row : m_map.getRows()) {
+  //   if (row->getType() == RowType::GRASS) {
+  //     populateGreenery(*row);
+  //   }
+  //
+  //   if (row->getType() == RowType::ROAD) {
+  //     float direction = ((float)rand() / RAND_MAX > 0.5f) ? 1.0f : -1.0f;
+  //
+  //     if ((float)rand() / RAND_MAX <
+  //         0.4f) { // Increased spawn chance for trains
+  //       float speed = (6.0f + (float)rand() / RAND_MAX * 4.0f) * direction;
+  //       float xPos = direction > 0.0f ? -15.0f : 15.0f;
+  //       auto train = std::make_unique<Car>(
+  //           ModelManager::getModel(ModelName::TRAIN_1), speed);
+  //       train->setRotation({0, glm::radians(90.0f), 0});
+  //       train->setPosition(
+  //           glm::vec3(xPos, row->getHeight() + 0.3f,
+  //                     row->getZPos() - (row->getDepth() - 0.25f)));
+  //       train->setScale(0.3f);
+  //       if (direction < 0.0f) {
+  //         train->setRotation(glm::vec3(0.0f, glm::radians(-90.0f), 0.0f));
+  //       }
+  //       row->addObject(std::move(train));
+  //     } else {
+  //       float speed = (1.5f + (float)rand() / RAND_MAX * 3.0f) * direction;
+  //       int numCars = 1 + (rand() % 2);
+  //
+  //       for (int c = 0; c < numCars; ++c) {
+  //         float xPos = ((float)rand() / RAND_MAX - 0.5f) * 20.0f;
+  //
+  //         if (rand() % 2 == 0) {
+  //           auto car = std::make_unique<Car>(
+  //               ModelManager::getModel(ModelName::CAR_1), speed);
+  //           car->setPosition(
+  //               glm::vec3(xPos, row->getHeight(),
+  //                         row->getZPos() - (row->getDepth() - 0.25f)));
+  //           car->setScale(0.0030f);
+  //           car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
+  //
+  //           if (direction < 0.0f) {
+  //             car->rotate(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+  //           }
+  //           row->addObject(std::move(car));
+  //         } else {
+  //           auto car = std::make_unique<Car>(
+  //               ModelManager::getModel(ModelName::CAR_2), speed);
+  //           car->setPosition(
+  //               glm::vec3(xPos, row->getHeight(),
+  //                         row->getZPos() - (row->getDepth() - 0.25f)));
+  //           car->setScale(0.0022f);
+  //           car->setRotation(glm::vec3(0, glm::radians(90.0f), 0));
+  //
+  //           if (direction < 0.0f) {
+  //             car->rotate(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+  //           }
+  //           row->addObject(std::move(car));
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   m_player =
       std::make_unique<Object>(ModelManager::getModel(ModelName::CHICKEN));

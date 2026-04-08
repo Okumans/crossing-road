@@ -101,7 +101,12 @@ static const unsigned char font8x8_basic[95][8] = {
     {0x31, 0x6B, 0x46, 0x00, 0x00, 0x00, 0x00, 0x00}, // ~
 };
 
-BitmapFont::BitmapFont() {}
+BitmapFont::BitmapFont() : texID(0) {
+  for (int i = 0; i < 256; ++i) {
+    m_characters[i] = {glm::vec2(0.0f), glm::vec2(0.0f), glm::ivec2(0),
+                       glm::ivec2(0),  0};
+  }
+}
 
 BitmapFont::~BitmapFont() {
   if (texID)

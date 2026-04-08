@@ -52,7 +52,7 @@ void WaterRow::drawSidePanel(const RenderContext &ctx, float nextHeight,
 }
 
 void WaterRow::_setupMesh() {
-  const float width = 30.0f;
+  const float width = WIDTH;
   const float u_max = width / 6.0f;
   const float v_max = m_depth / 6.0f;
 

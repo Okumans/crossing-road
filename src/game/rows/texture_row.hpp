@@ -27,6 +27,9 @@ public:
   virtual void drawSidePanel(const RenderContext &ctx, float nextHeight,
                              bool isForward) override;
 
+  const Material getMaterial() const { return m_material; }
+  const Material getSideMaterial() const { return m_sideMaterial; }
+
 private:
   void _setupMesh();
 };

@@ -19,9 +19,9 @@ enum class TextureType : uint8_t {
 
 class Texture {
 private:
-  bool m_ownTex;
-  TextureType m_type;
-  GLuint m_texID;
+  bool m_ownTex = false;
+  TextureType m_type = TextureType::UNDEFINED;
+  GLuint m_texID = 0;
 
 public:
   Texture(const std::vector<std::string> &faces);
