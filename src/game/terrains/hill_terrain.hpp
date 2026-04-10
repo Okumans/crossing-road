@@ -33,8 +33,7 @@ public:
     size_t row_numbers = Random::randInt<size_t>(5, 9);
     float peak_height = Random::randFloat(0.4f, 1.0f);
 
-    // FIX: please replace nullptr with the proper row (after fix things)
-    const Row *row_before = nullptr;
+    const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);
     const Material *start_mat = &grass_mat_1;
 
     if (row_before && row_before->getType() == RowType::GRASS) {

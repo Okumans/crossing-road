@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/row.hpp"
+#include "game/row_queue.hpp"
 #include "game/rows/texture_row.hpp"
 #include "game/terrain.hpp"
 #include "graphics/material.hpp"
@@ -43,8 +44,7 @@ private:
     GrassMaterialType start_grass_type =
         GrassMaterialType::GRASS_1; // default value
 
-    // FIX: please replace nullptr with the proper row (after fix things)
-    const Row *row_before = nullptr;
+    const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);
 
     // Maintain the pattern on grass textures
     if (!row_before || (row_before->getType() != RowType::GRASS)) {

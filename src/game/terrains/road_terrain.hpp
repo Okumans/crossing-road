@@ -30,8 +30,7 @@ public:
     size_t row_numbers = Random::randInt<size_t>(2, 5);
     const Material *start_mat = &road_mat_1;
 
-    // FIX: please replace nullptr with the proper row (after fix things)
-    const Row *row_before = nullptr;
+    const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);
 
     if (row_before && row_before->getType() == RowType::ROAD) {
       if (const auto texture_row =

@@ -36,8 +36,9 @@ void WaterRow::draw(const RenderContext &ctx, float z) {
     ctx.shader.use();
   }
 
+  // TODO:  if bounding box is implement, consider more advance z calculation
   for (auto &obj : m_objects) {
-    obj->draw(ctx, obj->getPosition(z).z);
+    obj->draw(ctx, obj->getPosition(z).z - (m_depth / 2.0));
   }
 }
 

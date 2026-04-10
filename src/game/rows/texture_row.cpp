@@ -1,7 +1,7 @@
+#include "texture_row.hpp"
 #include "game/row.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/idrawable.hpp"
-#include "texture_row.hpp"
 
 TextureRow::TextureRow(RowType type, const Material &material, float depth,
                        float height, std::optional<Material> sideMaterial)
@@ -20,7 +20,7 @@ void TextureRow::draw(const RenderContext &ctx, float z) {
   ctx.shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 
   for (auto &obj : m_objects) {
-    obj->draw(ctx, obj->getPosition(z).z);
+    obj->draw(ctx, obj->getPosition(z).z - (m_depth / 2.0));
   }
 }
 
