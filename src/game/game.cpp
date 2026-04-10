@@ -1,10 +1,6 @@
 #include "game.hpp"
 #include "game/map_manager.hpp"
-#include "game/row.hpp"
-#include "game/rows/texture_row.hpp"
-#include "game/rows/water_row.hpp"
-#include "game/terrain.hpp"
-#include "game/terrains/grass_terrain.hpp"
+#include "game/row_queue.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/material.hpp"
 #include "graphics/shader.hpp"
@@ -17,10 +13,10 @@
 #include "glm/fwd.hpp"
 #include "graphics/ibl_generator.hpp"
 #include "resource/texture_manager.hpp"
-#include "scene/car.hpp"
 #include "scene/object.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
+#include <print>
 
 Game::Game()
     : m_player(nullptr), m_skybox(std::make_unique<Skybox>()),
@@ -267,9 +263,9 @@ void Game::setup() {
   // }
 
   m_player =
-      std::make_unique<Object>(ModelManager::getModel(ModelName::CHICKEN));
+      std::make_unique<RowObject>(ModelManager::getModel(ModelName::CHICKEN));
   m_player->setRotation({0, glm::radians(-90.0f), 0});
-  m_player->setPosition({0.25f, 0.0f, 0.25f});
+  m_player->setPosition({0.25f, 0.0f});
 
   // Setup Lights
   LightingManager::clearLights();
@@ -309,9 +305,14 @@ void Game::update(double delta_time) {
 void Game::render(double delta_time, Camera &camera) {
   glEnable(GL_DEPTH_TEST);
 
+  const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
+  float player_z =
+      RowQueue::get().getZ(m_playerRowIdx) - curr_row->getDepth() / 2.0f;
+  m_player->setPosition({m_player->getPosition().x, curr_row->getHeight()});
+
   // 1. Shadow Pass
   m_lightSpaceMatrix =
-      LightingManager::calculateLightSpaceMatrix(m_player->getPosition());
+      LightingManager::calculateLightSpaceMatrix(m_player->getPosition(0.75));
 
   Shader &shadow_shader = ShaderManager::getShader(ShaderType::SHADOW);
   shadow_shader.use();
@@ -325,7 +326,8 @@ void Game::render(double delta_time, Camera &camera) {
   m_map.draw(
       {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time});
   m_player->draw(
-      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time});
+      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time},
+      player_z);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glCullFace(GL_BACK); // Restore back-face culling
@@ -407,7 +409,8 @@ void Game::render(double delta_time, Camera &camera) {
   pbr_shader.setVec3("u_BaseColor", glm::vec3(0.8f));
   pbr_shader.setVec2("u_UVOffset", glm::vec2(0.0f));
   m_player->draw(
-      {.shader = pbr_shader, .camera = camera, .deltaTime = delta_time});
+      {.shader = pbr_shader, .camera = camera, .deltaTime = delta_time},
+      player_z);
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
 
   glDisable(GL_BLEND);
@@ -416,15 +419,21 @@ void Game::render(double delta_time, Camera &camera) {
 
 void Game::moveForward() {
   if (m_player) {
-    glm::vec3 pos = m_player->getPosition();
-    pos.z -= 0.5f;
-    m_player->setPosition(pos);
+    m_playerRowIdx++;
+    // // glm::vec3 pos =
+    // //     m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx++));
+    // // m_player->setPosition(pos);
+    // //
+    //
+    // std::println(
+    //     "player z: {}",
+    //     m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx - 1)).z);
   }
 }
 
 void Game::moveLeft(double delta_time) {
   if (m_player) {
-    glm::vec3 pos = m_player->getPosition();
+    glm::vec2 pos = m_player->getPosition();
     pos.x -= 2.0f * (float)delta_time;
     m_player->setPosition(pos);
   }
@@ -432,14 +441,16 @@ void Game::moveLeft(double delta_time) {
 
 void Game::moveRight(double delta_time) {
   if (m_player) {
-    glm::vec3 pos = m_player->getPosition();
+    glm::vec2 pos = m_player->getPosition();
     pos.x += 2.0f * (float)delta_time;
     m_player->setPosition(pos);
   }
 }
 
 glm::vec3 Game::getPlayerPosition() const {
+  float z = RowQueue::get().getZ(m_playerRowIdx);
+
   if (m_player)
-    return m_player->getPosition();
+    return m_player->getPosition(z);
   return glm::vec3(0.0f);
 }

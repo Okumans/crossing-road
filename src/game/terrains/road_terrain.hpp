@@ -9,6 +9,7 @@
 #include "scene/car.hpp"
 #include "utility/utility.hpp"
 
+#include <cstdint>
 #include <memory>
 
 class RoadTerrain : public Terrain {
@@ -17,15 +18,9 @@ private:
   inline static const char *ROAD_2_TEX_NAME = "road_2";
 
 public:
-  RoadTerrain(std::function<const Row *(float)> &before_row_getter,
-              float curr_z)
-      : Terrain(before_row_getter, curr_z) {}
+  RoadTerrain(uint32_t start_z) : Terrain(start_z) {}
 
-  RoadTerrain(std::function<const Row *(float)> &&before_row_getter,
-              float curr_z)
-      : Terrain(std::move(before_row_getter), curr_z) {}
-
-  virtual float _generateTerrain() override {
+  virtual uint32_t _generateTerrain() override {
     assert(MaterialManager::exists(ROAD_1_TEX_NAME));
     assert(MaterialManager::exists(ROAD_2_TEX_NAME));
 
@@ -35,7 +30,9 @@ public:
     size_t row_numbers = Random::randInt<size_t>(2, 5);
     const Material *start_mat = &road_mat_1;
 
-    const Row *row_before = _getRowBeforeTerrain();
+    // FIX: please replace nullptr with the proper row (after fix things)
+    const Row *row_before = nullptr;
+
     if (row_before && row_before->getType() == RowType::ROAD) {
       if (const auto texture_row =
               dynamic_cast<const TextureRow *>(row_before)) {
@@ -46,22 +43,21 @@ public:
       }
     }
 
-    float curr_z = m_currZ;
+    uint32_t last_row_idx = 0;
     for (size_t i = 0; i < row_numbers; ++i) {
       const Material &current_mat =
           (i % 2 == 0) ? *start_mat
                        : (start_mat == &road_mat_1 ? road_mat_2 : road_mat_1);
 
-      auto road_row = std::make_unique<TextureRow>(curr_z, RowType::ROAD,
-                                                   current_mat, 1.0f, 0.05f);
+      auto road_row =
+          std::make_unique<TextureRow>(RowType::ROAD, current_mat, 1.0f, 0.05f);
 
       _populateLane(*road_row);
 
-      curr_z -= road_row->getDepth();
-      m_rows.push_back(std::move(road_row));
+      last_row_idx = addRow(std::move(road_row));
     }
 
-    return curr_z;
+    return last_row_idx;
   }
 
 private:
@@ -78,7 +74,7 @@ private:
       train->setScale(0.3f);
       train->setRotation(
           {0.0f, glm::radians(direction > 0.0f ? 90.0f : -90.0f), 0.0f});
-      train->setPosition({x, row.getHeight() + 0.3f, row.getZPos() - 0.75f});
+      train->setPosition({x, row.getHeight() + 0.3f});
 
       row.addObject(std::move(train));
     }
@@ -99,7 +95,7 @@ private:
             std::make_unique<Car>(ModelManager::getModel(modelName), speed);
         car->setScale(scale);
         car->setRotation({0, glm::radians(90.0f), 0});
-        car->setPosition({x_pos, row.getHeight(), row.getZPos() - 0.75f});
+        car->setPosition({x_pos, row.getHeight()});
 
         if (direction < 0.0f)
           car->rotate({0, glm::radians(180.0f), 0});

@@ -1,43 +1,38 @@
-#include "texture_row.hpp"
 #include "game/row.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/idrawable.hpp"
+#include "texture_row.hpp"
 
-TextureRow::TextureRow(float z_pos, RowType type, const Material &material,
-                       float depth, float height,
-                       std::optional<Material> sideMaterial)
-    : Row(z_pos, type, depth, height), m_material(material),
+TextureRow::TextureRow(RowType type, const Material &material, float depth,
+                       float height, std::optional<Material> sideMaterial)
+    : Row(type, depth, height), m_material(material),
       m_sideMaterial(sideMaterial.value_or(material)) {
   m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
   _setupMesh();
 }
 
-TextureRow::TextureRow(RowType type, const Material &material, float depth,
-                       float height, std::optional<Material> sideMaterial)
-    : TextureRow(0.0f, type, material, depth, height, sideMaterial) {}
-
-void TextureRow::draw(const RenderContext &ctx) {
+void TextureRow::draw(const RenderContext &ctx, float z) {
   ctx.shader.setMat4("u_Model",
-                     glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, m_zPos}));
+                     glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, z}));
   ctx.shader.setVec2("u_UVOffset", m_uvOffset);
   m_mesh->draw(ctx);
 
   ctx.shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 
   for (auto &obj : m_objects) {
-    obj->draw(ctx);
+    obj->draw(ctx, obj->getPosition(z).z);
   }
 }
 
-void TextureRow::drawSidePanel(const RenderContext &ctx, float nextHeight,
-                               bool isForward) {
+void TextureRow::drawSidePanel(const RenderContext &ctx, float z,
+                               float nextHeight, bool isForward) {
   if (m_height <= nextHeight)
     return;
 
-  float z = isForward ? m_zPos : m_zPos - m_depth;
+  float panelZ = isForward ? z : z - m_depth;
 
   glm::mat4 model = glm::mat4(1.0f);
-  model = glm::translate(model, glm::vec3(0.0f, nextHeight, z));
+  model = glm::translate(model, glm::vec3(0.0f, nextHeight, panelZ));
   if (!isForward) {
     model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 1, 0));
   }

@@ -19,9 +19,10 @@ public:
            float depth = 1.0f,
            float height = 0.0f); // For set later
 
-  virtual void draw(const RenderContext &ctx) override;
-  virtual void drawSidePanel(const RenderContext &ctx, float nextHeight,
-                             bool isForward) override;
+  virtual void drawSidePanel(const RenderContext &ctx, float z,
+                             float nextHeight, bool isForward) override;
+
+  virtual void draw(const RenderContext &ctx, float z) override;
 
 private:
   void _setupMesh();

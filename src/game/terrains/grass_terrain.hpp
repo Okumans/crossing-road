@@ -9,7 +9,6 @@
 #include "utility/utility.hpp"
 
 #include <cstdint>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -20,19 +19,12 @@ private:
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
 
 public:
-  GrassyTerrain(std::function<const Row *(float)> &before_row_getter,
-                float curr_z)
-      : Terrain(before_row_getter, curr_z) {
+  GrassyTerrain(uint32_t startRowidx) : Terrain(startRowidx) {
     _setupPopulator();
   }
 
-  GrassyTerrain(std::function<const Row *(float)> &&before_row_getter,
-                float curr_z)
-      : Terrain(std::move(before_row_getter), curr_z) {
-    _setupPopulator();
-  }
-
-  virtual float _generateTerrain() override {
+private:
+  virtual uint32_t _generateTerrain() override {
     enum class GrassMaterialType : uint8_t {
       GRASS_1 = 0,
       GRASS_2,
@@ -51,7 +43,8 @@ public:
     GrassMaterialType start_grass_type =
         GrassMaterialType::GRASS_1; // default value
 
-    const Row *row_before = _getRowBeforeTerrain();
+    // FIX: please replace nullptr with the proper row (after fix things)
+    const Row *row_before = nullptr;
 
     // Maintain the pattern on grass textures
     if (!row_before || (row_before->getType() != RowType::GRASS)) {
@@ -74,7 +67,7 @@ public:
       }
     }
 
-    float curr_z = m_currZ;
+    uint32_t last_row_idx = 0;
 
     for (size_t i = 0; i < row_numbers; ++i) {
       GrassMaterialType grass_mat_type = static_cast<GrassMaterialType>(
@@ -97,17 +90,15 @@ public:
 
       assert(grass_mat.has_value());
 
-      std::unique_ptr<TextureRow> grass_row = std::make_unique<TextureRow>(
-          curr_z, RowType::GRASS, grass_mat.value());
+      std::unique_ptr<TextureRow> grass_row =
+          std::make_unique<TextureRow>(RowType::GRASS, grass_mat.value());
 
-      curr_z -= grass_row->getDepth();
-      m_rows.push_back(std::move(grass_row));
+      last_row_idx = addRow(std::move(grass_row));
     }
 
-    return curr_z;
+    return last_row_idx;
   }
 
-private:
   void _setupPopulator() {
     TerrainPopulator greenery;
 
@@ -116,7 +107,7 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<Object>(ModelManager::getModel(ModelName::TREE_1)),
+        std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.15f;
           r.minScale = 0.006f;
@@ -125,7 +116,7 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<Object>(ModelManager::getModel(ModelName::BUSH_2)),
+        std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_2)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.1f;
           r.minScale = 0.0025f;
@@ -135,7 +126,7 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<Object>(ModelManager::getModel(ModelName::TREE_2)),
+        std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_2)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.1f;
           r.minScale = 0.4f;
@@ -145,7 +136,7 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<Object>(ModelManager::getModel(ModelName::BUSH_1)),
+        std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.1f;
           r.minScale = 0.002f;
@@ -154,7 +145,7 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<Object>(ModelManager::getModel(ModelName::ROCK_1)),
+        std::make_unique<RowObject>(ModelManager::getModel(ModelName::ROCK_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.08f;
           r.minScale = 0.005f;

@@ -7,20 +7,21 @@
 #include <memory>
 #include <print>
 
-Object::Object(std::shared_ptr<Model> model, glm::vec3 pos, glm::vec3 scale,
-               glm::vec3 rotation)
-    : m_model(std::move(model)), m_position(pos), m_rotation(rotation),
-      m_scale(scale),
+RowObject::RowObject(std::shared_ptr<Model> model, glm::vec2 pos,
+                     float z_offset, glm::vec3 scale, glm::vec3 rotation)
+    : m_model(std::move(model)), m_position({pos, z_offset}),
+      m_rotation(rotation), m_scale(scale),
       m_boundingBox(m_model ? _calculateAABB(*m_model) : AABB{}) {
   if (!m_model) {
     std::println(stderr, "Warning: Object created with null Model!");
   }
 }
-
-void Object::draw(const RenderContext &ctx) {
+void RowObject::draw(const RenderContext &ctx, float z) {
   glm::mat4 model = glm::mat4(1.0f);
 
-  model = glm::translate(model, m_position);
+  // m_position.z is the relative offset within the row
+  model = glm::translate(
+      model, glm::vec3(m_position.x, m_position.y, z + m_position.z));
 
   model = glm::rotate(model, m_rotation.x, glm::vec3(1, 0, 0));
   model = glm::rotate(model, m_rotation.y, glm::vec3(0, 1, 0));
@@ -32,10 +33,10 @@ void Object::draw(const RenderContext &ctx) {
   m_model->draw(ctx);
 }
 
-bool Object::collided(const Object &other) { return false; }
-bool Object::collided(AABB bounding_box) { return false; }
+bool RowObject::collided(const RowObject &other) { return false; }
+bool RowObject::collided(AABB bounding_box) { return false; }
 
-AABB Object::_calculateAABB(const Model &model) {
+AABB RowObject::_calculateAABB(const Model &model) {
   // TODO: Implement actaul bounding box calculation.
 
   return AABB{.left = glm::vec3(0.0f),

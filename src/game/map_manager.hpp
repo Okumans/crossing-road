@@ -17,7 +17,6 @@ enum class TerrainType {
 class MapManager : public IDrawable {
 private:
   std::vector<std::unique_ptr<Terrain>> m_terrains;
-  float m_currZ;
 
 public:
   MapManager();
@@ -32,16 +31,16 @@ public:
 
   std::generator<Row *> getRows() {
     for (const std::unique_ptr<Terrain> &terrain : m_terrains) {
-      for (const std::unique_ptr<Row> &row : terrain->getRows()) {
-        co_yield row.get();
+      for (Row *row : terrain->getRows()) {
+        co_yield row;
       }
     }
   }
 
   std::generator<const Row *const> getRows() const {
     for (const std::unique_ptr<Terrain> &terrain : m_terrains) {
-      for (const std::unique_ptr<Row> &row : terrain->getRows()) {
-        co_yield row.get();
+      for (const Row *row : terrain->getRows()) {
+        co_yield row;
       }
     }
   }

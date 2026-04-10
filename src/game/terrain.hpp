@@ -1,13 +1,15 @@
 #pragma once
 
 #include "game/row.hpp"
+#include "game/row_queue.hpp"
 #include "graphics/idrawable.hpp"
 #include "scene/object.hpp"
 #include "utility/utility.hpp"
 
-#include <functional>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <vector>
 
 class Terrain;
@@ -25,7 +27,7 @@ struct PlacementRule {
 };
 
 struct SpawnConfig {
-  std::unique_ptr<Object> object;
+  std::unique_ptr<RowObject> object;
   PlacementRule rule;
 };
 
@@ -38,7 +40,7 @@ public:
   TerrainPopulator(TerrainPopulator &&) = default;
   TerrainPopulator &operator=(TerrainPopulator &&) = default;
 
-  TerrainPopulator &withRule(RowType type, std::unique_ptr<Object> &&object,
+  TerrainPopulator &withRule(RowType type, std::unique_ptr<RowObject> &&object,
                              PlacementRule rule = {}) {
     assert(rule.probability >= 0.0f && rule.probability <= 1.0f);
     assert(rule.minX <= rule.maxX);
@@ -50,30 +52,50 @@ public:
   void populate(Terrain &terrain);
 };
 
-class Terrain : public IDrawable {
+struct RowInfo {
+  std::unique_ptr<Row> row;
+  uint32_t rowIdx;
+  float relativeZ;
+};
+
+class Terrain : public IZDrawable {
   friend class TerrainPopulator;
 
+private:
+  std::vector<RowInfo> m_rowsInfo;
+
 protected:
-  std::vector<std::unique_ptr<Row>> m_rows;
-  float m_currZ;
   TerrainPopulator m_populator;
-  std::function<const Row *(float)> m_rowBeforeTerrainGetter;
+  uint32_t m_startRowIdx;
+  float m_currRelativeZ;
 
 public:
-  Terrain(std::function<const Row *(float)> before_row_getter, float curr_z)
-      : m_currZ(curr_z),
-        m_rowBeforeTerrainGetter(std::move(before_row_getter)) {}
+  Terrain(uint32_t start_row)
+      : m_startRowIdx(start_row), m_currRelativeZ(0.0f) {}
 
   virtual ~Terrain() = default;
 
+  virtual uint32_t addRow(std::unique_ptr<Row> &&row) {
+    uint32_t row_idx = RowQueue::get().registerRow(row.get());
+    float row_depth = row->getDepth();
+
+    m_rowsInfo.push_back({.row = std::move(row),
+                          .rowIdx = row_idx,
+                          .relativeZ = m_currRelativeZ});
+
+    m_currRelativeZ -= row_depth;
+
+    return row_idx;
+  }
+
   virtual void update(float delta_time) {
-    for (auto &row : m_rows)
+    for (auto &[row, idx, z] : m_rowsInfo)
       row->update(delta_time);
   }
 
-  virtual void draw(const RenderContext &ctx) {
-    for (auto &row : m_rows)
-      row->draw(ctx);
+  virtual void draw(const RenderContext &ctx, float z) {
+    for (auto &[row, idx, z] : m_rowsInfo)
+      row->draw(ctx, z);
   }
 
   float generate() {
@@ -86,21 +108,24 @@ public:
     m_populator = std::move(populator);
   }
 
-  void setZPos(float curr_z) { m_currZ = curr_z; }
-  float getZPos() const { return m_currZ; }
-  const std::vector<std::unique_ptr<Row>> &getRows() const { return m_rows; }
+  const auto &getRowsInfo() const { return m_rowsInfo; }
+
+  auto getRows() {
+    return m_rowsInfo | std::views::transform(
+                            [](const RowInfo &ri) { return ri.row.get(); });
+  }
 
 protected:
-  virtual const Row *_getRowBeforeTerrain() {
-    return m_rowBeforeTerrainGetter(m_currZ);
-  };
+  // virtual const Row *_getRowBeforeTerrain() {
+  //   return m_rowBeforeTerrainGetter(m_currZ);
+  // };
 
-  virtual float _generateTerrain() = 0;
+  virtual uint32_t _generateTerrain() = 0;
 };
 
 inline void TerrainPopulator::populate(Terrain &terrain) {
-  for (auto &rowPtr : terrain.m_rows) {
-    RowType type = rowPtr->getType();
+  for (auto &[row, idx, z] : terrain.m_rowsInfo) {
+    RowType type = row->getType();
     if (!m_rules.contains(type))
       continue;
 
@@ -112,16 +137,16 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
 
           // Clone is much cheaper than creating a new once
           // (because Bounding Box calculation)
-          std::unique_ptr<Object> obj =
-              std::make_unique<Object>(*config.object);
+          std::unique_ptr<RowObject> obj =
+              std::make_unique<RowObject>(*config.object);
 
           float x = Random::randFloat(rule.minX, rule.maxX);
           float scale = Random::randFloat(rule.minScale, rule.maxScale);
-          float z =
-              rowPtr->getZPos() - (rowPtr->getDepth() - 0.25f) + rule.zOffset;
-          float y = rowPtr->getHeight() + rule.yOffset;
+          float z = rule.zOffset;
+          float y = row->getHeight() + rule.yOffset;
 
-          obj->setPosition({x, y, z});
+          obj->setPosition({x, y});
+          obj->setZOffset(z);
           obj->setScale(obj->getScale() * scale);
 
           if (rule.randomRotation) {
@@ -129,7 +154,7 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
                 {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
           }
 
-          rowPtr->addObject(std::move(obj));
+          row->addObject(std::move(obj));
         }
       }
     }

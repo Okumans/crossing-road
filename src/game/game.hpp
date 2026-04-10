@@ -4,6 +4,7 @@
 #include "graphics/skybox.hpp"
 #include "map_manager.hpp"
 #include "scene/object.hpp"
+#include <cstdint>
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 
@@ -17,7 +18,7 @@
 
 class Game {
 private:
-  std::unique_ptr<Object> m_player;
+  std::unique_ptr<RowObject> m_player;
   MapManager m_map;
   std::unique_ptr<Skybox> m_skybox;
 
@@ -28,6 +29,7 @@ private:
   glm::mat4 m_lightSpaceMatrix;
 
   float m_currentTime = 0.0f;
+  uint32_t m_playerRowIdx = 0;
 
 public:
   Game();
