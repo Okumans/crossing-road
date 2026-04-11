@@ -2,6 +2,7 @@
 
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
+#include "glm/fwd.hpp"
 #include "graphics/idrawable.hpp"
 #include "scene/row_object.hpp"
 #include "utility/utility.hpp"
@@ -145,14 +146,15 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
           float z = rule.zOffset;
           float y = row->getHeight() + rule.yOffset;
 
-          obj->setPosition({x, y});
-          obj->setZOffset(z);
-          obj->setScale(obj->getScale() * scale);
-
-          if (rule.randomRotation) {
+          if (rule.randomRotation)
             obj->setRotation(
                 {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
-          }
+
+          obj->setPosition({x, y});
+          obj->setZOffset(z);
+          obj->setScale(obj->getScale() *
+                        scale); // even the scale changed in this case all of
+                                // the boungding box would be ok
 
           if (!row->collided(*obj))
             row->addObject(std::move(obj));

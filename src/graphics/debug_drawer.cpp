@@ -40,6 +40,8 @@ void DebugDrawer::_init() {
 
 void DebugDrawer::drawAABB(const RenderContext &ctx, const AABB &aabb,
                            const glm::vec3 &color) {
+  if (aabb.isEmpty())
+    return;
   _init();
 
   Shader &shader = ShaderManager::getShader(ShaderType::DEBUG);

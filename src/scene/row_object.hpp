@@ -31,6 +31,11 @@ struct AABB {
     max = glm::max(max, point);
   }
 
+  void translate(const glm::vec3 &offset) {
+    min += offset;
+    max += offset;
+  }
+
   void transform(const glm::mat4 &matrix) {
     glm::vec3 corners[8] = {{min.x, min.y, min.z}, {max.x, min.y, min.z},
                             {min.x, max.y, min.z}, {max.x, max.y, min.z},
@@ -50,14 +55,24 @@ struct AABB {
     return {glm::vec3(std::numeric_limits<float>::max()),
             glm::vec3(std::numeric_limits<float>::lowest())};
   }
+
+  bool isEmpty() const {
+    return min.x > max.x || min.y > max.y || min.z > max.z;
+  }
 };
 
 class RowObject : public IZDrawable {
+public:
+  static float s_minClipY;
+  static float s_maxClipY;
+  static bool s_useClipY;
+
 protected:
   std::shared_ptr<Model> m_model;
 
-  AABB m_localAABB;
-  mutable AABB m_worldAABB;
+  AABB m_baseAABB;          // Raw un-transformed AABB from model
+  AABB m_localAABB;         // Rotated and Scaled AABB
+  mutable AABB m_worldAABB; // Rotated, Scaled and Traslated AABB
 
 private:
   glm::vec3
@@ -70,7 +85,8 @@ private:
 public:
   RowObject(std::shared_ptr<Model> model, glm::vec2 pos = glm::vec2(0.0f),
             float z_offset = 0.0f, glm::vec3 scale = glm::vec3(1.0f),
-            glm::vec3 rotation = glm::vec3(0.0f));
+            glm::vec3 rotation = glm::vec3(0.0f),
+            bool defer_aabb_calculation = false);
 
   RowObject(const RowObject &other) = default;
   RowObject(RowObject &&other) noexcept = default;
@@ -96,25 +112,10 @@ public:
     m_isDirty = true;
   }
 
-  void setScale(glm::vec3 scale) {
-    m_scale = scale;
-    m_isDirty = true;
-  };
-
-  void setScale(float scale) {
-    m_scale = glm::vec3(scale);
-    m_isDirty = true;
-  };
-
-  void setRotation(glm::vec3 rads) {
-    m_rotation = rads;
-    m_isDirty = true;
-  }
-
-  void rotate(glm::vec3 rads) {
-    m_rotation += rads;
-    m_isDirty = true;
-  }
+  void setScale(glm::vec3 scale, bool recalculate_aabb = true);
+  void setScale(float scale, bool recalculate_aabb = true);
+  void setRotation(glm::vec3 rads, bool recalculate_aabb = true);
+  void rotate(glm::vec3 rads, bool recalculate_aabb = true);
 
   glm::vec3 getPosition(float z) const {
     return {m_position.x, m_position.y, z + m_position.z};
@@ -125,27 +126,20 @@ public:
   glm::vec3 getScale() const { return m_scale; };
   glm::vec3 getRotation() const { return m_rotation; }
 
-  glm::vec3 getWorldAABBCenter() const;
-
   const AABB &getLocalAABB() const { return m_localAABB; }
-  const AABB &getWorldAABB(float z = 0.0f) const {
-    if (m_isDirty || m_lastZ != z) {
-      _updateAABB(z);
-      m_isDirty = false;
-      m_lastZ = z;
-    }
-
-    return m_worldAABB;
-  }
-
-  float getWidth() const { return m_localAABB.max.x - m_localAABB.min.x; }
-  float getHeight() const { return m_localAABB.max.y - m_localAABB.min.y; }
-  float getDepth() const { return m_localAABB.max.z - m_localAABB.min.z; }
+  glm::vec3 getWorldAABBCenter() const;
+  const AABB &getWorldAABB(float z = 0.0f) const;
 
   bool collided(const RowObject &other);
   bool collided(AABB bounding_box);
 
+  void setHeightClip(float min_y, float max_y);
+
 private:
-  void _updateAABB(float z = 0.0f) const;
-  static AABB _calculateAABB(const Model &model);
+  void _updateLocalAABB(bool deep_scan);
+  void _updateGlobalAABB(float z = 0.0f) const;
+  static AABB _calculateAABB(const Model &model,
+                             const glm::mat4 &transform = glm::mat4(1.0f),
+                             float min_y = std::numeric_limits<float>::lowest(),
+                             float max_y = std::numeric_limits<float>::max());
 };
