@@ -69,5 +69,5 @@ private:
 
   void _setupResources();
   void _setupUIElements();
-  void _updateUIElements();
+  void _updateUIElements(double delta_time);
 };

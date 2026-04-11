@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/shader.hpp"
 #include "resource/shader_manager.hpp"
+#include <memory>
 
 WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
                    float depth, float height)
@@ -36,9 +37,9 @@ void WaterRow::draw(const RenderContext &ctx, float z) {
     ctx.shader.use();
   }
 
-  // TODO:  if bounding box is implement, consider more advance z calculation
-  for (auto &obj : m_objects) {
-    obj->draw(ctx, obj->getPosition(z).z - (m_depth / 2.0));
+  for (std::unique_ptr<RowObject> &obj : m_objects) {
+    float center_z = -(m_depth / 2.0f);
+    obj->draw(ctx, z + center_z - obj->getWorldAABBCenter().z);
   }
 }
 

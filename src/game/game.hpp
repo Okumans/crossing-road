@@ -33,6 +33,8 @@ private:
   float m_currentTime = 0.0f;
   uint32_t m_playerRowIdx = 0;
 
+  bool m_debugAABB = true;
+
 public:
   Game();
   ~Game();
@@ -45,6 +47,8 @@ public:
   void moveForward();
   void moveLeft(double delta_time);
   void moveRight(double delta_time);
+
+  void toggleDebugAABB() { m_debugAABB = !m_debugAABB; }
 
   glm::vec3 getPlayerPosition() const;
 };

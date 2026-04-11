@@ -48,6 +48,10 @@ public:
   virtual float getHeight() const { return m_height; }
   virtual RowType getType() const { return m_type; }
 
+  const std::vector<std::unique_ptr<RowObject>> &getObjects() const {
+    return m_objects;
+  }
+
   virtual void setDepth(float depth) { m_depth = depth; }
   virtual void setHeight(float height) { m_height = height; }
   virtual void setType(RowType type) { m_type = type; }

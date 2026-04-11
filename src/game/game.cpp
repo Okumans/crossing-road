@@ -2,6 +2,7 @@
 #include "game/map_manager.hpp"
 #include "game/row_queue.hpp"
 #include "glm/trigonometric.hpp"
+#include "graphics/debug_drawer.hpp"
 #include "graphics/ibl_generator.hpp"
 #include "graphics/material.hpp"
 #include "graphics/shader.hpp"
@@ -413,6 +414,26 @@ void Game::render(double delta_time, Camera &camera) {
       player_z);
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
 
+  if (m_debugAABB) {
+    RenderContext debugCtx = {
+        .shader = pbr_shader, .camera = camera, .deltaTime = delta_time};
+
+    DebugDrawer::drawAABB(debugCtx, m_player->getWorldAABB(player_z),
+                          {1.0f, 1.0f, 0.0f});
+
+    if (curr_row) {
+      float row_z = RowQueue::get().getZ(m_playerRowIdx);
+      for (const auto &obj : curr_row->getObjects()) {
+
+        float center_z = -(curr_row->getDepth() / 2.0f);
+        float obj_z = row_z + center_z - obj->getWorldAABBCenter().z;
+
+        DebugDrawer::drawAABB(debugCtx, obj->getWorldAABB(obj_z),
+                              {1.0f, 0.0f, 0.0f});
+      }
+    }
+  }
+
   glDisable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
 }
@@ -420,14 +441,6 @@ void Game::render(double delta_time, Camera &camera) {
 void Game::moveForward() {
   if (m_player) {
     m_playerRowIdx++;
-    // // glm::vec3 pos =
-    // //     m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx++));
-    // // m_player->setPosition(pos);
-    // //
-    //
-    // std::println(
-    //     "player z: {}",
-    //     m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx - 1)).z);
   }
 }
 

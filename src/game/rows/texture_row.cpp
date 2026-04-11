@@ -2,6 +2,7 @@
 #include "game/row.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/idrawable.hpp"
+#include <memory>
 
 TextureRow::TextureRow(RowType type, const Material &material, float depth,
                        float height, std::optional<Material> sideMaterial)
@@ -19,8 +20,9 @@ void TextureRow::draw(const RenderContext &ctx, float z) {
 
   ctx.shader.setVec2("u_UVOffset", glm::vec2(0.0f));
 
-  for (auto &obj : m_objects) {
-    obj->draw(ctx, obj->getPosition(z).z - (m_depth / 2.0));
+  for (std::unique_ptr<RowObject> &obj : m_objects) {
+    float center_z = -(m_depth / 2.0f);
+    obj->draw(ctx, z + center_z - obj->getWorldAABBCenter().z);
   }
 }
 
@@ -37,7 +39,6 @@ void TextureRow::drawSidePanel(const RenderContext &ctx, float z,
     model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0, 1, 0));
   }
   model = glm::scale(model, glm::vec3(1.0f, m_height - nextHeight, m_depth));
-  // model = glm::scale(model, glm::vec3(1.0f, 3.00f, m_depth));
 
   ctx.shader.setMat4("u_Model", model);
   ctx.shader.setVec2("u_UVOffset", m_uvOffset);

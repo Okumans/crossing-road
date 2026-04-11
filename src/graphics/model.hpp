@@ -27,8 +27,10 @@ public:
 
 private:
   void _loadModel(const char *path, bool flip_vertical);
-  void _processNode(aiNode *node, const aiScene *scene, bool flip_vertical);
-  Mesh _processMesh(aiMesh *mesh, const aiScene *scene, bool flip_vertical);
+  void _processNode(aiNode *node, const aiScene *scene, bool flip_vertical,
+                    glm::mat4 transform);
+  Mesh _processMesh(aiMesh *mesh, const aiScene *scene, bool flip_vertical,
+                    glm::mat4 transform);
   std::shared_ptr<Texture> _loadMaterialTexture(aiMaterial *mat,
                                                 const aiScene *scene,
                                                 aiTextureType type,

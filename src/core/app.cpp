@@ -35,7 +35,7 @@ void App::render(double delta_time) {
   m_camera.Position = glm::mix(m_camera.Position, targetCameraPos,
                                (float)delta_time * lerpFactor);
 
-  _updateUIElements();
+  _updateUIElements(delta_time);
 
   m_game.render(delta_time, m_camera);
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
@@ -79,9 +79,6 @@ void App::_setupResources() {
 #else
   ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
                             UI_FRAGMENT_SHADER_PATH);
-  ShaderManager::loadShader(ShaderType::CAMERA,
-                            SHADER_PATH "/model_loading.vert.glsl",
-                            SHADER_PATH "/model_loading.frag.glsl");
   ShaderManager::loadShader(ShaderType::PBR, SHADER_PATH "/pbr.vert.glsl",
                             SHADER_PATH "/pbr.frag.glsl");
   ShaderManager::loadShader(ShaderType::SKYBOX, SHADER_PATH "/skybox.vert.glsl",
@@ -93,6 +90,8 @@ void App::_setupResources() {
                             SHADER_PATH "/irradiance.frag.glsl");
   ShaderManager::loadShader(ShaderType::WATER, SHADER_PATH "/pbr.vert.glsl",
                             SHADER_PATH "/water.frag.glsl");
+  ShaderManager::loadShader(ShaderType::DEBUG, SHADER_PATH "/debug.vert.glsl",
+                            SHADER_PATH "/debug.frag.glsl");
 #endif
 
   // Ensure the existence of static generated textures
@@ -139,9 +138,6 @@ void App::_setupResources() {
   loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3");
   loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
 
-  // TextureManager::loadTexture(TextureName("water"), TextureType::DIFFUSE,
-  //                             ASSETS_PATH "/textures/water.jpg");
-
   loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
   MaterialManager::addMaterial(
       "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
@@ -151,12 +147,35 @@ void App::_setupResources() {
 
   // Load other resources
   m_game.setup();
+  // m_game.toggleDebugAABB();
   m_font.loadDefaultFont();
 }
 
-void App::_setupUIElements() { ; }
+void App::_setupUIElements() {
+  m_uiManager.addTextElement("fps_counter", {1.0f, 1.0f, 0.0f, 0.0f}, "FPS: 0",
+                             m_font, {1.0f, 1.0f, 1.0f, 1.0f}, 0.2f);
+}
 
-void App::_updateUIElements() { ; }
+void App::_updateUIElements(double delta_time) {
+  static double timeAccumulator = 0.0;
+  static int frameCount = 0;
+  static double lastFps = 0.0;
+
+  timeAccumulator += delta_time;
+  frameCount++;
+
+  if (timeAccumulator >= 0.5) {
+    lastFps = frameCount / timeAccumulator;
+    timeAccumulator = 0.0;
+    frameCount = 0;
+
+    auto *fpsElement =
+        dynamic_cast<TextElement *>(m_uiManager.getElement("fps_counter"));
+    if (fpsElement) {
+      fpsElement->text = std::format("FPS: {}", static_cast<int>(lastFps));
+    }
+  }
+}
 
 void App::_handleProcessInput(double delta_time) {
   if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {

@@ -55,15 +55,17 @@ struct AABB {
 class RowObject : public IZDrawable {
 protected:
   std::shared_ptr<Model> m_model;
-  glm::vec3
-      m_position; // (x, y) position, z is control on draw, stored z offset
-  glm::vec3 m_rotation;
-  glm::vec3 m_scale;
 
   AABB m_localAABB;
   mutable AABB m_worldAABB;
 
+private:
+  glm::vec3
+      m_position; // (x, y) position, z is control on draw, stored z offset
+  glm::vec3 m_rotation;
+  glm::vec3 m_scale;
   mutable bool m_isDirty = true;
+  mutable float m_lastZ = 0.0f;
 
 public:
   RowObject(std::shared_ptr<Model> model, glm::vec2 pos = glm::vec2(0.0f),
@@ -81,6 +83,11 @@ public:
 
   void setPosition(glm::vec2 pos) {
     m_position = {pos, 0.0f};
+    m_isDirty = true;
+  }
+
+  void translate(glm::vec2 vec) {
+    m_position += glm::vec3(vec, 0.0f);
     m_isDirty = true;
   }
 
@@ -118,15 +125,22 @@ public:
   glm::vec3 getScale() const { return m_scale; };
   glm::vec3 getRotation() const { return m_rotation; }
 
+  glm::vec3 getWorldAABBCenter() const;
+
   const AABB &getLocalAABB() const { return m_localAABB; }
   const AABB &getWorldAABB(float z = 0.0f) const {
-    if (m_isDirty) {
+    if (m_isDirty || m_lastZ != z) {
       _updateAABB(z);
-      m_isDirty = true;
+      m_isDirty = false;
+      m_lastZ = z;
     }
 
     return m_worldAABB;
   }
+
+  float getWidth() const { return m_localAABB.max.x - m_localAABB.min.x; }
+  float getHeight() const { return m_localAABB.max.y - m_localAABB.min.y; }
+  float getDepth() const { return m_localAABB.max.z - m_localAABB.min.z; }
 
   bool collided(const RowObject &other);
   bool collided(AABB bounding_box);

@@ -11,6 +11,9 @@
 #include <cassert>
 #include <glm/fwd.hpp>
 
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <format>
 #include <memory>
 #include <print>
@@ -37,8 +40,7 @@ void Model::_loadModel(const char *path, bool flip_vertical) {
   Assimp::Importer import;
   const aiScene *scene = import.ReadFile(
       path, aiProcess_Triangulate | aiProcess_FlipUVs |
-                aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices |
-                aiProcess_PreTransformVertices);
+                aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
@@ -55,53 +57,66 @@ void Model::_loadModel(const char *path, bool flip_vertical) {
     m_directory = ".";
   }
 
-  _processNode(scene->mRootNode, scene, flip_vertical);
+  _processNode(scene->mRootNode, scene, flip_vertical, glm::mat4(1.0f));
 }
 
-void Model::_processNode(aiNode *node, const aiScene *scene,
-                         bool flip_vertical) {
+void Model::_processNode(aiNode *node, const aiScene *scene, bool flip_vertical,
+                         glm::mat4 transform) {
+  glm::mat4 nodeTransform;
+  memcpy(glm::value_ptr(nodeTransform), &node->mTransformation,
+         sizeof(float) * 16);
+  nodeTransform = glm::transpose(nodeTransform);
+  glm::mat4 globalTransform = transform * nodeTransform;
+
   for (size_t i = 0; i < node->mNumMeshes; ++i) {
     aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-    m_meshes.push_back(_processMesh(mesh, scene, flip_vertical));
+    m_meshes.push_back(
+        _processMesh(mesh, scene, flip_vertical, globalTransform));
   }
 
   for (size_t i = 0; i < node->mNumChildren; ++i) {
-    _processNode(node->mChildren[i], scene, flip_vertical);
+    _processNode(node->mChildren[i], scene, flip_vertical, globalTransform);
   }
 }
 
-Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene,
-                         bool flip_vertical) {
+Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene, bool flip_vertical,
+                         glm::mat4 transform) {
   std::vector<Vertex> vertices;
   std::vector<uint32_t> indices;
 
   vertices.reserve(mesh->mNumVertices);
   indices.reserve(mesh->mNumFaces);
 
-  for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-    glm::vec3 position(mesh->mVertices[i].x, mesh->mVertices[i].y,
-                       mesh->mVertices[i].z);
+  glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(transform)));
 
-    glm::vec3 normal = (mesh->mNormals)
-                           ? glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
-                                       mesh->mNormals[i].z)
-                           : glm::vec3(0.0f);
+  for (size_t i = 0; i < mesh->mNumVertices; ++i) {
+    glm::vec4 pos4 =
+        transform * glm::vec4(mesh->mVertices[i].x, mesh->mVertices[i].y,
+                              mesh->mVertices[i].z, 1.0f);
+    glm::vec3 position(pos4.x, pos4.y, pos4.z);
+
+    glm::vec3 normal =
+        (mesh->mNormals)
+            ? normalMat * glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y,
+                                    mesh->mNormals[i].z)
+            : glm::vec3(0.0f);
 
     glm::vec2 texCoords = (mesh->mTextureCoords[0])
                               ? glm::vec2(mesh->mTextureCoords[0][i].x,
                                           mesh->mTextureCoords[0][i].y)
                               : glm::vec2(0.0f);
 
-    glm::vec3 tangent = (mesh->mTangents) ? glm::vec3(mesh->mTangents[i].x,
-                                                      mesh->mTangents[i].y,
-                                                      mesh->mTangents[i].z)
-                                          : glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 tangent =
+        (mesh->mTangents)
+            ? normalMat * glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y,
+                                    mesh->mTangents[i].z)
+            : glm::vec3(1.0f, 0.0f, 0.0f);
 
-    glm::vec3 bitangent =
-        (mesh->mBitangents)
-            ? glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y,
-                        mesh->mBitangents[i].z)
-            : glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 bitangent = (mesh->mBitangents)
+                              ? normalMat * glm::vec3(mesh->mBitangents[i].x,
+                                                      mesh->mBitangents[i].y,
+                                                      mesh->mBitangents[i].z)
+                              : glm::vec3(0.0f, 1.0f, 0.0f);
 
     vertices.emplace_back(position, normal, texCoords, tangent, bitangent);
   }

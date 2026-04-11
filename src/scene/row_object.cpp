@@ -17,6 +17,22 @@ RowObject::RowObject(std::shared_ptr<Model> model, glm::vec2 pos,
     std::println(stderr, "Warning: Object created with null Model!");
   }
 }
+
+glm::vec3 RowObject::getWorldAABBCenter() const {
+  glm::mat4 model = glm::mat4(1.0f);
+
+  model = glm::rotate(model, m_rotation.x, glm::vec3(1, 0, 0));
+  model = glm::rotate(model, m_rotation.y, glm::vec3(0, 1, 0));
+  model = glm::rotate(model, m_rotation.z, glm::vec3(0, 0, 1));
+
+  model = glm::scale(model, m_scale);
+
+  AABB relativeAABB = m_localAABB;
+  relativeAABB.transform(model);
+
+  return relativeAABB.getCenter();
+}
+
 void RowObject::draw(const RenderContext &ctx, float z) {
   glm::mat4 model = glm::mat4(1.0f);
 
