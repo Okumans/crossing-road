@@ -2,9 +2,11 @@
 
 #include "graphics/idrawable.hpp"
 #include "graphics/izdrawable.hpp"
-#include "scene/object.hpp"
+#include "scene/row_object.hpp"
+
 #include <glad/gl.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 enum class RowType { GRASS, ROAD, WATER };
 
@@ -31,6 +33,15 @@ public:
 
   virtual void addObject(std::unique_ptr<RowObject> object) {
     m_objects.push_back(std::move(object));
+  }
+
+  virtual bool collided(const RowObject &target) const {
+    for (const std::unique_ptr<RowObject> &object : m_objects) {
+      if (object->collided(target))
+        return true;
+    }
+
+    return false;
   }
 
   virtual float getDepth() const { return m_depth; }

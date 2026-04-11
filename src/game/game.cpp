@@ -2,21 +2,21 @@
 #include "game/map_manager.hpp"
 #include "game/row_queue.hpp"
 #include "glm/trigonometric.hpp"
+#include "graphics/ibl_generator.hpp"
 #include "graphics/material.hpp"
 #include "graphics/shader.hpp"
 #include "resource/lighting_manager.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
-
-#include "glad/gl.h"
-#include "glm/fwd.hpp"
-#include "graphics/ibl_generator.hpp"
 #include "resource/texture_manager.hpp"
-#include "scene/object.hpp"
+#include "scene/row_object.hpp"
+
+#include <glad/gl.h>
+#include <glm/fwd.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include <memory>
-#include <print>
 
 Game::Game()
     : m_player(nullptr), m_skybox(std::make_unique<Skybox>()),

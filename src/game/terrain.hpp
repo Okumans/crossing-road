@@ -3,7 +3,7 @@
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
 #include "graphics/idrawable.hpp"
-#include "scene/object.hpp"
+#include "scene/row_object.hpp"
 #include "utility/utility.hpp"
 
 #include <cstdint>
@@ -154,7 +154,8 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
                 {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
           }
 
-          row->addObject(std::move(obj));
+          if (!row->collided(*obj))
+            row->addObject(std::move(obj));
         }
       }
     }

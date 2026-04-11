@@ -5,6 +5,7 @@
 #include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "graphics/idrawable.hpp"
+
 #include <cstdint>
 #include <memory>
 

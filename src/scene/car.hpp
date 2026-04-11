@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.hpp"
+#include "row_object.hpp"
 
 class Car : public RowObject {
 private:

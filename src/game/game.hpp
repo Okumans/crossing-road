@@ -3,10 +3,12 @@
 #include "graphics/camera.hpp"
 #include "graphics/skybox.hpp"
 #include "map_manager.hpp"
-#include "scene/object.hpp"
-#include <cstdint>
+#include "scene/row_object.hpp"
+
 #include <glad/gl.h>
 #include <glm/glm.hpp>
+
+#include <cstdint>
 
 #ifndef SHADER_PATH
 #define SHADER_PATH ASSETS_PATH "/shaders"

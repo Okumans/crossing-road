@@ -23,7 +23,7 @@ public:
   Model(Model &&) noexcept;
 
   void draw(const RenderContext &ctx) override;
-  std::vector<Mesh> &getMeshes() { return m_meshes; }
+  const std::vector<Mesh> &getMeshes() const { return m_meshes; }
 
 private:
   void _loadModel(const char *path, bool flip_vertical);

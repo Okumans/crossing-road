@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/row.hpp"
+
 #include <algorithm>
 #include <cstdint>
 #include <deque>
