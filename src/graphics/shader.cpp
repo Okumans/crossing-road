@@ -4,7 +4,8 @@
 #include <print>
 #include <sstream>
 
-Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath,
+Shader::Shader(const char *vertexShaderPath,
+               const char *fragmentShaderPath,
                const char *geometryShaderPath)
     : Shader(
           fromFile(vertexShaderPath, fragmentShaderPath, geometryShaderPath)) {}
@@ -65,9 +66,11 @@ Shader Shader::fromFile(const char *vertexShaderPath,
     geometryShaderSource = gShaderStream.str();
   }
 
-  return fromSource(
-      vertexShaderSource.c_str(), fragmentShaderSource.c_str(),
-      (geometryShaderPath != nullptr) ? geometryShaderSource.c_str() : nullptr);
+  return fromSource(vertexShaderSource.c_str(),
+                    fragmentShaderSource.c_str(),
+                    (geometryShaderPath != nullptr)
+                        ? geometryShaderSource.c_str()
+                        : nullptr);
 }
 
 Shader Shader::fromSource(const char *vertexShaderSource,
@@ -142,23 +145,29 @@ void Shader::setVec4(const std::string &name, const glm::vec4 &value) {
   glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 }
 
-void Shader::setVec4(const std::string &name, float x, float y, float z,
-                     float w) {
+void Shader::setVec4(
+    const std::string &name, float x, float y, float z, float w) {
   glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 }
 
 void Shader::setMat2(const std::string &name, const glm::mat2 &mat) {
-  glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE,
+  glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()),
+                     1,
+                     GL_FALSE,
                      &mat[0][0]);
 }
 
 void Shader::setMat3(const std::string &name, const glm::mat3 &mat) {
-  glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE,
+  glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()),
+                     1,
+                     GL_FALSE,
                      &mat[0][0]);
 }
 
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) {
-  glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE,
+  glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()),
+                     1,
+                     GL_FALSE,
                      &mat[0][0]);
 }
 
@@ -171,7 +180,8 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
       glGetShaderInfoLog(shader, 1024, NULL, infoLog);
       std::println("ERROR::SHADER_COMPILATION_ERROR of type: {}\n{}\n -- "
                    "--------------------------------------------------- -- ",
-                   type, infoLog);
+                   type,
+                   infoLog);
     }
   } else {
     glGetProgramiv(shader, GL_LINK_STATUS, &success);
@@ -179,7 +189,8 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
       glGetProgramInfoLog(shader, 1024, NULL, infoLog);
       std::println("ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n -- "
                    "--------------------------------------------------- -- ",
-                   type, infoLog);
+                   type,
+                   infoLog);
     }
   }
 }

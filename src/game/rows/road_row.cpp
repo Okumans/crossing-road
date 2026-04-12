@@ -5,9 +5,17 @@
 #include <glm/gtc/constants.hpp>
 #include <optional>
 
-RoadRow::RoadRow(const Material &material, float depth, float height,
-                 float speed, float direction, float uv_scale_factor)
-    : TextureRow(RowType::ROAD, material, depth, height, std::nullopt,
+RoadRow::RoadRow(const Material &material,
+                 float depth,
+                 float height,
+                 float speed,
+                 float direction,
+                 float uv_scale_factor)
+    : TextureRow(RowType::ROAD,
+                 material,
+                 depth,
+                 height,
+                 std::nullopt,
                  uv_scale_factor),
       m_laneSpeed(speed), m_direction(direction),
       m_pattern(TrafficPattern::CONSTANT) {

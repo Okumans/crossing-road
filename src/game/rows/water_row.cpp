@@ -5,8 +5,10 @@
 #include "resource/shader_manager.hpp"
 #include <memory>
 
-WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
-                   float depth, float height)
+WaterRow::WaterRow(const Material &water_material,
+                   Shader &water_shader,
+                   float depth,
+                   float height)
     : Row(RowType::WATER, depth, height), m_material(water_material),
       m_waterShader(water_shader) {
   m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
@@ -43,8 +45,10 @@ void WaterRow::draw(const RenderContext &ctx, float z) {
   }
 }
 
-void WaterRow::drawSidePanel(const RenderContext &ctx, float z,
-                             float nextHeight, bool isForward) {
+void WaterRow::drawSidePanel(const RenderContext &ctx,
+                             float z,
+                             float nextHeight,
+                             bool isForward) {
   (void)ctx;
   (void)z;
   (void)nextHeight;
@@ -70,6 +74,9 @@ void WaterRow::_setupMesh() {
 
   std::vector<uint32_t> indices = {0, 1, 2, 0, 2, 3};
 
-  m_mesh = std::make_unique<Mesh>(std::move(vertices), std::move(indices),
-                                  m_material, glm::vec3(0.0, 0.4, 0.5), 0.8f);
+  m_mesh = std::make_unique<Mesh>(std::move(vertices),
+                                  std::move(indices),
+                                  m_material,
+                                  glm::vec3(0.0, 0.4, 0.5),
+                                  0.8f);
 }

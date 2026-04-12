@@ -12,8 +12,11 @@ float RowObject::s_minClipY = 0.0f;
 float RowObject::s_maxClipY = 0.0f;
 bool RowObject::s_useClipY = false;
 
-RowObject::RowObject(std::shared_ptr<Model> model, glm::vec2 pos,
-                     float z_offset, glm::vec3 scale, glm::vec3 rotation,
+RowObject::RowObject(std::shared_ptr<Model> model,
+                     glm::vec2 pos,
+                     float z_offset,
+                     glm::vec3 scale,
+                     glm::vec3 rotation,
                      bool defer_aabb_calculation)
     : m_model(std::move(model)), m_position({pos, z_offset}),
       m_rotation(rotation), m_scale(scale),
@@ -87,8 +90,9 @@ void RowObject::draw(const RenderContext &ctx, float z) {
   glm::mat4 model = glm::mat4(1.0f);
 
   // m_position.z is the relative offset within the row
-  model = glm::translate(
-      model, glm::vec3(m_position.x, m_position.y, z + m_position.z));
+  model =
+      glm::translate(model,
+                     glm::vec3(m_position.x, m_position.y, z + m_position.z));
 
   model = glm::rotate(model, m_rotation.x, glm::vec3(1, 0, 0));
   model = glm::rotate(model, m_rotation.y, glm::vec3(0, 1, 0));
@@ -123,8 +127,10 @@ void RowObject::_updateGlobalAABB(float z) const {
   m_worldAABB = updated_AABB;
 }
 
-AABB RowObject::_calculateAABB(const Model &model, const glm::mat4 &transform,
-                               float min_y, float max_y) {
+AABB RowObject::_calculateAABB(const Model &model,
+                               const glm::mat4 &transform,
+                               float min_y,
+                               float max_y) {
   AABB aabb = AABB::empty();
 
   for (const Mesh &mesh : model.getMeshes()) {

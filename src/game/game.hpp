@@ -52,5 +52,3 @@ public:
 
   glm::vec3 getPlayerPosition() const;
 };
-
-// TODO: integrated world position helpers

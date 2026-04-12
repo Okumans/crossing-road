@@ -103,8 +103,11 @@ static const unsigned char font8x8_basic[95][8] = {
 
 BitmapFont::BitmapFont() : texID(0) {
   for (int i = 0; i < 256; ++i) {
-    m_characters[i] = {glm::vec2(0.0f), glm::vec2(0.0f), glm::ivec2(0),
-                       glm::ivec2(0),  0};
+    m_characters[i] = {glm::vec2(0.0f),
+                       glm::vec2(0.0f),
+                       glm::ivec2(0),
+                       glm::ivec2(0),
+                       0};
   }
 }
 
@@ -154,17 +157,26 @@ void BitmapFont::_generate_font_texture() {
       }
     }
 
-    m_characters[(int)c] = {
-        glm::vec2((float)startX / texWidth, (float)startY / texHeight),
-        glm::vec2((float)(startX + 8) / texWidth,
-                  (float)(startY + 8) / texHeight),
-        glm::ivec2(8, 8), glm::ivec2(0, 0), 8};
+    m_characters[(int)c] = {glm::vec2((float)startX / texWidth,
+                                      (float)startY / texHeight),
+                            glm::vec2((float)(startX + 8) / texWidth,
+                                      (float)(startY + 8) / texHeight),
+                            glm::ivec2(8, 8),
+                            glm::ivec2(0, 0),
+                            8};
   }
 
   glGenTextures(1, &texID);
   glBindTexture(GL_TEXTURE_2D, texID);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, texWidth, texHeight, 0, GL_RED,
-               GL_UNSIGNED_BYTE, data.data());
+  glTexImage2D(GL_TEXTURE_2D,
+               0,
+               GL_RED,
+               texWidth,
+               texHeight,
+               0,
+               GL_RED,
+               GL_UNSIGNED_BYTE,
+               data.data());
 
   // Simple swizzling to make it white/transparent or just use GL_RED in shader
   GLint swizzleMask[] = {GL_ONE, GL_ONE, GL_ONE, GL_RED};

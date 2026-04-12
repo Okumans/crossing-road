@@ -32,7 +32,8 @@ void App::render(double delta_time) {
   glm::vec3 targetCameraPos =
       glm::vec3(0, playerPos.y, playerPos.z) + glm::vec3(8.0f, 8.0f, 8.0f);
   float lerpFactor = 5.0f;
-  m_camera.Position = glm::mix(m_camera.Position, targetCameraPos,
+  m_camera.Position = glm::mix(m_camera.Position,
+                               targetCameraPos,
                                (float)delta_time * lerpFactor);
 
   _updateUIElements(delta_time);
@@ -74,23 +75,30 @@ void App::_setupResources() {
   // Load Shader
 #ifdef EMBED_SHADER
   ShaderManager::loadShaderSource(
-      ShaderType::UI, arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
+      ShaderType::UI,
+      arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
       arr_to_str(ui_frag_glsl, ui_frag_glsl_len).c_str());
 #else
-  ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
+  ShaderManager::loadShader(ShaderType::UI,
+                            UI_VERTEX_SHADER_PATH,
                             UI_FRAGMENT_SHADER_PATH);
-  ShaderManager::loadShader(ShaderType::PBR, SHADER_PATH "/pbr.vert.glsl",
+  ShaderManager::loadShader(ShaderType::PBR,
+                            SHADER_PATH "/pbr.vert.glsl",
                             SHADER_PATH "/pbr.frag.glsl");
-  ShaderManager::loadShader(ShaderType::SKYBOX, SHADER_PATH "/skybox.vert.glsl",
+  ShaderManager::loadShader(ShaderType::SKYBOX,
+                            SHADER_PATH "/skybox.vert.glsl",
                             SHADER_PATH "/skybox.frag.glsl");
-  ShaderManager::loadShader(ShaderType::SHADOW, SHADER_PATH "/shadow.vert.glsl",
+  ShaderManager::loadShader(ShaderType::SHADOW,
+                            SHADER_PATH "/shadow.vert.glsl",
                             SHADER_PATH "/shadow.frag.glsl");
   ShaderManager::loadShader(ShaderType::IRRADIANCE,
                             SHADER_PATH "/irradiance.vert.glsl",
                             SHADER_PATH "/irradiance.frag.glsl");
-  ShaderManager::loadShader(ShaderType::WATER, SHADER_PATH "/pbr.vert.glsl",
+  ShaderManager::loadShader(ShaderType::WATER,
+                            SHADER_PATH "/pbr.vert.glsl",
                             SHADER_PATH "/water.frag.glsl");
-  ShaderManager::loadShader(ShaderType::DEBUG, SHADER_PATH "/debug.vert.glsl",
+  ShaderManager::loadShader(ShaderType::DEBUG,
+                            SHADER_PATH "/debug.vert.glsl",
                             SHADER_PATH "/debug.frag.glsl");
 #endif
 
@@ -139,15 +147,17 @@ void App::_setupResources() {
   loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5");
   loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4");
   loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
-  MaterialManager::addMaterial(
-      "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
-                     .setRoughnessFactor(0.07f)
-                     .setMetallicFactor(0.0f)
-                     .create());
-  MaterialManager::addMaterial(
-      "road_2", Material::builder(MaterialManager::getMaterial("road_2"))
-                    .setMetallicFactor(2.0f)
-                    .create());
+  MaterialManager::addMaterial("water_1",
+                               Material::builder(
+                                   MaterialManager::getMaterial("water_1"))
+                                   .setRoughnessFactor(0.07f)
+                                   .setMetallicFactor(0.0f)
+                                   .create());
+  MaterialManager::addMaterial("road_2",
+                               Material::builder(
+                                   MaterialManager::getMaterial("road_2"))
+                                   .setMetallicFactor(2.0f)
+                                   .create());
 
   // Load other resources
   m_game.setup();
@@ -156,8 +166,12 @@ void App::_setupResources() {
 }
 
 void App::_setupUIElements() {
-  m_uiManager.addTextElement("fps_counter", {1.0f, 1.0f, 0.0f, 0.0f}, "FPS: 0",
-                             m_font, {1.0f, 1.0f, 1.0f, 1.0f}, 0.2f);
+  m_uiManager.addTextElement("fps_counter",
+                             {1.0f, 1.0f, 0.0f, 0.0f},
+                             "FPS: 0",
+                             m_font,
+                             {1.0f, 1.0f, 1.0f, 1.0f},
+                             0.2f);
 }
 
 void App::_updateUIElements(double delta_time) {
@@ -223,8 +237,8 @@ void App::_handleFramebufferSizeCallback(int width, int height) {
 }
 
 // GLFW static callbacks adapters
-void App::_glfwKeyCallback(GLFWwindow *window, int key, int scancode,
-                           int action, int mods) {
+void App::_glfwKeyCallback(
+    GLFWwindow *window, int key, int scancode, int action, int mods) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));
 
   if (app) {
@@ -232,7 +246,8 @@ void App::_glfwKeyCallback(GLFWwindow *window, int key, int scancode,
   }
 }
 
-void App::_glfwMouseMoveCallback(GLFWwindow *window, double x_pos,
+void App::_glfwMouseMoveCallback(GLFWwindow *window,
+                                 double x_pos,
                                  double y_pos) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));
 
@@ -241,7 +256,9 @@ void App::_glfwMouseMoveCallback(GLFWwindow *window, double x_pos,
   }
 }
 
-void App::_glfwMouseButtonCallback(GLFWwindow *window, int button, int action,
+void App::_glfwMouseButtonCallback(GLFWwindow *window,
+                                   int button,
+                                   int action,
                                    int mods) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));
 
@@ -250,7 +267,8 @@ void App::_glfwMouseButtonCallback(GLFWwindow *window, int button, int action,
   }
 }
 
-void App::_glfwScrollCallback(GLFWwindow *window, double offset_x,
+void App::_glfwScrollCallback(GLFWwindow *window,
+                              double offset_x,
                               double offset_y) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));
 
@@ -259,7 +277,8 @@ void App::_glfwScrollCallback(GLFWwindow *window, double offset_x,
   }
 }
 
-void App::_glfwFramebufferSizeCallback(GLFWwindow *window, int width,
+void App::_glfwFramebufferSizeCallback(GLFWwindow *window,
+                                       int width,
                                        int height) {
   App *app = static_cast<App *>(glfwGetWindowUserPointer(window));
 

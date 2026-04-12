@@ -108,7 +108,11 @@ private:
     TerrainPopulator greenery;
 
     PlacementRule base{
-        .attempts = 8, .minX = -12.0f, .maxX = 12.0f, .zOffset = 0.25f};
+        .attempts = 8,
+        .minX = -12.0f,
+        .maxX = 12.0f,
+        .zOffset = 0.25f,
+    };
 
     greenery.withRule(
         RowType::GRASS,

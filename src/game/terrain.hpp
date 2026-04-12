@@ -117,10 +117,6 @@ public:
   }
 
 protected:
-  // virtual const Row *_getRowBeforeTerrain() {
-  //   return m_rowBeforeTerrainGetter(m_currZ);
-  // };
-
   virtual uint32_t _generateTerrain() = 0;
 };
 

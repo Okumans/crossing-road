@@ -1,13 +1,22 @@
 #include "grass_row.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
-GrassRow::GrassRow(const Material &material, float depth, float height,
-                   std::optional<Material> sideMaterial, float uv_scale_factor)
-    : TextureRow(RowType::GRASS, material, depth, height, sideMaterial,
+GrassRow::GrassRow(const Material &material,
+                   float depth,
+                   float height,
+                   std::optional<Material> sideMaterial,
+                   float uv_scale_factor)
+    : TextureRow(RowType::GRASS,
+                 material,
+                 depth,
+                 height,
+                 sideMaterial,
                  uv_scale_factor) {}
 
-void GrassRow::drawSidePanel(const RenderContext &ctx, float z,
-                             float next_height, bool is_forward) {
+void GrassRow::drawSidePanel(const RenderContext &ctx,
+                             float z,
+                             float next_height,
+                             bool is_forward) {
   if (m_height <= next_height)
     return;
 
@@ -21,8 +30,9 @@ void GrassRow::drawSidePanel(const RenderContext &ctx, float z,
   float draw_top_edge_height = std::min(total_height, top_edge_height);
 
   glm::mat4 model_top(1.0f);
-  model_top = glm::translate(
-      model_top, glm::vec3(0.0f, m_height - draw_top_edge_height, panel_z));
+  model_top =
+      glm::translate(model_top,
+                     glm::vec3(0.0f, m_height - draw_top_edge_height, panel_z));
 
   if (!is_forward)
     model_top =
@@ -33,8 +43,9 @@ void GrassRow::drawSidePanel(const RenderContext &ctx, float z,
 
   ctx.shader.setMat4("u_Model", model_top);
   ctx.shader.setVec2("u_UVOffset", m_uvOffset);
-  ctx.shader.setVec2(
-      "u_UVScale", glm::vec2(1.0f, draw_top_edge_height / getUVScaleFactor()));
+  ctx.shader.setVec2("u_UVScale",
+                     glm::vec2(1.0f,
+                               draw_top_edge_height / getUVScaleFactor()));
 
   m_topEdgeMesh->draw(ctx);
 

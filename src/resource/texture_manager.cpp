@@ -27,21 +27,26 @@ std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
   return TextureManager::textures.at(name);
 }
 
-std::shared_ptr<Texture>
-TextureManager::loadTexture(TextureName name, TextureType type,
-                            const void *data, size_t size, bool flip_vertical) {
+std::shared_ptr<Texture> TextureManager::loadTexture(TextureName name,
+                                                     TextureType type,
+                                                     const void *data,
+                                                     size_t size,
+                                                     bool flip_vertical) {
   textures[name] = std::make_shared<Texture>(data, size, type, flip_vertical);
 
   return TextureManager::textures.at(name);
 }
 
-Texture TextureManager::loadTexture(TextureType type, const char *texture_path,
+Texture TextureManager::loadTexture(TextureType type,
+                                    const char *texture_path,
                                     bool flip_vertical) {
   return Texture(texture_path, type, flip_vertical);
 }
 
-Texture TextureManager::loadTexture(TextureType type, const void *data,
-                                    size_t size, bool flip_vertical) {
+Texture TextureManager::loadTexture(TextureType type,
+                                    const void *data,
+                                    size_t size,
+                                    bool flip_vertical) {
   return Texture(data, size, type, flip_vertical);
 }
 
@@ -68,8 +73,15 @@ Texture TextureManager::generateStaticWhiteTexture() {
   glTextureStorage2D(white_texture, 1, GL_RGBA8, size, size);
 
   std::vector<uint8_t> white_data(size * size * 4, 0xFF);
-  glTextureSubImage2D(white_texture, 0, 0, 0, size, size, GL_RGBA,
-                      GL_UNSIGNED_BYTE, white_data.data());
+  glTextureSubImage2D(white_texture,
+                      0,
+                      0,
+                      0,
+                      size,
+                      size,
+                      GL_RGBA,
+                      GL_UNSIGNED_BYTE,
+                      white_data.data());
 
   glTextureParameteri(white_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTextureParameteri(white_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -85,8 +97,15 @@ Texture TextureManager::generateStaticBlackTexture() {
   glCreateTextures(GL_TEXTURE_2D, 1, &black_texture);
   glTextureStorage2D(black_texture, 1, GL_RGBA8, size, size);
   std::vector<uint8_t> black_data(size * size * 4, 0x00);
-  glTextureSubImage2D(black_texture, 0, 0, 0, size, size, GL_RGBA,
-                      GL_UNSIGNED_BYTE, black_data.data());
+  glTextureSubImage2D(black_texture,
+                      0,
+                      0,
+                      0,
+                      size,
+                      size,
+                      GL_RGBA,
+                      GL_UNSIGNED_BYTE,
+                      black_data.data());
   glTextureParameteri(black_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTextureParameteri(black_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   return Texture(black_texture, TextureType::DIFFUSE, true);
@@ -105,8 +124,15 @@ Texture TextureManager::generateStaticNormalTexture() {
     normal_data[i * 4 + 2] = 0xFF;
     normal_data[i * 4 + 3] = 0xFF;
   }
-  glTextureSubImage2D(normal_texture, 0, 0, 0, size, size, GL_RGBA,
-                      GL_UNSIGNED_BYTE, normal_data.data());
+  glTextureSubImage2D(normal_texture,
+                      0,
+                      0,
+                      0,
+                      size,
+                      size,
+                      GL_RGBA,
+                      GL_UNSIGNED_BYTE,
+                      normal_data.data());
   glTextureParameteri(normal_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTextureParameteri(normal_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   return Texture(normal_texture, TextureType::NORMAL, true);
@@ -125,8 +151,15 @@ Texture TextureManager::generateStaticPBRDefaultTexture() {
     pbr_data[i * 4 + 2] = 0x00; // B (Metallic)
     pbr_data[i * 4 + 3] = 0xFF; // A
   }
-  glTextureSubImage2D(pbr_texture, 0, 0, 0, size, size, GL_RGBA,
-                      GL_UNSIGNED_BYTE, pbr_data.data());
+  glTextureSubImage2D(pbr_texture,
+                      0,
+                      0,
+                      0,
+                      size,
+                      size,
+                      GL_RGBA,
+                      GL_UNSIGNED_BYTE,
+                      pbr_data.data());
   glTextureParameteri(pbr_texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTextureParameteri(pbr_texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   return Texture(pbr_texture, TextureType::METALLIC, true);

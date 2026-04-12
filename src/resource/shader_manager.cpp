@@ -5,7 +5,8 @@
 
 std::unordered_map<ShaderType, std::unique_ptr<Shader>> ShaderManager::shaders;
 
-Shader &ShaderManager::loadShader(ShaderType type, const char *vertShaderPath,
+Shader &ShaderManager::loadShader(ShaderType type,
+                                  const char *vertShaderPath,
                                   const char *fragShaderPath) {
   ShaderManager::shaders[type] =
       std::make_unique<Shader>(Shader(vertShaderPath, fragShaderPath));

@@ -12,13 +12,34 @@ void DebugDrawer::_init() {
   if (m_initialized)
     return;
 
-  float vertices[] = {0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0,
-                      0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
+  float vertices[] =
+      {0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1};
 
   uint32_t indices[] = {
-      0, 1, 1, 2, 2, 3, 3, 0, // bottom
-      4, 5, 5, 6, 6, 7, 7, 4, // top
-      0, 4, 1, 5, 2, 6, 3, 7  // sides
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      0, // bottom
+      4,
+      5,
+      5,
+      6,
+      6,
+      7,
+      7,
+      4, // top
+      0,
+      4,
+      1,
+      5,
+      2,
+      6,
+      3,
+      7 // sides
   };
 
   glCreateVertexArrays(1, &m_vao);
@@ -38,7 +59,8 @@ void DebugDrawer::_init() {
   m_initialized = true;
 }
 
-void DebugDrawer::drawAABB(const RenderContext &ctx, const AABB &aabb,
+void DebugDrawer::drawAABB(const RenderContext &ctx,
+                           const AABB &aabb,
                            const glm::vec3 &color) {
   if (aabb.isEmpty())
     return;

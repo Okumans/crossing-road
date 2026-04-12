@@ -33,8 +33,15 @@ void Game::setup() {
   glGenFramebuffers(1, &m_shadowMapFBO);
   glGenTextures(1, &m_shadowMapTex);
   glBindTexture(GL_TEXTURE_2D, m_shadowMapTex);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH,
-               SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glTexImage2D(GL_TEXTURE_2D,
+               0,
+               GL_DEPTH_COMPONENT,
+               SHADOW_WIDTH,
+               SHADOW_HEIGHT,
+               0,
+               GL_DEPTH_COMPONENT,
+               GL_FLOAT,
+               NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -45,8 +52,11 @@ void Game::setup() {
   glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapFBO);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                         m_shadowMapTex, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER,
+                         GL_DEPTH_ATTACHMENT,
+                         GL_TEXTURE_2D,
+                         m_shadowMapTex,
+                         0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -85,7 +95,7 @@ void Game::setup() {
           ASSETS_PATH "/textures/skybox/sky_3/py.hdr", // +Y
           ASSETS_PATH "/textures/skybox/sky_3/ny.hdr", // -Y
           ASSETS_PATH "/textures/skybox/sky_3/pz.hdr", // +Z
-          ASSETS_PATH "/textures/skybox/sky_3/nz.hdr"  // -Z
+          ASSETS_PATH "/textures/skybox/sky_3/nz.hdr", // -Z
       });
 
   // Generate Irradiance Map
@@ -93,8 +103,9 @@ void Game::setup() {
   m_skybox->setTexture(skybox_tex);
 
   auto &irradiance_shader = ShaderManager::getShader(ShaderType::IRRADIANCE);
-  auto irradiance_map = IBLGenerator::generateIrradianceMap(
-      *skybox_tex, *m_skybox, irradiance_shader);
+  auto irradiance_map = IBLGenerator::generateIrradianceMap(*skybox_tex,
+                                                            *m_skybox,
+                                                            irradiance_shader);
   TextureManager::manage(TextureName("irradiance_map"),
                          std::move(*irradiance_map));
 
@@ -136,7 +147,8 @@ void Game::update(double delta_time) {
   float sun_speed = 0.3f;
   float sun_radius = 1.0f;
   glm::vec3 sun_dir = glm::normalize(
-      glm::vec3(std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,
+      glm::vec3(std::cos(m_currentTime * sun_speed) * sun_radius,
+                -1.0f,
                 std::sin(m_currentTime * sun_speed) * sun_radius));
 
   Light sun = LightingManager::getShadowCaster();
@@ -169,8 +181,9 @@ void Game::render(double delta_time, Camera &camera) {
   glDisable(GL_CULL_FACE);
 
   {
-    RenderContext shadow_draw_ctx = {
-        .shader = shadow_shader, .camera = camera, .deltaTime = delta_time};
+    RenderContext shadow_draw_ctx = {.shader = shadow_shader,
+                                     .camera = camera,
+                                     .deltaTime = delta_time};
 
     m_map.draw(shadow_draw_ctx);
     m_player->draw(shadow_draw_ctx, player_z);
@@ -255,16 +268,19 @@ void Game::render(double delta_time, Camera &camera) {
   // Lower base color slightly to avoid "overblown" look under strong light
   pbr_shader.setVec3("u_BaseColor", glm::vec3(0.8f));
   pbr_shader.setVec2("u_UVOffset", glm::vec2(0.0f));
-  m_player->draw(
-      {.shader = pbr_shader, .camera = camera, .deltaTime = delta_time},
-      player_z);
+  m_player->draw({.shader = pbr_shader,
+                  .camera = camera,
+                  .deltaTime = delta_time},
+                 player_z);
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
 
   if (m_debugAABB) {
-    RenderContext debugCtx = {
-        .shader = pbr_shader, .camera = camera, .deltaTime = delta_time};
+    RenderContext debugCtx = {.shader = pbr_shader,
+                              .camera = camera,
+                              .deltaTime = delta_time};
 
-    DebugDrawer::drawAABB(debugCtx, m_player->getWorldAABB(player_z),
+    DebugDrawer::drawAABB(debugCtx,
+                          m_player->getWorldAABB(player_z),
                           {1.0f, 1.0f, 0.0f});
 
     if (curr_row) {
@@ -274,7 +290,8 @@ void Game::render(double delta_time, Camera &camera) {
         float center_z = -(curr_row->getDepth() / 2.0f);
         float obj_z = row_z + center_z - obj->getWorldAABBCenter().z;
 
-        DebugDrawer::drawAABB(debugCtx, obj->getWorldAABB(obj_z),
+        DebugDrawer::drawAABB(debugCtx,
+                              obj->getWorldAABB(obj_z),
                               {1.0f, 0.0f, 0.0f});
       }
     }
