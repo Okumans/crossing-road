@@ -15,6 +15,13 @@
 
 class Terrain;
 
+enum class TerrainType {
+  GRASSY,
+  ROAD,
+  HILLY,
+  Count,
+};
+
 struct PlacementRule {
   int attempts = 1;
   float probability = 1.0f;
@@ -67,12 +74,13 @@ private:
 
 protected:
   TerrainPopulator m_populator;
+  TerrainType m_type;
   uint32_t m_startRowIdx;
   float m_currRelativeZ;
 
 public:
-  Terrain(uint32_t start_row)
-      : m_startRowIdx(start_row), m_currRelativeZ(0.0f) {}
+  Terrain(TerrainType type, uint32_t start_row)
+      : m_type(type), m_startRowIdx(start_row), m_currRelativeZ(0.0f) {}
 
   virtual ~Terrain() = default;
 
@@ -109,8 +117,8 @@ public:
     m_populator = std::move(populator);
   }
 
+  TerrainType getType() const { return m_type; }
   const auto &getRowsInfo() const { return m_rowsInfo; }
-
   auto getRows() {
     return m_rowsInfo | std::views::transform(
                             [](const RowInfo &ri) { return ri.row.get(); });

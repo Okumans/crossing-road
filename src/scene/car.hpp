@@ -1,6 +1,5 @@
 #pragma once
 
-#include "game/row.hpp"
 #include "row_object.hpp"
 
 class Car : public RowObject {
@@ -13,9 +12,13 @@ public:
       glm::vec3 scale = glm::vec3(1.0f), glm::vec3 rotation = glm::vec3(0.0f))
       : RowObject(model, pos, z_offset, scale, rotation), m_speed(speed) {}
 
+  Car(const Car &) = default;
+
   void update(double delta_time) override {
     glm::vec2 pos = getPosition();
     pos.x += m_speed * (float)delta_time;
     setPosition(pos);
   }
+
+  void setSpeed(float speed) { m_speed = speed; }
 };

@@ -21,7 +21,9 @@ private:
   inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
 public:
-  HillTerrain(uint32_t start_z) : Terrain(start_z) { _setupPopulator(); }
+  HillTerrain(uint32_t start_z) : Terrain(TerrainType::HILLY, start_z) {
+    _setupPopulator();
+  }
 
   virtual uint32_t _generateTerrain() override {
     assert(MaterialManager::exists(GRASS_1_TEX_NAME));

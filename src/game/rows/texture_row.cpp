@@ -4,11 +4,8 @@
 #include "graphics/idrawable.hpp"
 #include <memory>
 
-TextureRow::TextureRow(RowType type,
-                       const Material &material,
-                       float depth,
-                       float height,
-                       std::optional<Material> side_material,
+TextureRow::TextureRow(RowType type, const Material &material, float depth,
+                       float height, std::optional<Material> side_material,
                        float uv_scale_factor)
     : Row(type, depth, height), m_material(material),
       m_sideMaterial(side_material.value_or(material)),
@@ -33,10 +30,8 @@ void TextureRow::draw(const RenderContext &ctx, float z) {
   }
 }
 
-void TextureRow::drawSidePanel(const RenderContext &ctx,
-                               float z,
-                               float next_height,
-                               bool is_forward) {
+void TextureRow::drawSidePanel(const RenderContext &ctx, float z,
+                               float next_height, bool is_forward) {
   if (m_height <= next_height)
     return;
 
@@ -50,9 +45,8 @@ void TextureRow::drawSidePanel(const RenderContext &ctx,
 
   ctx.shader.setMat4("u_Model", model);
   ctx.shader.setVec2("u_UVOffset", m_uvOffset);
-  ctx.shader.setVec2("u_UVScale",
-                     glm::vec2(1.0f,
-                               (m_height - next_height) / m_uvScaleFactor));
+  ctx.shader.setVec2(
+      "u_UVScale", glm::vec2(1.0f, (m_height - next_height) / m_uvScaleFactor));
 
   m_sideMesh->draw(ctx);
 
@@ -79,10 +73,8 @@ void TextureRow::_setupMesh() {
 
   std::vector<uint32_t> indices = {0, 1, 2, 0, 2, 3};
 
-  m_mesh = std::make_unique<Mesh>(std::move(vertices),
-                                  std::move(indices),
-                                  m_material,
-                                  glm::vec3(1.0f));
+  m_mesh = std::make_unique<Mesh>(std::move(vertices), std::move(indices),
+                                  m_material, glm::vec3(1.0f));
 
   glm::vec3 side_n(0, 0, 1);
   glm::vec3 side_t(1, 0, 0);
@@ -99,11 +91,9 @@ void TextureRow::_setupMesh() {
   // Create copies of vertices and indices for both meshes
   m_sideMesh = std::make_unique<Mesh>(std::vector<Vertex>(side_vertices),
                                       std::vector<uint32_t>(side_indices),
-                                      m_sideMaterial,
-                                      glm::vec3(1.0f));
+                                      m_sideMaterial, glm::vec3(1.0f));
 
   m_topEdgeMesh = std::make_unique<Mesh>(std::vector<Vertex>(side_vertices),
                                          std::vector<uint32_t>(side_indices),
-                                         m_material,
-                                         glm::vec3(1.0f));
+                                         m_material, glm::vec3(1.0f));
 }

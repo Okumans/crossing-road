@@ -1,21 +1,15 @@
 #include "road_row.hpp"
 #include "scene/car.hpp"
+#include "scene/row_object.hpp"
 #include "utility/utility.hpp"
 
 #include <glm/gtc/constants.hpp>
+#include <memory>
 #include <optional>
 
-RoadRow::RoadRow(const Material &material,
-                 float depth,
-                 float height,
-                 float speed,
-                 float direction,
-                 float uv_scale_factor)
-    : TextureRow(RowType::ROAD,
-                 material,
-                 depth,
-                 height,
-                 std::nullopt,
+RoadRow::RoadRow(const Material &material, float depth, float height,
+                 float speed, float direction, float uv_scale_factor)
+    : TextureRow(RowType::ROAD, material, depth, height, std::nullopt,
                  uv_scale_factor),
       m_laneSpeed(speed), m_direction(direction),
       m_pattern(TrafficPattern::CONSTANT) {
@@ -23,8 +17,8 @@ RoadRow::RoadRow(const Material &material,
   m_uvOffset = glm::vec2(0.0f);
 }
 
-void RoadRow::addCarTemplate(std::shared_ptr<Model> model, float scale) {
-  m_carTemplates.push_back({model, scale});
+void RoadRow::addCarTemplate(std::unique_ptr<Car> &&car) {
+  m_carTemplates.push_back(std::move(car));
 }
 
 void RoadRow::prePopulate() {
@@ -61,13 +55,10 @@ void RoadRow::_spawnCar(std::optional<float> override_x) {
   if (m_carTemplates.empty())
     return;
 
-  // Pick a random template
-  const auto &t =
-      m_carTemplates[Random::randInt<size_t>(0, m_carTemplates.size() - 1)];
-
-  // Create the car
-  auto car = std::make_unique<Car>(t.model, m_laneSpeed * m_direction);
-  car->setScale(t.scale);
+  // Clone random template into car
+  std::unique_ptr<Car> car = std::make_unique<Car>(
+      *m_carTemplates[Random::randInt<size_t>(0, m_carTemplates.size() - 1)]);
+  car->setSpeed(m_laneSpeed * m_direction);
 
   // Orient car based on direction
   if (m_direction > 0.0f) {

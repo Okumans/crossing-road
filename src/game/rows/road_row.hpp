@@ -1,6 +1,8 @@
 #pragma once
 
+#include "scene/car.hpp"
 #include "texture_row.hpp"
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -23,18 +25,13 @@ private:
   int m_clusterRemaining = 0;
   bool m_isWaitingForTrain = false;
 
-  // Car templates for this lane
-  struct CarTemplate {
-    std::shared_ptr<Model> model;
-    float scale;
-  };
-  std::vector<CarTemplate> m_carTemplates;
+  std::vector<std::unique_ptr<Car>> m_carTemplates;
 
 public:
   RoadRow(const Material &material, float depth, float height, float speed,
           float direction, float uv_scale_factor = 4.0f);
 
-  void addCarTemplate(std::shared_ptr<Model> model, float scale);
+  void addCarTemplate(std::unique_ptr<Car> &&car);
   void setPattern(TrafficPattern pattern) { m_pattern = pattern; }
   void prePopulate();
 

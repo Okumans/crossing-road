@@ -12,7 +12,7 @@ enum class RowType { GRASS, ROAD, WATER };
 
 class Row : public IZDrawable {
 public:
-  inline static const float WIDTH = 25.0f;
+  inline static const float WIDTH = 22.0f;
   inline static const float SLOT_WIDTH = 1.0f;
 
 protected:

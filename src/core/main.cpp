@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <exception>
 #define _USE_MATH_DEFINES
 #include <stdbool.h>
 #include <stddef.h>
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
 
   double last_frame_time = glfwGetTime();
 
-  {
+  try {
     App application(window);
 
     while (!glfwWindowShouldClose(window)) {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
       double delta_frame_time = current_frame_time - last_frame_time;
       last_frame_time = current_frame_time;
 
-      process_input(window); // global event (like closing the window)
+      process_input(window);
 
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -76,6 +77,8 @@ int main(int argc, char *argv[]) {
       glfwSwapBuffers(window);
       glfwPollEvents();
     }
+  } catch (const std::exception &e) {
+    puts(e.what());
   }
 
   glfwDestroyWindow(window);

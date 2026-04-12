@@ -50,6 +50,7 @@ public:
     uint32_t toRemove =
         std::min(amount, static_cast<uint32_t>(m_storage.size()));
     for (uint32_t i = 0; i < toRemove; ++i) {
+      m_startZ += m_storage[0]->getDepth();
       m_storage.pop_front();
     }
     m_firstStoredIdx += toRemove;
@@ -92,11 +93,14 @@ public:
     return m_storage | std::views::take(m_capacity) | std::views::enumerate |
            std::views::transform([this](std::tuple<long, Row *> tup) {
              auto &[idx, row] = tup;
-             return std::make_pair(getZ(idx), row);
+             return std::make_pair(getZ(static_cast<uint32_t>(idx) + m_firstStoredIdx), row);
            });
   }
 
   uint32_t getCurrRowIdx() const { return m_currRowIdx; }
+  uint32_t getFirstStoredRowIdx() const { return m_firstStoredIdx; }
+
+  uint32_t getCapacity() const { return m_capacity; }
 };
 
 inline std::unique_ptr<RowQueue> RowQueue::s_instance = nullptr;

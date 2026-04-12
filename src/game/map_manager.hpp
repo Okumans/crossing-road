@@ -8,15 +8,10 @@
 #include <memory>
 #include <vector>
 
-enum class TerrainType {
-  GRASSY,
-  ROAD,
-  HILLY,
-};
-
 class MapManager : public IDrawable {
 private:
   std::vector<std::unique_ptr<Terrain>> m_terrains;
+  uint32_t m_playerRowIdx;
 
 public:
   MapManager();
@@ -24,6 +19,8 @@ public:
   void addTerrain(TerrainType type);
   void update(double delta_time);
   void draw(const RenderContext &ctx);
+
+  void updatePlayerRowIdx(uint32_t idx) { m_playerRowIdx = idx; }
 
   const std::vector<std::unique_ptr<Terrain>> &getTerrain() const {
     return m_terrains;
@@ -45,5 +42,6 @@ public:
     }
   }
 
-  const Row *const getTerrainLastRowBefore(float curr_z);
+private:
+  void _generateNext();
 };

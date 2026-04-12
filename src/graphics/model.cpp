@@ -183,7 +183,8 @@ Mesh Model::_processMesh(aiMesh *mesh,
     // 2. Normal / Height
     if (material->GetTextureCount(aiTextureType_NORMALS) > 0) {
       if (auto &&tex = _loadMaterialTexture(material,
-                                            scene, aiTextureType_NORMALS,
+                                            scene,
+                                            aiTextureType_NORMALS,
                                             TextureType::NORMAL,
                                             flip_vertical);
           tex)

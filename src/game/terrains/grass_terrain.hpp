@@ -21,7 +21,8 @@ private:
   inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
 public:
-  GrassyTerrain(uint32_t startRowidx) : Terrain(startRowidx) {
+  GrassyTerrain(uint32_t startRowidx)
+      : Terrain(TerrainType::GRASSY, startRowidx) {
     _setupPopulator();
   }
 
