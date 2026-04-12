@@ -1,9 +1,11 @@
 #include "game.hpp"
 #include "game/map_manager.hpp"
+#include "game/row.hpp"
 #include "game/row_queue.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/debug_drawer.hpp"
 #include "graphics/ibl_generator.hpp"
+#include "graphics/idrawable.hpp"
 #include "graphics/shader.hpp"
 #include "resource/lighting_manager.hpp"
 #include "resource/model_manager.hpp"
@@ -78,12 +80,12 @@ void Game::setup() {
   TextureManager::loadCubemap(
       TextureName("skybox"),
       {
-          ASSETS_PATH "/textures/skybox/pz.png", // +X (Right)
-          ASSETS_PATH "/textures/skybox/nz.png", // -X (Left)
-          ASSETS_PATH "/textures/skybox/py.png", // +Y (Top)
-          ASSETS_PATH "/textures/skybox/ny.png", // -Y (Bottom)
-          ASSETS_PATH "/textures/skybox/nx.png", // +Z (Back)
-          ASSETS_PATH "/textures/skybox/px.png"  // -Z (Front)
+          ASSETS_PATH "/textures/skybox/sky_3/px.hdr", // +X
+          ASSETS_PATH "/textures/skybox/sky_3/nx.hdr", // -X
+          ASSETS_PATH "/textures/skybox/sky_3/py.hdr", // +Y
+          ASSETS_PATH "/textures/skybox/sky_3/ny.hdr", // -Y
+          ASSETS_PATH "/textures/skybox/sky_3/pz.hdr", // +Z
+          ASSETS_PATH "/textures/skybox/sky_3/nz.hdr"  // -Z
       });
 
   // Generate Irradiance Map
@@ -113,7 +115,7 @@ void Game::setup() {
   // 1. "Sun" Light (Directional, casts shadows)
   LightingManager::addLight({.type = LightType::DIRECTIONAL,
                              .position = glm::vec3(0.3f, -1.0f, 0.1f),
-                             .color = glm::vec3(11.0f, 9.0f, 8.0f),
+                             .color = glm::vec3(11.0f, 9.0f, 8.0f) * .8f,
                              .castsShadows = true});
 
   // 2. Sky Blue Fill Light (Directional)
@@ -131,11 +133,11 @@ void Game::update(double delta_time) {
   m_currentTime += static_cast<float>(delta_time);
 
   // --- PBR DEBUG: Rotate Sun ---
-  float sun_speed = 0.5f;
+  float sun_speed = 0.01f;
   float sun_radius = 1.0f;
-  glm::vec3 sun_dir = glm::normalize(glm::vec3(
-      std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,
-      std::sin(m_currentTime * sun_speed) * sun_radius));
+  glm::vec3 sun_dir = glm::normalize(
+      glm::vec3(std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,
+                std::sin(m_currentTime * sun_speed) * sun_radius));
 
   Light sun = LightingManager::getShadowCaster();
   sun.position = sun_dir;
@@ -154,8 +156,8 @@ void Game::render(double delta_time, Camera &camera) {
   m_player->setPosition({m_player->getPosition().x, curr_row->getHeight()});
 
   // 1. Shadow Pass
-  m_lightSpaceMatrix =
-      LightingManager::calculateLightSpaceMatrix(m_player->getPosition(0.75));
+  m_lightSpaceMatrix = LightingManager::calculateLightSpaceMatrix(
+      m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx)));
 
   Shader &shadow_shader = ShaderManager::getShader(ShaderType::SHADOW);
   shadow_shader.use();
@@ -166,11 +168,13 @@ void Game::render(double delta_time, Camera &camera) {
   glClear(GL_DEPTH_BUFFER_BIT);
   glDisable(GL_CULL_FACE);
 
-  m_map.draw(
-      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time});
-  m_player->draw(
-      {.shader = shadow_shader, .camera = camera, .deltaTime = delta_time},
-      player_z);
+  {
+    RenderContext shadow_draw_ctx = {
+        .shader = shadow_shader, .camera = camera, .deltaTime = delta_time};
+
+    m_map.draw(shadow_draw_ctx);
+    m_player->draw(shadow_draw_ctx, player_z);
+  }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glCullFace(GL_BACK); // Restore back-face culling
@@ -207,7 +211,7 @@ void Game::render(double delta_time, Camera &camera) {
 
   // Bind Skybox for reflections
   glBindTextureUnit(10, skyboxTex->getTexID());
-  pbr_shader.setInt("u_Skybox", 10);
+  pbr_shader.setInt("u_SpecularEnvMap", 10);
 
   // Bind Irradiance Map for diffuse IBL
   auto irradianceMap =
@@ -224,7 +228,7 @@ void Game::render(double delta_time, Camera &camera) {
 
   pbr_shader.setFloat("u_HeightScale", 0.03f);
   pbr_shader.setFloat("u_AOFactor", 1.0f);
-  pbr_shader.setFloat("u_AmbientIntensity", 0.4f);
+  pbr_shader.setFloat("u_AmbientIntensity", 1.0f);
 
   // Update water shader global uniforms
   Shader &water_shader = ShaderManager::getShader(ShaderType::WATER);
@@ -233,12 +237,12 @@ void Game::render(double delta_time, Camera &camera) {
   water_shader.setMat4("u_View", view);
   water_shader.setVec3("u_CameraPos", camera.Position);
   water_shader.setMat4("u_LightSpaceMatrix", m_lightSpaceMatrix);
-  water_shader.setInt("u_Skybox", 10);
+  water_shader.setInt("u_SpecularEnvMap", 10);
   water_shader.setInt("u_IrradianceMap", 12);
   water_shader.setInt("u_ShadowMap", 11);
   water_shader.setFloat("u_Time", m_currentTime);
   LightingManager::apply(water_shader);
-  water_shader.setFloat("u_AmbientIntensity", 0.4f);
+  water_shader.setFloat("u_AmbientIntensity", 1.0f);
 
   // Return to PBR shader as default
   pbr_shader.use();

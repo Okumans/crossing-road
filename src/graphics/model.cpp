@@ -191,16 +191,28 @@ Mesh Model::_processMesh(aiMesh *mesh, const aiScene *scene, bool flip_vertical,
       if (auto &&tex =
               _loadMaterialTexture(material, scene, aiTextureType_UNKNOWN,
                                    TextureType::METALLIC, flip_vertical);
-          tex)
+          tex) {
         mat_builder.setMetallic(tex);
-
+        mat_builder.setRoughness(tex);
+      }
     }
 
     else if (material->GetTextureCount(aiTextureType_METALNESS) > 0) {
       if (auto &&tex =
               _loadMaterialTexture(material, scene, aiTextureType_METALNESS,
-                                   TextureType::METALLIC, flip_vertical))
+                                   TextureType::METALLIC, flip_vertical);
+          tex) {
         mat_builder.setMetallic(tex);
+        mat_builder.setRoughness(tex);
+      }
+    }
+
+    else if (material->GetTextureCount(aiTextureType_SHININESS) > 0) {
+      if (auto &&tex =
+              _loadMaterialTexture(material, scene, aiTextureType_SHININESS,
+                                   TextureType::ROUGHNESS, flip_vertical);
+          tex)
+        mat_builder.setRoughness(tex);
     }
 
     // 4. Ambient Occlusion

@@ -12,7 +12,7 @@ uniform sampler2D u_DiffuseTex;
 uniform sampler2D u_NormalTex;
 uniform sampler2D u_MetallicRoughnessTex;
 uniform sampler2D u_AOTex;
-uniform samplerCube u_Skybox;
+uniform samplerCube u_SpecularEnvMap;
 uniform samplerCube u_IrradianceMap;
 uniform sampler2D u_ShadowMap;
 
@@ -161,7 +161,7 @@ void main()
   vec3 irradiance = texture(u_IrradianceMap, N).rgb;
   vec3 ambient_diffuse = irradiance * albedo * kD_ambient;
 
-  vec3 prefilteredColor = textureLod(u_Skybox, R, roughness * 4.0).rgb;
+  vec3 prefilteredColor = textureLod(u_SpecularEnvMap, R, roughness * 4.0).rgb;
   vec3 ambient_specular = prefilteredColor * kS_ambient;
 
   vec3 ambient = (ambient_diffuse + ambient_specular) * u_AOFactor * u_AmbientIntensity;

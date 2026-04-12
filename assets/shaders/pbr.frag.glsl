@@ -14,7 +14,7 @@ uniform sampler2D u_HeightTex;
 uniform sampler2D u_MetallicTex;
 uniform sampler2D u_RoughnessTex;
 uniform sampler2D u_AOTex;
-uniform samplerCube u_Skybox; // Pre-filtered map (Specular IBL)
+uniform samplerCube u_SpecularEnvMap; // Pre-filtered map (Specular IBL)
 uniform samplerCube u_IrradianceMap; // Diffuse IBL
 uniform sampler2D u_ShadowMap;
 
@@ -26,6 +26,7 @@ uniform float u_RoughnessFactor;
 uniform float u_AOFactor;
 uniform float u_HeightScale;
 uniform float u_AmbientIntensity;
+uniform bool u_UsePackedMR;
 
 // Lights
 struct Light {
@@ -142,9 +143,16 @@ void main()
 
   vec3 albedo = pow(diffuseSample.rgb, vec3(2.2)) * u_BaseColor;
 
-  // Sampling separate Metallic and Roughness maps
-  float metallic = texture(u_MetallicTex, texCoords).r * u_MetallicFactor;
-  float roughness = texture(u_RoughnessTex, texCoords).r * u_RoughnessFactor;
+  // Sampling separate or packed Metallic and Roughness maps
+  float metallic, roughness;
+  if (u_UsePackedMR) {
+    vec3 mrSample = texture(u_MetallicTex, texCoords).rgb;
+    metallic = mrSample.b * u_MetallicFactor;
+    roughness = mrSample.g * u_RoughnessFactor;
+  } else {
+    metallic = texture(u_MetallicTex, texCoords).r * u_MetallicFactor;
+    roughness = texture(u_RoughnessTex, texCoords).r * u_RoughnessFactor;
+  }
 
   roughness = clamp(roughness, 0.005, 1.0);
   metallic = clamp(metallic, 0.0, 1.0);
@@ -194,7 +202,7 @@ void main()
   // Indirect Specular (Pre-filtered Cubemap)
   // Without the BRDF LUT, we use F directly to scale the pre-filtered color.
   const float MAX_REFLECTION_LOD = 4.0;
-  vec3 prefilteredColor = textureLod(u_Skybox, R, roughness * MAX_REFLECTION_LOD).rgb;
+  vec3 prefilteredColor = textureLod(u_SpecularEnvMap, R, roughness * MAX_REFLECTION_LOD).rgb;
   vec3 ambient_specular = prefilteredColor * kS_ambient;
 
   vec3 ambient = (ambient_diffuse + ambient_specular) * ao * u_AmbientIntensity;

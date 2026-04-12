@@ -209,6 +209,14 @@ void Mesh::draw(const RenderContext &ctx) {
   counter++;
 
   // Factors
+  bool usePackedMR = false;
+  if (m_material.getMetallic() && m_material.getRoughness() &&
+      m_material.getMetallic()->getTexID() ==
+          m_material.getRoughness()->getTexID()) {
+    usePackedMR = true;
+  }
+  ctx.shader.setBool("u_UsePackedMR", usePackedMR);
+
   ctx.shader.setVec3("u_BaseColor", m_baseColor);
   ctx.shader.setFloat("u_Opacity", m_opacity);
   ctx.shader.setFloat("u_MetallicFactor", m_material.getMetallicFactor());

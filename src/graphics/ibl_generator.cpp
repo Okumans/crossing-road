@@ -12,7 +12,7 @@ std::shared_ptr<Texture> IBLGenerator::generateIrradianceMap(const Texture& skyb
 
     GLuint irradianceMap;
     glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &irradianceMap);
-    glTextureStorage2D(irradianceMap, 1, GL_RGB8, 32, 32);
+    glTextureStorage2D(irradianceMap, 1, GL_RGB16F, 32, 32);
 
     glTextureParameteri(irradianceMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(irradianceMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

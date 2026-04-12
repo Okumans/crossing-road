@@ -18,6 +18,7 @@ class RoadTerrain : public Terrain {
 private:
   inline static const char *ROAD_1_TEX_NAME = "road_1";
   inline static const char *ROAD_2_TEX_NAME = "road_2";
+  inline static const char *ROAD_3_TEX_NAME = "road_3";
 
 public:
   RoadTerrain(uint32_t start_z) : Terrain(start_z) {}
@@ -26,6 +27,7 @@ public:
     enum class RoadMaterialType : uint8_t {
       ROAD_1 = 0,
       ROAD_2,
+      ROAD_3,
       Count // For getting element count
     };
 
@@ -37,7 +39,8 @@ public:
     static const std::map<RoadMaterialType, RoadMaterialConfig>
         ROAD_MATERIAL_CONFIG = {
             {RoadMaterialType::ROAD_1, {ROAD_1_TEX_NAME, 4.0f}},
-            {RoadMaterialType::ROAD_2, {ROAD_2_TEX_NAME, 1.0f}}};
+            {RoadMaterialType::ROAD_2, {ROAD_2_TEX_NAME, 4.0f}},
+            {RoadMaterialType::ROAD_3, {ROAD_3_TEX_NAME, 1.0f}}};
 
     for (uint8_t i = 0; i < static_cast<uint8_t>(RoadMaterialType::Count);
          ++i) {
@@ -68,7 +71,7 @@ public:
     for (size_t i = 0; i < row_numbers; ++i) {
       RoadMaterialType road_mat_type = static_cast<RoadMaterialType>(
           (static_cast<uint8_t>(start_road_type) + i) %
-          static_cast<uint8_t>(RoadMaterialType::Count));
+          static_cast<uint8_t>(RoadMaterialType::ROAD_3));
 
       const auto &config = ROAD_MATERIAL_CONFIG.at(road_mat_type);
       const Material &material = MaterialManager::getMaterial(config.name);
@@ -95,6 +98,10 @@ public:
 
       // Add a chance for a train lane
       if (Random::randChance(0.15f)) {
+        const auto &config = ROAD_MATERIAL_CONFIG.at(RoadMaterialType::ROAD_3);
+        const Material &material = MaterialManager::getMaterial(config.name);
+        float uv_scale = config.uv_scale;
+
         road_row = std::make_unique<RoadRow>(material, 1.0f, 0.05f,
                                              speed * 2.0f, direction, uv_scale);
         road_row->addCarTemplate(ModelManager::getModel(ModelName::TRAIN_1),
