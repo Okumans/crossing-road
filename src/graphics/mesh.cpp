@@ -176,19 +176,29 @@ void Mesh::draw(const RenderContext &ctx) {
   }
   counter++;
 
-  // 4. MetallicRoughness (Packed)
-  ctx.shader.setInt("u_MetallicRoughnessTex", counter);
+  // 4. Metallic
+  ctx.shader.setInt("u_MetallicTex", counter);
   if (m_material.getMetallic()) {
     glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
   } else {
-    // Default PBR: Roughness=1.0, Metallic=0.0
+    // Default Metallic = 0.0 (Black)
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_PBR_DEFAULT_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
   }
   counter++;
 
-  // 5. AO
+  // 5. Roughness
+  ctx.shader.setInt("u_RoughnessTex", counter);
+  if (m_material.getRoughness()) {
+    glBindTextureUnit(counter, m_material.getRoughness()->getTexID());
+  } else {
+    // Default Roughness = 1.0 (White)
+    glBindTextureUnit(
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+  }
+  counter++;
+
+  // 6. AO
   ctx.shader.setInt("u_AOTex", counter);
   if (m_material.getAO()) {
     glBindTextureUnit(counter, m_material.getAO()->getTexID());

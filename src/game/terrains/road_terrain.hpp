@@ -1,16 +1,18 @@
 #pragma once
 
 #include "game/row.hpp"
+#include "game/rows/road_row.hpp"
 #include "game/rows/texture_row.hpp"
 #include "game/terrain.hpp"
 #include "graphics/material.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
-#include "scene/car.hpp"
 #include "utility/utility.hpp"
 
 #include <cstdint>
+#include <map>
 #include <memory>
+#include <utility>
 
 class RoadTerrain : public Terrain {
 private:
@@ -21,14 +23,32 @@ public:
   RoadTerrain(uint32_t start_z) : Terrain(start_z) {}
 
   virtual uint32_t _generateTerrain() override {
-    assert(MaterialManager::exists(ROAD_1_TEX_NAME));
-    assert(MaterialManager::exists(ROAD_2_TEX_NAME));
+    enum class RoadMaterialType : uint8_t {
+      ROAD_1 = 0,
+      ROAD_2,
+      Count // For getting element count
+    };
 
-    const Material &road_mat_1 = MaterialManager::getMaterial(ROAD_1_TEX_NAME);
-    const Material &road_mat_2 = MaterialManager::getMaterial(ROAD_2_TEX_NAME);
+    struct RoadMaterialConfig {
+      const char *name;
+      float uv_scale;
+    };
 
-    size_t row_numbers = Random::randInt<size_t>(2, 5);
-    const Material *start_mat = &road_mat_1;
+    static const std::map<RoadMaterialType, RoadMaterialConfig>
+        ROAD_MATERIAL_CONFIG = {
+            {RoadMaterialType::ROAD_1, {ROAD_1_TEX_NAME, 4.0f}},
+            {RoadMaterialType::ROAD_2, {ROAD_2_TEX_NAME, 1.0f}}};
+
+    for (uint8_t i = 0; i < static_cast<uint8_t>(RoadMaterialType::Count);
+         ++i) {
+      assert(MaterialManager::exists(
+          ROAD_MATERIAL_CONFIG.at(static_cast<RoadMaterialType>(i)).name));
+    }
+
+    size_t row_numbers =
+        Random::randWeighted<size_t>(1, 5, {15.0, 10.0, 5.0, 2.0, 1.0});
+
+    RoadMaterialType start_road_type = RoadMaterialType::ROAD_1;
 
     const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);
 
@@ -36,71 +56,56 @@ public:
       if (const auto texture_row =
               dynamic_cast<const TextureRow *>(row_before)) {
         if (texture_row->getMaterial().getDiffuse()->getTexID() ==
-            road_mat_1.getDiffuse()->getTexID()) {
-          start_mat = &road_mat_2;
+            MaterialManager::getMaterial(ROAD_1_TEX_NAME)
+                .getDiffuse()
+                ->getTexID()) {
+          start_road_type = RoadMaterialType::ROAD_2;
         }
       }
     }
 
     uint32_t last_row_idx = 0;
     for (size_t i = 0; i < row_numbers; ++i) {
-      const Material &current_mat =
-          (i % 2 == 0) ? *start_mat
-                       : (start_mat == &road_mat_1 ? road_mat_2 : road_mat_1);
+      RoadMaterialType road_mat_type = static_cast<RoadMaterialType>(
+          (static_cast<uint8_t>(start_road_type) + i) %
+          static_cast<uint8_t>(RoadMaterialType::Count));
 
-      auto road_row =
-          std::make_unique<TextureRow>(RowType::ROAD, current_mat, 1.0f, 0.05f);
+      const auto &config = ROAD_MATERIAL_CONFIG.at(road_mat_type);
+      const Material &material = MaterialManager::getMaterial(config.name);
+      float uv_scale = config.uv_scale;
 
-      _populateLane(*road_row);
+      float direction = Random::randChance(0.5f) ? 1.0f : -1.0f;
+      float speed = Random::randFloat(3.0f, 6.0f);
 
+      auto road_row = std::make_unique<RoadRow>(material, 1.0f, 0.05f, speed,
+                                                direction, uv_scale);
+
+      // Add car templates
+      road_row->addCarTemplate(ModelManager::getModel(ModelName::CAR_1),
+                               0.0030f);
+      road_row->addCarTemplate(ModelManager::getModel(ModelName::CAR_2),
+                               0.0022f);
+
+      // Randomly pick a pattern
+      if (Random::randChance(0.3f)) {
+        road_row->setPattern(TrafficPattern::CLUSTER);
+      } else {
+        road_row->setPattern(TrafficPattern::CONSTANT);
+      }
+
+      // Add a chance for a train lane
+      if (Random::randChance(0.15f)) {
+        road_row = std::make_unique<RoadRow>(material, 1.0f, 0.05f,
+                                             speed * 2.0f, direction, uv_scale);
+        road_row->addCarTemplate(ModelManager::getModel(ModelName::TRAIN_1),
+                                 0.3f);
+        road_row->setPattern(TrafficPattern::TRAIN);
+      }
+
+      road_row->prePopulate();
       last_row_idx = addRow(std::move(road_row));
     }
 
     return last_row_idx;
-  }
-
-private:
-  void _populateLane(Row &row) {
-    float direction = Random::randChance(0.5f) ? 1.0f : -1.0f;
-
-    // 20% Train lane
-    if (Random::randChance(0.2f)) {
-      float speed = Random::randFloat(6.0f, 10.0f) * direction;
-      float x = direction > 0.0f ? -15.0f : 15.0f;
-
-      std::unique_ptr<Car> train = std::make_unique<Car>(
-          ModelManager::getModel(ModelName::TRAIN_1), speed);
-      train->setScale(0.3f);
-      train->setRotation(
-          {0.0f, glm::radians(direction > 0.0f ? 90.0f : -90.0f), 0.0f});
-      train->setPosition({x, row.getHeight() + 0.3f});
-
-      row.addObject(std::move(train));
-    }
-
-    // 80% Car lane
-    else {
-      float speed = Random::randFloat(1.5f, 4.5f) * direction;
-      int numCars = Random::randInt(1, 2);
-
-      for (int i = 0; i < numCars; ++i) {
-        float x_pos = Random::randFloat(-10.0f, 10.0f);
-
-        ModelName modelName =
-            Random::randChance(0.5f) ? ModelName::CAR_1 : ModelName::CAR_2;
-        float scale = (modelName == ModelName::CAR_1) ? 0.0030f : 0.0022f;
-
-        auto car =
-            std::make_unique<Car>(ModelManager::getModel(modelName), speed);
-        car->setScale(scale);
-        car->setRotation({0, glm::radians(90.0f), 0});
-        car->setPosition({x_pos, row.getHeight()});
-
-        if (direction < 0.0f)
-          car->rotate({0, glm::radians(180.0f), 0});
-
-        row.addObject(std::move(car));
-      }
-    }
   }
 };

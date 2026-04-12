@@ -8,7 +8,6 @@
 #include <concepts>
 #include <filesystem>
 #include <format>
-#include <functional>
 #include <random>
 #include <string>
 
@@ -93,6 +92,17 @@ public:
   template <std::floating_point T = float> static T randFloat(T min, T max) {
     std::uniform_real_distribution<T> dist(min, max);
     return dist(s_engine);
+  }
+
+  /**
+   * @brief Generates a random integer in range [min, max] using custom weights.
+   * The weights vector size must equal (max - min + 1).
+   */
+  template <std::integral T = int>
+  static T randWeighted(T min, T max, const std::vector<double> &weights) {
+    // weights[0] corresponds to min, weights[1] to min + 1, etc.
+    std::discrete_distribution<T> dist(weights.begin(), weights.end());
+    return min + dist(s_engine);
   }
 
   /**

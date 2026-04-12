@@ -72,14 +72,3 @@ void MapManager::draw(const RenderContext &ctx) {
     prevRow->drawSidePanel(ctx, prevRenderZ, 0.0f, false);
   }
 }
-
-// const Row *const MapManager::getTerrainLastRowBefore(float curr_z) {
-//   auto it = std::ranges::lower_bound(m_terrains, curr_z, std::less<>(),
-//                                      &Terrain::);
-//
-//   if (it != m_terrains.begin()) {
-//     return std::prev(it)->get()->getRows().back().get();
-//   }
-//
-//   return nullptr;
-// }

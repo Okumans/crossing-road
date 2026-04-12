@@ -13,11 +13,14 @@ protected:
   std::unique_ptr<Mesh> m_mesh;
   std::unique_ptr<Mesh> m_sideMesh;
 
+private:
+  float m_uvScaleFactor;
+
 public:
-  TextureRow(
-      RowType type, const Material &material, float depth = 1.0f,
-      float height = 0.0f,
-      std::optional<Material> sideMaterial = std::nullopt); // For set later
+  TextureRow(RowType type, const Material &material, float depth = 1.0f,
+             float height = 0.0f,
+             std::optional<Material> sideMaterial = std::nullopt,
+             float uv_scale_factor = 4.0f);
 
   virtual void draw(const RenderContext &ctx, float z) override;
   virtual void drawSidePanel(const RenderContext &ctx, float z,
@@ -25,6 +28,9 @@ public:
 
   const Material getMaterial() const { return m_material; }
   const Material getSideMaterial() const { return m_sideMaterial; }
+  void setUVScaleFactor(float uv_scale_factor) {
+    m_uvScaleFactor = uv_scale_factor;
+  };
 
 private:
   void _setupMesh();

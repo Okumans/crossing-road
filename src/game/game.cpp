@@ -99,9 +99,12 @@ void Game::setup() {
   m_map.addTerrain(TerrainType::GRASSY);
   m_map.addTerrain(TerrainType::ROAD);
   m_map.addTerrain(TerrainType::HILLY);
+  m_map.addTerrain(TerrainType::ROAD);
   m_map.addTerrain(TerrainType::GRASSY);
   m_map.addTerrain(TerrainType::ROAD);
+  m_map.addTerrain(TerrainType::ROAD);
   m_map.addTerrain(TerrainType::HILLY);
+  m_map.addTerrain(TerrainType::ROAD);
   m_map.addTerrain(TerrainType::GRASSY);
 
   // Setup Lights
@@ -109,8 +112,8 @@ void Game::setup() {
 
   // 1. "Sun" Light (Directional, casts shadows)
   LightingManager::addLight({.type = LightType::DIRECTIONAL,
-                             .position = glm::vec3(-1.0f, -0.6f, -0.2f),
-                             .color = glm::vec3(12.0f, 11.0f, 10.0f),
+                             .position = glm::vec3(0.3f, -1.0f, 0.1f),
+                             .color = glm::vec3(11.0f, 9.0f, 8.0f),
                              .castsShadows = true});
 
   // 2. Sky Blue Fill Light (Directional)
@@ -121,22 +124,25 @@ void Game::setup() {
   // 3. Ground Bounce Fill (Point light)
   LightingManager::addLight({.type = LightType::POINT,
                              .position = glm::vec3(0.0f, -5.0f, 0.0f),
-                             .color = glm::vec3(0.15f, 0.1f, 0.05f)});
+                             .color = glm::vec3(0.3f, 0.2f, 0.1f) * 5.0f});
 }
 
 void Game::update(double delta_time) {
   m_currentTime += static_cast<float>(delta_time);
-  m_map.update(delta_time);
 
-  // Update sun position (first light)
-  float angle = m_currentTime * 0.001f; // speed
-  glm::vec3 sunDir = glm::vec3(cos(angle), -0.6f, sin(angle));
+  // --- PBR DEBUG: Rotate Sun ---
+  float sun_speed = 0.5f;
+  float sun_radius = 1.0f;
+  glm::vec3 sun_dir = glm::normalize(glm::vec3(
+      std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,
+      std::sin(m_currentTime * sun_speed) * sun_radius));
 
-  Light sun = {.type = LightType::DIRECTIONAL,
-               .position = sunDir,
-               .color = glm::vec3(12.0f, 11.0f, 10.0f),
-               .castsShadows = true};
+  Light sun = LightingManager::getShadowCaster();
+  sun.position = sun_dir;
   LightingManager::setLight(0, sun);
+  // -----------------------------
+
+  m_map.update(delta_time);
 }
 
 void Game::render(double delta_time, Camera &camera) {

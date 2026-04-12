@@ -5,9 +5,11 @@
 #include <memory>
 
 TextureRow::TextureRow(RowType type, const Material &material, float depth,
-                       float height, std::optional<Material> sideMaterial)
+                       float height, std::optional<Material> sideMaterial,
+                       float uv_scale_factor)
     : Row(type, depth, height), m_material(material),
-      m_sideMaterial(sideMaterial.value_or(material)) {
+      m_sideMaterial(sideMaterial.value_or(material)),
+      m_uvScaleFactor(uv_scale_factor) {
   m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
   _setupMesh();
 }
@@ -49,8 +51,8 @@ void TextureRow::drawSidePanel(const RenderContext &ctx, float z,
 
 void TextureRow::_setupMesh() {
   const float width = WIDTH;
-  const float u_max = width / 4.0f;
-  const float v_max = m_depth / 4.0f;
+  const float u_max = width / m_uvScaleFactor;
+  const float v_max = m_depth / m_uvScaleFactor;
 
   glm::vec3 n(0, 1, 0);
   glm::vec3 t(1, 0, 0);

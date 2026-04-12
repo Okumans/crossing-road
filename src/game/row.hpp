@@ -13,6 +13,7 @@ enum class RowType { GRASS, ROAD, WATER };
 class Row : public IZDrawable {
 public:
   inline static const float WIDTH = 25.0f;
+  inline static const float SLOT_WIDTH = 1.0f;
 
 public:
   Row(RowType type, float depth = 1.0f, float height = 0.0f)
@@ -21,8 +22,21 @@ public:
   virtual ~Row() {}
 
   virtual void update(double delta_time) {
-    for (auto &obj : m_objects) {
-      obj->update(delta_time);
+    for (auto it = m_objects.begin(); it != m_objects.end();) {
+      (*it)->update(delta_time);
+
+      // Check if object should be removed (e.g. left the screen)
+      // For now, we'll let the RoadRow handle its own objects, 
+      // but we need a way to mark them for deletion or just erase here.
+      // Let's use a simple bounds check based on WIDTH.
+      const AABB& worldAABB = (*it)->getWorldAABB();
+      float halfWidth = WIDTH / 2.0f + 2.0f; // Padding
+
+      if (worldAABB.min.x > halfWidth || worldAABB.max.x < -halfWidth) {
+          it = m_objects.erase(it);
+      } else {
+          ++it;
+      }
     }
   }
 

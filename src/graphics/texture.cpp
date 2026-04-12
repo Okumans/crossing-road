@@ -12,10 +12,23 @@ Texture::Texture(const std::vector<std::string> &faces)
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(false); // Cubemaps should NOT be flipped
 
+  bool isHDR = false;
+  if (!faces.empty()) {
+    std::string_view firstFace = faces[0];
+    if (firstFace.ends_with(".hdr")) {
+      isHDR = true;
+    }
+  }
+
   for (unsigned int i = 0; i < faces.size(); i++) {
-    // Force 4 channels (RGBA) to ensure consistency
-    unsigned char *data = stbi_load(faces[i].c_str(), &width, &height,
-                                    &nrChannels, STBI_rgb_alpha);
+    void *data = nullptr;
+    if (isHDR) {
+      data = stbi_loadf(faces[i].c_str(), &width, &height, &nrChannels, 0);
+    } else {
+      // Force 4 channels (RGBA) to ensure consistency for LDR
+      data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 4);
+    }
+
     if (data) {
       if (i == 0) {
         // Calculate mipmap levels
@@ -23,12 +36,22 @@ Texture::Texture(const std::vector<std::string> &faces)
             static_cast<int>(std::floor(std::log2(std::max(width, height)))) +
             1;
         // Allocate immutable storage for 6 faces
-        glTextureStorage2D(m_texID, levels, GL_RGBA8, width, height);
+        if (isHDR) {
+          // Use GL_RGB16F for HDR cubemaps
+          glTextureStorage2D(m_texID, levels, GL_RGB16F, width, height);
+        } else {
+          glTextureStorage2D(m_texID, levels, GL_RGBA8, width, height);
+        }
       }
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGBA,
-                          GL_UNSIGNED_BYTE, data);
+      if (isHDR) {
+        glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGB,
+                            GL_FLOAT, data);
+      } else {
+        glTextureSubImage3D(m_texID, 0, 0, 0, i, width, height, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, data);
+      }
       glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
       stbi_image_free(data);

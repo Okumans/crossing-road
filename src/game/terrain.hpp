@@ -130,34 +130,44 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
     if (!m_rules.contains(type))
       continue;
 
-    for (const SpawnConfig &config : m_rules.at(type)) {
-      const PlacementRule &rule = config.rule;
+    const auto &rules = m_rules.at(type);
 
-      for (size_t i = 0; i < rule.attempts; ++i) {
-        if (Random::randChance(rule.probability)) {
+    // Grid-based spawning (25 slots)
+    // Randomly pick one slot in the playable area to definitely be a gap
+    int guaranteedGap = Random::randInt(5, 19);
 
-          // Clone is much cheaper than creating a new once
-          // (because Bounding Box calculation)
+    for (int i = 0; i < 25; ++i) {
+      if (i == guaranteedGap)
+        continue;
+
+      // Weight probability to be higher at edges (0.0 to 12.0 distance)
+      float distFromCenter = std::abs(i - 12) / 12.0f;
+      float edgeWeight = 0.4f + 0.6f * distFromCenter; // 0.4 center, 1.0 edges
+
+      for (const auto &config : rules) {
+        if (Random::randChance(config.rule.probability * edgeWeight)) {
           std::unique_ptr<RowObject> obj =
               std::make_unique<RowObject>(*config.object);
 
-          float x = Random::randFloat(rule.minX, rule.maxX);
-          float scale = Random::randFloat(rule.minScale, rule.maxScale);
-          float z = rule.zOffset;
-          float y = row->getHeight() + rule.yOffset;
-
-          if (rule.randomRotation)
-            obj->setRotation(
-                {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
+          float x = -12.0f + (float)i;
+          float scale =
+              Random::randFloat(config.rule.minScale, config.rule.maxScale);
+          float z = config.rule.zOffset;
+          float y = row->getHeight() + config.rule.yOffset;
 
           obj->setPosition({x, y});
           obj->setZOffset(z);
-          obj->setScale(obj->getScale() *
-                        scale); // even the scale changed in this case all of
-                                // the boungding box would be ok
+          obj->setScale(obj->getScale() * scale);
 
-          if (!row->collided(*obj))
+          if (config.rule.randomRotation) {
+            obj->setRotation(
+                {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
+          }
+
+          if (!row->collided(*obj)) {
             row->addObject(std::move(obj));
+            break; // One object per slot
+          }
         }
       }
     }

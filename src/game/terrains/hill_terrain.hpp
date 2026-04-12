@@ -30,7 +30,8 @@ public:
     const Material &grass_mat_2 =
         MaterialManager::getMaterial(GRASS_2_TEX_NAME);
 
-    size_t row_numbers = Random::randInt<size_t>(5, 9);
+    size_t row_numbers =
+        Random::randWeighted<size_t>(1, 5, {5.0, 0.0, 10.0f, 0.0, 3.0});
     float peak_height = Random::randFloat(0.4f, 1.0f);
 
     const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);

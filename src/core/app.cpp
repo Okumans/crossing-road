@@ -131,19 +131,21 @@ void App::_setupResources() {
   ModelManager::loadModel(ModelName::TRAIN_1,
                           ASSETS_PATH "/objects/car/train_1.glb");
 
-  // Load the material & Textures, for the ground textures
-  // TODO: Use enum instead of fixed string
+  // Load the material & Textures
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
   loadMaterialFolder("grass_2", ASSETS_PATH "/textures/grass/2");
   loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3");
-  loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
-
+  loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/5");
   loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
   MaterialManager::addMaterial(
       "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
                      .setRoughnessFactor(0.07f)
                      .setMetallicFactor(0.0f)
                      .create());
+  MaterialManager::addMaterial(
+      "road_2", Material::builder(MaterialManager::getMaterial("road_2"))
+                    .setMetallicFactor(2.0f)
+                    .create());
 
   // Load other resources
   m_game.setup();

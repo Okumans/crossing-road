@@ -16,23 +16,6 @@ public:
   void update(double delta_time) override {
     glm::vec2 pos = getPosition();
     pos.x += m_speed * (float)delta_time;
-    setPosition(pos); // Temporarily set position to get accurate world AABB
-
-    float halfWidth = Row::WIDTH / 2.0f;
-    const AABB &worldAABB = getWorldAABB(0.0f);
-    const AABB &localAABB = getLocalAABB();
-
-    // Wrap around logic
-    if (m_speed > 0.0f && worldAABB.min.x > halfWidth) {
-      // Moving right, fully exited right side. Wrap to left.
-      // New pos.x + localAABB.max.x = -halfWidth
-      pos.x = -halfWidth - localAABB.max.x;
-      setPosition(pos);
-    } else if (m_speed < 0.0f && worldAABB.max.x < -halfWidth) {
-      // Moving left, fully exited left side. Wrap to right.
-      // New pos.x + localAABB.min.x = halfWidth
-      pos.x = halfWidth - localAABB.min.x;
-      setPosition(pos);
-    }
+    setPosition(pos);
   }
 };

@@ -40,7 +40,8 @@ private:
     const Material &grass_mat_2 =
         MaterialManager::getMaterial(GRASS_2_TEX_NAME);
 
-    size_t row_numbers = Random::randInt<size_t>(2, 5);
+    size_t row_numbers =
+        Random::randWeighted<size_t>(1, 5, {20.0, 15.0, 5.0, 2.0, 1.0});
     GrassMaterialType start_grass_type =
         GrassMaterialType::GRASS_1; // default value
 
@@ -92,6 +93,7 @@ private:
 
       std::unique_ptr<TextureRow> grass_row =
           std::make_unique<TextureRow>(RowType::GRASS, grass_mat.value());
+      grass_row->setUVScaleFactor(8.0f);
 
       last_row_idx = addRow(std::move(grass_row));
     }
@@ -109,7 +111,7 @@ private:
         RowType::GRASS,
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.15f;
+          r.probability = 0.05f;
           r.minScale = 0.006f;
           r.maxScale = 0.006f;
         }));
@@ -118,7 +120,7 @@ private:
         RowType::GRASS,
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_2)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.1f;
+          r.probability = 0.03f;
           r.minScale = 0.0025f;
           r.maxScale = 0.0025f;
           r.yOffset = 0.20f;
@@ -128,7 +130,7 @@ private:
         RowType::GRASS,
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_2)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.1f;
+          r.probability = 0.03f;
           r.minScale = 0.4f;
           r.maxScale = 0.4f;
           r.yOffset = -0.10f;
@@ -138,7 +140,7 @@ private:
         RowType::GRASS,
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.1f;
+          r.probability = 0.02f;
           r.minScale = 0.002f;
           r.maxScale = 0.002f;
         }));
@@ -147,7 +149,7 @@ private:
         RowType::GRASS,
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::ROCK_1)),
         withBase(base, [](PlacementRule &r) {
-          r.probability = 0.08f;
+          r.probability = 0.02f;
           r.minScale = 0.005f;
           r.maxScale = 0.005f;
         }));
