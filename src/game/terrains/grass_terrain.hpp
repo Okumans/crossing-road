@@ -2,7 +2,7 @@
 
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
-#include "game/rows/texture_row.hpp"
+#include "game/rows/grass_row.hpp"
 #include "game/terrain.hpp"
 #include "graphics/material.hpp"
 #include "resource/material_manager.hpp"
@@ -18,6 +18,7 @@ class GrassyTerrain : public Terrain {
 private:
   inline static const char *GRASS_1_TEX_NAME = "grass_1";
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
+  inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
 public:
   GrassyTerrain(uint32_t startRowidx) : Terrain(startRowidx) {
@@ -68,6 +69,9 @@ private:
       }
     }
 
+    const Material &grass_side_mat =
+        MaterialManager::getMaterial(GRASS_SIDE_TEX_NAME);
+
     uint32_t last_row_idx = 0;
 
     for (size_t i = 0; i < row_numbers; ++i) {
@@ -91,9 +95,8 @@ private:
 
       assert(grass_mat.has_value());
 
-      std::unique_ptr<TextureRow> grass_row =
-          std::make_unique<TextureRow>(RowType::GRASS, grass_mat.value());
-      grass_row->setUVScaleFactor(8.0f);
+      std::unique_ptr<GrassRow> grass_row = std::make_unique<GrassRow>(
+          grass_mat.value(), 1.0f, 0.0f, grass_side_mat, 8.0f);
 
       last_row_idx = addRow(std::move(grass_row));
     }

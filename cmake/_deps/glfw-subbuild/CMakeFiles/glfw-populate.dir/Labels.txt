@@ -1,0 +1,14 @@
+# Target labels
+ glfw-populate
+# Source files and their labels
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/CMakeFiles/glfw-populate
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/CMakeFiles/glfw-populate.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/CMakeFiles/glfw-populate-complete.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-mkdir.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-test.rule
+/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update.rule

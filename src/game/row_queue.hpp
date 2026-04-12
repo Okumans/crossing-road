@@ -8,6 +8,7 @@
 #include <memory>
 #include <ranges>
 #include <stdexcept>
+#include <tuple>
 
 class RowQueue {
 private:
@@ -71,7 +72,7 @@ public:
     if (!exists(row_idx))
       return 0.0f;
 
-    float acc_z = 0.0f;
+    float acc_z = -m_startZ;
     for (uint32_t i = 0; i < row_idx - m_firstStoredIdx; ++i) {
       acc_z -= m_storage[i]->getDepth();
     }
@@ -86,6 +87,14 @@ public:
   }
 
   auto getRows() const { return m_storage | std::views::take(m_capacity); }
+
+  auto getRowsWithZ() const {
+    return m_storage | std::views::take(m_capacity) | std::views::enumerate |
+           std::views::transform([this](std::tuple<long, Row *> tup) {
+             auto &[idx, row] = tup;
+             return std::make_pair(getZ(idx), row);
+           });
+  }
 
   uint32_t getCurrRowIdx() const { return m_currRowIdx; }
 };

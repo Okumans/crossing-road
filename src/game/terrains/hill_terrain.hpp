@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/row.hpp"
+#include "game/rows/grass_row.hpp"
 #include "game/rows/texture_row.hpp"
 #include "game/terrain.hpp"
 #include "graphics/material.hpp"
@@ -17,6 +18,7 @@ class HillTerrain : public Terrain {
 private:
   inline static const char *GRASS_1_TEX_NAME = "grass_1";
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
+  inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
 public:
   HillTerrain(uint32_t start_z) : Terrain(start_z) { _setupPopulator(); }
@@ -29,6 +31,8 @@ public:
         MaterialManager::getMaterial(GRASS_1_TEX_NAME);
     const Material &grass_mat_2 =
         MaterialManager::getMaterial(GRASS_2_TEX_NAME);
+    const Material &grass_side_mat =
+        MaterialManager::getMaterial(GRASS_SIDE_TEX_NAME);
 
     size_t row_numbers =
         Random::randWeighted<size_t>(1, 5, {5.0, 0.0, 10.0f, 0.0, 3.0});
@@ -60,8 +64,8 @@ public:
           peak_height * std::sin(std::numbers::pi_v<float> * (float)(i + 1) /
                                  (float)(row_numbers + 1));
 
-      auto grass_row =
-          std::make_unique<TextureRow>(RowType::GRASS, current_mat, 1.0f, h);
+      std::unique_ptr<GrassRow> grass_row = std::make_unique<GrassRow>(
+          current_mat, 1.0f, h, grass_side_mat, 8.0f);
 
       last_row_idx = addRow(std::move(grass_row));
     }

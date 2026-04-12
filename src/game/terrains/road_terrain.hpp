@@ -103,9 +103,9 @@ public:
         float uv_scale = config.uv_scale;
 
         road_row = std::make_unique<RoadRow>(material, 1.0f, 0.05f,
-                                             speed * 2.0f, direction, uv_scale);
+                                             speed * 5.0f, direction, uv_scale);
         road_row->addCarTemplate(ModelManager::getModel(ModelName::TRAIN_1),
-                                 0.3f);
+                                 0.4f);
         road_row->setPattern(TrafficPattern::TRAIN);
       }
 

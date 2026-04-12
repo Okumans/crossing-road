@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/groupsourcesbyfolder.cmake-populate"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/groupsourcesbyfolder.cmake-populate.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/groupsourcesbyfolder.cmake-populate-complete.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-build.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-configure.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-download.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-install.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-patch.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-test.rule"
+		},
+		{
+			"file" : "/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/groupsourcesbyfolder.cmake-populate-prefix/src/groupsourcesbyfolder.cmake-populate-stamp/groupsourcesbyfolder.cmake-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"groupsourcesbyfolder.cmake-populate"
+		],
+		"name" : "groupsourcesbyfolder.cmake-populate"
+	}
+}

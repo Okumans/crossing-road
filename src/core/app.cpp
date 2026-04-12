@@ -137,6 +137,7 @@ void App::_setupResources() {
   loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3");
   loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
   loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5");
+  loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4");
   loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
   MaterialManager::addMaterial(
       "water_1", Material::builder(MaterialManager::getMaterial("water_1"))

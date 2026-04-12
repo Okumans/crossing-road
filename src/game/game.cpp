@@ -133,7 +133,7 @@ void Game::update(double delta_time) {
   m_currentTime += static_cast<float>(delta_time);
 
   // --- PBR DEBUG: Rotate Sun ---
-  float sun_speed = 0.01f;
+  float sun_speed = 0.3f;
   float sun_radius = 1.0f;
   glm::vec3 sun_dir = glm::normalize(
       glm::vec3(std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,

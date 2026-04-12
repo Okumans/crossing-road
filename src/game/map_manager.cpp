@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <memory>
 
-MapManager::MapManager() { RowQueue::init(19, 3.5f); }
+MapManager::MapManager() { RowQueue::init(19, 3.0f); }
 
 void MapManager::addTerrain(TerrainType type) {
   std::unique_ptr<Terrain> terrain = nullptr;
@@ -42,19 +42,17 @@ void MapManager::update(double delta_time) {
 
 void MapManager::draw(const RenderContext &ctx) {
   Row *prevRow = nullptr;
-
-  float renderZ = 0.0f; // Start rendering from Z = 0
   float prevRenderZ = 0.0f;
 
-  for (Row *row : RowQueue::get().getRows()) {
-    row->draw(ctx, renderZ);
+  for (auto [z, row] : RowQueue::get().getRowsWithZ()) {
+    row->draw(ctx, z);
 
     float currentHeight = row->getHeight();
     float prevHeight = prevRow ? prevRow->getHeight() : 0.0f;
 
     // Side panel towards previous row
     if (currentHeight > prevHeight) {
-      row->drawSidePanel(ctx, renderZ, prevHeight, true);
+      row->drawSidePanel(ctx, z, prevHeight, true);
     }
 
     // Previous row side panel towards current row
@@ -63,8 +61,7 @@ void MapManager::draw(const RenderContext &ctx) {
     }
 
     prevRow = row;
-    prevRenderZ = renderZ;
-    renderZ -= row->getDepth();
+    prevRenderZ = z;
   }
 
   // Final row side panel to ground level

@@ -15,6 +15,12 @@ public:
   inline static const float WIDTH = 25.0f;
   inline static const float SLOT_WIDTH = 1.0f;
 
+protected:
+  float m_depth;
+  float m_height;
+  RowType m_type;
+  std::vector<std::unique_ptr<RowObject>> m_objects;
+
 public:
   Row(RowType type, float depth = 1.0f, float height = 0.0f)
       : m_type(type), m_depth(depth), m_height(height) {}; // For set later
@@ -26,16 +32,16 @@ public:
       (*it)->update(delta_time);
 
       // Check if object should be removed (e.g. left the screen)
-      // For now, we'll let the RoadRow handle its own objects, 
+      // For now, we'll let the RoadRow handle its own objects,
       // but we need a way to mark them for deletion or just erase here.
       // Let's use a simple bounds check based on WIDTH.
-      const AABB& worldAABB = (*it)->getWorldAABB();
+      const AABB &worldAABB = (*it)->getWorldAABB();
       float halfWidth = WIDTH / 2.0f + 2.0f; // Padding
 
       if (worldAABB.min.x > halfWidth || worldAABB.max.x < -halfWidth) {
-          it = m_objects.erase(it);
+        it = m_objects.erase(it);
       } else {
-          ++it;
+        ++it;
       }
     }
   }
@@ -43,7 +49,7 @@ public:
   virtual void draw(const RenderContext &ctx, float z) override = 0;
 
   virtual void drawSidePanel(const RenderContext &ctx, float z,
-                             float nextHeight, bool isForward) = 0;
+                             float next_height, bool is_forward) = 0;
 
   virtual void addObject(std::unique_ptr<RowObject> object) {
     m_objects.push_back(std::move(object));
@@ -69,18 +75,4 @@ public:
   virtual void setDepth(float depth) { m_depth = depth; }
   virtual void setHeight(float height) { m_height = height; }
   virtual void setType(RowType type) { m_type = type; }
-
-protected:
-  float m_depth;
-  float m_height;
-  RowType m_type;
-
-  // glm::vec2 m_uvOffset;
-  // Material m_material;
-  // Material m_sideMaterial;
-  // std::unique_ptr<Mesh> m_mesh;
-  // std::unique_ptr<Mesh> m_sideMesh; // Reusable side quad mesh
-  std::vector<std::unique_ptr<RowObject>> m_objects;
-  //
-  // void _setupMesh();
 };
