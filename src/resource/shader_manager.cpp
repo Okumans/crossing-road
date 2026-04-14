@@ -1,28 +1,29 @@
 #include "shader_manager.hpp"
+#include "utility/enum_map.hpp"
+#include "utility/utility.hpp"
 
 #include <memory>
-#include <unordered_map>
 
-std::unordered_map<ShaderType, std::unique_ptr<Shader>> ShaderManager::shaders;
+SettableNotInitialized<EnumMap<ShaderType, std::unique_ptr<Shader>>>
+    ShaderManager::s_shaders;
 
-Shader &ShaderManager::loadShader(ShaderType type,
-                                  const char *vertShaderPath,
+Shader &ShaderManager::loadShader(ShaderType type, const char *vertShaderPath,
                                   const char *fragShaderPath) {
-  ShaderManager::shaders[type] =
-      std::make_unique<Shader>(Shader(vertShaderPath, fragShaderPath));
+  s_shaders.set(
+      type, std::make_unique<Shader>(Shader(vertShaderPath, fragShaderPath)));
 
-  return *ShaderManager::shaders.at(type);
+  return *s_shaders.getUnvalidated(type);
 }
 
 Shader &ShaderManager::loadShaderSource(ShaderType type,
                                         const char *vertShaderSource,
                                         const char *fragShaderSource) {
-  ShaderManager::shaders[type] = std::make_unique<Shader>(
-      Shader::fromSource(vertShaderSource, fragShaderSource));
+  s_shaders.set(type, std::make_unique<Shader>(Shader::fromSource(
+                          vertShaderSource, fragShaderSource)));
 
-  return *ShaderManager::shaders.at(type);
+  return *s_shaders.getUnvalidated(type);
 }
 
 Shader &ShaderManager::getShader(ShaderType type) {
-  return *ShaderManager::shaders.at(type);
+  return *s_shaders.ensureInitialized().at(type);
 }

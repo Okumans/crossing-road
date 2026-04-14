@@ -39,7 +39,9 @@ void WaterRow::draw(const RenderContext &ctx, float z) {
 
   for (std::unique_ptr<RowObject> &obj : m_objects) {
     float center_z = -(m_depth / 2.0f);
-    obj->draw(ctx, z + center_z - obj->getWorldAABBCenter().z);
+    float obj_z = z + center_z - obj->getWorldAABBCenter().z;
+
+    obj->draw(ctx, obj_z);
   }
 }
 

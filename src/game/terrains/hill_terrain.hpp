@@ -20,11 +20,22 @@ private:
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
   inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
+  inline static NotInitialized<TerrainPopulator> s_terrainPopulator;
+
 public:
   HillTerrain(uint32_t start_z) : Terrain(TerrainType::HILLY, start_z) {
-    _setupPopulator();
+    _ensurePopulator();
   }
 
+  virtual uint32_t generate() override {
+    uint32_t lastest_row_idx = _generateTerrain();
+    s_terrainPopulator.ensureInitialized().populate(*this);
+    return lastest_row_idx;
+  }
+
+  static void setup() { _ensurePopulator(); }
+
+private:
   virtual uint32_t _generateTerrain() override {
     assert(MaterialManager::exists(GRASS_1_TEX_NAME));
     assert(MaterialManager::exists(GRASS_2_TEX_NAME));
@@ -75,8 +86,10 @@ public:
     return last_row_idx;
   }
 
-private:
-  void _setupPopulator() {
+  static void _ensurePopulator() {
+    if (s_terrainPopulator.isInitialized())
+      return;
+
     TerrainPopulator greenery;
 
     PlacementRule base{
@@ -87,8 +100,7 @@ private:
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.2f;
-          r.minScale = 0.006f;
-          r.maxScale = 0.006f;
+          r.scale = 0.006f;
         }));
 
     greenery.withRule(
@@ -96,8 +108,7 @@ private:
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_2)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.12f;
-          r.minScale = 0.0025f;
-          r.maxScale = 0.0025f;
+          r.scale = 0.0025f;
           r.yOffset = 0.20f;
         }));
 
@@ -106,8 +117,7 @@ private:
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_2)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.12f;
-          r.minScale = 0.4f;
-          r.maxScale = 0.4f;
+          r.scale = 0.4f;
           r.yOffset = -0.10f;
         }));
 
@@ -116,8 +126,7 @@ private:
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.12f;
-          r.minScale = 0.002f;
-          r.maxScale = 0.002f;
+          r.scale = 0.002f;
         }));
 
     greenery.withRule(
@@ -125,10 +134,9 @@ private:
         std::make_unique<RowObject>(ModelManager::getModel(ModelName::ROCK_1)),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.15f; // Hills have more rocks
-          r.minScale = 0.005f;
-          r.maxScale = 0.005f;
+          r.scale = 0.005f;
         }));
 
-    bind(std::move(greenery));
+    s_terrainPopulator.init(std::move(greenery));
   }
 };

@@ -52,6 +52,7 @@ public:
   void setMaterial(const Material &material) { m_material = material; }
 
   virtual void draw(const RenderContext &ctx) override;
+  void draw(const RenderContext &ctx, const Material &material);
 
 private:
   void _setupMesh();

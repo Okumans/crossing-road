@@ -12,6 +12,7 @@
 #include <memory>
 #include <random>
 #include <ranges>
+#include <stdexcept>
 #include <string>
 
 inline void loadMaterialFolder(const std::string &materialName,
@@ -133,84 +134,101 @@ constexpr T withBase(T base, F modifier) {
   return base;
 }
 
-// template <typename Key, typename Value,
-//           size_t Size = magic_enum::enum_count<Key>()>
-// class EnumMap {
-// private:
-//   std::array<Value, Size> _data;
-//
-//   // Helper to convert enum to index
-//   constexpr size_t to_idx(Key key) const { return static_cast<size_t>(key); }
-//
-// public:
-//   // Default constructor
-//   EnumMap() = default;
-//
-//   struct Entry {
-//     Key key;
-//     Value value;
-//   };
-//
-//   // // Initializer list constructor
-//   // constexpr EnumMap(std::initializer_list<std::pair<Key, Value>> list) {
-//   //   for (auto &item :
-//   //        const_cast<std::initializer_list<std::pair<Key, Value>> &>(list))
-//   {
-//   //     // We use const_cast because initializer_list elements are const,
-//   //     // and we need to move the Value (especially for unique_ptr)
-//   //     _data[to_idx(item.first)] = std::move(item.second);
-//   //   }
-//   // }
-//   // 1. Variadic constructor for: EnumMap(Entry{k, v}, Entry{k, v})
-//   template <typename... Entries>
-//   constexpr EnumMap(Entries &&...entries) : _data{} {
-//     ((_data[to_idx(entries.key)] = std::move(entries.value)), ...);
-//   }
-//
-//   // 2. Array-based constructor for: EnumMap({ {k, v}, {k, v} })
-//   // This allows the {{...}, {...}} syntax to work
-//   template <size_t N> constexpr EnumMap(Entry (&&entries)[N]) : _data{} {
-//     for (size_t i = 0; i < N; ++i) {
-//       _data[to_idx(entries[i].key)] = std::move(entries[i].value);
-//     }
-//   }
-//
-//   // Access with bounds checking
-//   Value &at(Key key) { return _data.at(to_idx(key)); }
-//
-//   const Value &at(Key key) const { return _data.at(to_idx(key)); }
-//
-//   // Standard operator[] (no bounds checking, like std::array)
-//   Value &operator[](Key key) { return _data[to_idx(key)]; }
-//
-//   const Value &operator[](Key key) const { return _data[to_idx(key)]; }
-//
-//   size_t size() const { return Size; }
-//
-//   // Allows: for (auto& x : map)
-//   auto begin() noexcept { return _data.begin(); }
-//   auto end() noexcept { return _data.end(); }
-//
-//   // Allows: for (const auto& x : map)
-//   auto begin() const noexcept { return _data.begin(); }
-//   auto end() const noexcept { return _data.end(); }
-//
-//   // Explicit const iterators
-//   auto cbegin() const noexcept { return _data.cbegin(); }
-//   auto cend() const noexcept { return _data.cend(); }
-//
-//   auto pairs() {
-//     return std::views::iota(size_t(0), Size) |
-//            std::views::transform([this](size_t i) {
-//              return std::pair<Key, Value &>(static_cast<Key>(i), _data[i]);
-//            });
-//   }
-//
-//   auto pairs() const {
-//     return std::views::iota(size_t(0), Size) |
-//            std::views::transform([this](size_t i) {
-//              return std::pair<Key, const Value &>(static_cast<Key>(i),
-//                                                   _data[i]);
-//            });
-//   }
-// };
+template <typename T> class NotInitialized {
+private:
+  std::optional<T> storage;
+
+public:
+  // Throws if accessed before init() is called
+  T &ensureInitialized() {
+    if (!storage.has_value()) {
+      throw std::runtime_error("Attempted to access unitialized object.");
+    }
+    return *storage;
+  }
+
+  // Const version for read-only access
+  const T &ensureInitialized() const {
+    if (!storage.has_value()) {
+      throw std::runtime_error("Attempted to access unitialized object.");
+    }
+    return *storage;
+  }
+
+  bool isInitialized() const { return storage.has_value(); }
+
+  // Variadic template to construct T in-place
+  template <typename... Args> void init(Args &&...args) {
+    if (storage.has_value()) {
+      throw std::runtime_error("Object is already initialized.");
+    }
+    storage.emplace(std::forward<Args>(args)...);
+  }
+};
+
+template <typename T> struct DefaultValidator {
+  constexpr bool operator()(const T &) const { return true; }
+};
+
+template <typename T, typename Validator = DefaultValidator<T>>
+class SettableNotInitialized {
+private:
+  std::optional<T> storage;
+
+public:
+  template <typename Key, typename Value>
+    requires requires(T t, Key k, Value v) { t[k] = std::forward<Value>(v); }
+  constexpr bool set(Key &&key, Value &&value) {
+    if (!storage.has_value()) {
+      storage.emplace();
+    }
+
+    (*storage)[std::forward<Key>(key)] = std::forward<Value>(value);
+
+    return Validator{}(*storage);
+  }
+
+  template <typename Key>
+    requires requires(T t, Key k) { t[k]; }
+  constexpr decltype(auto) getUnvalidated(Key &&key) {
+    if (storage.has_value()) {
+      return (*storage)[std::forward<Key>(key)];
+    }
+
+    throw std::runtime_error("Attempted to access elements before underlying "
+                             "storage was allocated.");
+  }
+
+  template <typename Key>
+    requires requires(const T t, Key k) { t[k]; }
+  constexpr decltype(auto) getUnvalidated(Key &&key) const {
+    if (storage.has_value()) {
+      return (*storage)[std::forward<Key>(key)];
+    }
+
+    throw std::runtime_error("Attempted to access elements before underlying "
+                             "storage was allocated.");
+  }
+
+  constexpr T &ensureInitialized() {
+    if (!isInitialized()) {
+      throw std::runtime_error(
+          "Attempted to access uninitialized or incomplete object.");
+    }
+    return *storage;
+  }
+
+  constexpr const T &ensureInitialized() const {
+    if (!isInitialized()) {
+      throw std::runtime_error(
+          "Attempted to access uninitialized or incomplete object.");
+    }
+    return *storage;
+  }
+
+  constexpr bool isInitialized() const {
+    return storage.has_value() && Validator{}(*storage);
+  }
+
+  constexpr void clear() { storage.reset(); }
+};

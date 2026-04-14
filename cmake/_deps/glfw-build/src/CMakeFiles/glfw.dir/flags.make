@@ -6,7 +6,7 @@ C_DEFINES = -D_GLFW_USE_CONFIG_H -Dglfw_EXPORTS
 
 C_INCLUDES = -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-src/include -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-src/src -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-build/src
 
-C_FLAGS = -g -std=gnu99 -fPIC -Wall -fvisibility=hidden
+C_FLAGS = -O3 -DNDEBUG -std=gnu99 -fPIC -Wall -fvisibility=hidden
 
 # Custom flags: _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o_FLAGS = -Wdeclaration-after-statement
 

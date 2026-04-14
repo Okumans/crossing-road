@@ -1,9 +1,9 @@
 file(REMOVE_RECURSE
   "../../../lib/.3"
-  "../../../lib/libglfwd.pdb"
-  "../../../lib/libglfwd.so"
-  "../../../lib/libglfwd.so.3"
-  "../../../lib/libglfwd.so.3.3"
+  "../../../lib/libglfw.pdb"
+  "../../../lib/libglfw.so"
+  "../../../lib/libglfw.so.3"
+  "../../../lib/libglfw.so.3.3"
   "CMakeFiles/glfw.dir/link.d"
   "CMakeFiles/glfw.dir/context.c.o"
   "CMakeFiles/glfw.dir/context.c.o.d"

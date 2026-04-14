@@ -3,6 +3,7 @@
 #include "game/terrain.hpp"
 #include "scene/car.hpp"
 #include "utility/enum_map.hpp"
+#include "utility/utility.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -28,7 +29,8 @@ private:
     float uvScale;
   };
 
-  inline static EnumMap<CarType, std::unique_ptr<Car>> s_carTemplate;
+  inline static SettableNotInitialized<EnumMap<CarType, std::unique_ptr<Car>>>
+      s_carTemplate;
   inline constexpr static EnumMap<RoadMaterialType, RoadMaterialConfig>
       ROAD_MATERIAL_CONFIG = {{{ROAD_1_TEX_NAME, 4.0f},
                                {ROAD_2_TEX_NAME, 4.0f},
@@ -40,6 +42,8 @@ public:
   virtual uint32_t _generateTerrain() override;
 
   static void setCar(CarType type, std::unique_ptr<Car> &&car) {
-    s_carTemplate[type] = std::move(car);
+    s_carTemplate.set(type, std::move(car));
   }
+
+  static void setup();
 };

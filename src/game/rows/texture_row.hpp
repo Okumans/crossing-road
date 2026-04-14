@@ -10,9 +10,9 @@ protected:
   glm::vec2 m_uvOffset;
   Material m_material;
   Material m_sideMaterial;
-  std::unique_ptr<Mesh> m_mesh;
-  std::unique_ptr<Mesh> m_sideMesh;
-  std::unique_ptr<Mesh> m_topEdgeMesh;
+
+  static std::unique_ptr<Mesh> s_topMesh;
+  static std::unique_ptr<Mesh> s_sideMesh;
 
 private:
   float m_uvScaleFactor;
@@ -20,7 +20,7 @@ private:
 public:
   TextureRow(RowType type, const Material &material, float depth = 1.0f,
              float height = 0.0f,
-             std::optional<Material> sid_material = std::nullopt,
+             std::optional<Material> side_material = std::nullopt,
              float uv_scale_factor = 4.0f);
 
   virtual void draw(const RenderContext &ctx, float z) override;
@@ -34,6 +34,6 @@ public:
   };
   float getUVScaleFactor() const { return m_uvScaleFactor; }
 
-private:
-  void _setupMesh();
+protected:
+  static void _ensureStaticMeshes();
 };

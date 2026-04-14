@@ -1,9 +1,10 @@
 #pragma once
 
 #include "graphics/model.hpp"
+#include "utility/enum_map.hpp"
+#include "utility/utility.hpp"
 
 #include <memory>
-#include <unordered_map>
 
 // Define model names here
 enum class ModelName {
@@ -16,11 +17,13 @@ enum class ModelName {
   CAR_1,
   CAR_2,
   TRAIN_1,
+  LILLYPAD_1,
 };
 
 class ModelManager {
 public:
-  static std::unordered_map<ModelName, std::shared_ptr<Model>> models;
+  static SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>>
+      s_models;
 
   static std::shared_ptr<Model>
   loadModel(ModelName name, const char *model_path, bool flip_vertical = false);

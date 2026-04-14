@@ -5,11 +5,12 @@
 #include "glm/fwd.hpp"
 #include "graphics/idrawable.hpp"
 #include "scene/row_object.hpp"
+#include "utility/enum_map.hpp"
 #include "utility/utility.hpp"
 
 #include <cstdint>
-#include <map>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <vector>
 
@@ -25,8 +26,7 @@ enum class TerrainType {
 struct PlacementRule {
   int attempts = 1;
   float probability = 1.0f;
-  float minScale = 1.0f;
-  float maxScale = 1.0f;
+  float scale = 1.0f;
   float minX = -Row::WIDTH / 2.0f;
   float maxX = Row::WIDTH / 2.0f;
   float yOffset = 0.0f;
@@ -41,19 +41,44 @@ struct SpawnConfig {
 
 class TerrainPopulator {
 private:
-  std::map<RowType, std::vector<SpawnConfig>> m_rules;
+  EnumMap<RowType, std::optional<std::vector<SpawnConfig>>> m_rules;
 
 public:
   TerrainPopulator() = default;
   TerrainPopulator(TerrainPopulator &&) = default;
   TerrainPopulator &operator=(TerrainPopulator &&) = default;
 
+  /**
+   * @brief Registers a spawning rule for a specific row type.
+   *
+   * This method adds an object template and its associated placement rules to
+   * the populator. The provided object's scale is adjusted based on the rule,
+   * and its AABB is recalculated.
+   *
+   * @note It is recommended that the passed object is in a deferred state (AABB
+   * not yet calculated) as it will be recalculated here after scaling.
+   *
+   * @param type The row type to apply this rule to.
+   * @param object The template object to spawn.
+   * @param rule The placement rules (probability, scale, bounds, etc.).
+   * @return TerrainPopulator& Reference to this for method chaining.
+   */
   TerrainPopulator &withRule(RowType type, std::unique_ptr<RowObject> &&object,
                              PlacementRule rule = {}) {
+
     assert(rule.probability >= 0.0f && rule.probability <= 1.0f);
     assert(rule.minX <= rule.maxX);
 
-    m_rules[type].push_back({.object = std::move(object), .rule = rule});
+    std::optional<std::vector<SpawnConfig>> &opt = m_rules[type];
+
+    if (!opt)
+      opt.emplace();
+
+    object->setScale(object->getScale() * rule.scale);
+    object->recalculateAABB();
+
+    opt->push_back({.object = std::move(object), .rule = rule});
+
     return *this;
   }
 
@@ -73,7 +98,6 @@ private:
   std::vector<RowInfo> m_rowsInfo;
 
 protected:
-  TerrainPopulator m_populator;
   TerrainType m_type;
   uint32_t m_startRowIdx;
   float m_currRelativeZ;
@@ -107,14 +131,9 @@ public:
       row->draw(ctx, z);
   }
 
-  float generate() {
-    float offset = _generateTerrain();
-    m_populator.populate(*this);
-    return offset;
-  }
-
-  void bind(TerrainPopulator &&populator) {
-    m_populator = std::move(populator);
+  virtual uint32_t generate() {
+    uint32_t lastest_row_idx = _generateTerrain();
+    return lastest_row_idx;
   }
 
   TerrainType getType() const { return m_type; }
@@ -131,41 +150,41 @@ protected:
 inline void TerrainPopulator::populate(Terrain &terrain) {
   for (auto &[row, idx, z] : terrain.m_rowsInfo) {
     RowType type = row->getType();
-    if (!m_rules.contains(type))
+    if (!m_rules[type])
       continue;
 
-    const auto &rules = m_rules.at(type);
+    const auto &rules = m_rules[type].value();
 
     // Grid-based spawning (25 slots)
     // Randomly pick one slot in the playable area to definitely be a gap
-    int guaranteedGap = Random::randInt(5, 19);
+    int guaranteed_gap = Random::randInt(5, 19);
 
     for (int i = 0; i < 25; ++i) {
-      if (i == guaranteedGap)
+      if (i == guaranteed_gap)
         continue;
 
       // Weight probability to be higher at edges (0.0 to 12.0 distance)
-      float distFromCenter = std::abs(i - 12) / 12.0f;
-      float edgeWeight = 0.4f + 0.6f * distFromCenter; // 0.4 center, 1.0 edges
+      float dist_from_center = std::abs(i - 12) / 12.0f;
+      float edge_weight =
+          0.4f + 0.6f * dist_from_center; // 0.4 center, 1.0 edges
 
       for (const auto &config : rules) {
-        if (Random::randChance(config.rule.probability * edgeWeight)) {
+        if (Random::randChance(config.rule.probability * edge_weight)) {
+
+          // Clone object (skip AABB recalculation)
           std::unique_ptr<RowObject> obj =
               std::make_unique<RowObject>(*config.object);
 
+          // scale is already set, with recalculateAABB on withRule
           float x = -12.0f + (float)i;
-          float scale =
-              Random::randFloat(config.rule.minScale, config.rule.maxScale);
           float z = config.rule.zOffset;
           float y = row->getHeight() + config.rule.yOffset;
 
           obj->setPosition({x, y});
           obj->setZOffset(z);
-          obj->setScale(obj->getScale() * scale);
 
           if (config.rule.randomRotation) {
-            obj->setRotation(
-                {0.0f, Random::randFloat(0.0f, glm::two_pi<float>()), 0.0f});
+            obj->setRotationY(Random::randFloat(0.0f, glm::two_pi<float>()));
           }
 
           if (!row->collided(*obj)) {

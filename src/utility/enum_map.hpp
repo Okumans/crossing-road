@@ -1,4 +1,7 @@
+#pragma once
+
 #include "external/magic_enum.hpp"
+#include <algorithm>
 #include <array>
 #include <format>
 #include <initializer_list>
@@ -69,5 +72,16 @@ public:
              return std::pair<Key, const Value &>(static_cast<Key>(i),
                                                   _data[i]);
            });
+  }
+};
+
+template <typename T> struct EnumMapValidator {
+  constexpr bool operator()(const T &ref) const {
+    return std::ranges::all_of(ref, [](const auto &value) {
+      static_assert(std::is_constructible_v<bool, decltype(value)>,
+                    "EnumMap elements must be convertible to bool!");
+
+      return static_cast<bool>(value);
+    });
   }
 };

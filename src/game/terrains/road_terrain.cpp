@@ -5,6 +5,7 @@
 #include "game/rows/road_row.hpp"
 #include "graphics/material.hpp"
 #include "resource/material_manager.hpp"
+#include "resource/model_manager.hpp"
 #include "scene/car.hpp"
 #include "utility/utility.hpp"
 
@@ -14,7 +15,7 @@
 #include <utility>
 
 uint32_t RoadTerrain::_generateTerrain() {
-  for (const auto &[type, car] : s_carTemplate.pairs()) {
+  for (const auto &[type, car] : s_carTemplate.ensureInitialized().pairs()) {
     if (!car)
       throw std::runtime_error(
           std::format("Car with type=\"{}\" need to be set first",
@@ -56,10 +57,10 @@ uint32_t RoadTerrain::_generateTerrain() {
                                               direction, uv_scale);
 
     // Add car templates
-    road_row->addCarTemplate(
-        std::make_unique<Car>(*s_carTemplate[CarType::CAR_1]));
-    road_row->addCarTemplate(
-        std::make_unique<Car>(*s_carTemplate[CarType::CAR_2]));
+    road_row->addCarTemplate(std::make_unique<Car>(
+        *s_carTemplate.ensureInitialized()[CarType::CAR_1]));
+    road_row->addCarTemplate(std::make_unique<Car>(
+        *s_carTemplate.ensureInitialized()[CarType::CAR_2]));
 
     // Randomly pick a pattern
     if (Random::randChance(0.3f)) {
@@ -76,8 +77,8 @@ uint32_t RoadTerrain::_generateTerrain() {
 
       road_row = std::make_unique<RoadRow>(material, 1.0f, 0.05f, speed * 5.0f,
                                            direction, uv_scale);
-      road_row->addCarTemplate(
-          std::make_unique<Car>(*s_carTemplate[CarType::TRAIN_1]));
+      road_row->addCarTemplate(std::make_unique<Car>(
+          *s_carTemplate.ensureInitialized()[CarType::TRAIN_1]));
       road_row->setPattern(TrafficPattern::TRAIN);
     }
 
@@ -86,4 +87,18 @@ uint32_t RoadTerrain::_generateTerrain() {
   }
 
   return last_row_idx;
+}
+
+void RoadTerrain::setup() {
+  setCar(CarType::CAR_1,
+         std::make_unique<Car>(ModelManager::getModel(ModelName::CAR_1), 0.0f,
+                               glm::vec2(0.0f), 0.0f, glm::vec3(0.0030f)));
+
+  setCar(CarType::CAR_2,
+         std::make_unique<Car>(ModelManager::getModel(ModelName::CAR_2), 0.0f,
+                               glm::vec2(0.0f), 0.0f, glm::vec3(0.0022f)));
+
+  setCar(CarType::TRAIN_1,
+         std::make_unique<Car>(ModelManager::getModel(ModelName::TRAIN_1), 0.0f,
+                               glm::vec2(0.0f), 0.0f, glm::vec3(0.4f)));
 }

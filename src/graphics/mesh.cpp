@@ -112,92 +112,89 @@ void Mesh::_setupMesh() {
   glVertexArrayAttribBinding(m_vao, 4, 0);
 }
 
-void Mesh::draw(const RenderContext &ctx) {
+void Mesh::draw(const RenderContext &ctx) { draw(ctx, m_material); }
+
+void Mesh::draw(const RenderContext &ctx, const Material &material) {
   int counter = 0;
 
   // 1. Diffuse/Albedo
   ctx.shader.setInt("u_DiffuseTex", counter);
-  if (m_material.getDiffuse()) {
-    glBindTextureUnit(counter, m_material.getDiffuse()->getTexID());
+  if (material.getDiffuse()) {
+    glBindTextureUnit(counter, material.getDiffuse()->getTexID());
   } else {
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
   }
   counter++;
 
   // 2. Normal
   ctx.shader.setInt("u_NormalTex", counter);
-  if (m_material.getNormal()) {
-    glBindTextureUnit(counter, m_material.getNormal()->getTexID());
+  if (material.getNormal()) {
+    glBindTextureUnit(counter, material.getNormal()->getTexID());
   } else {
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_NORMAL_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_NORMAL_TEXTURE)->getTexID());
   }
   counter++;
 
   // 3. Height/Parallax
   ctx.shader.setInt("u_HeightTex", counter);
-  if (m_material.getHeight()) {
-    glBindTextureUnit(counter, m_material.getHeight()->getTexID());
+  if (material.getHeight()) {
+    glBindTextureUnit(counter, material.getHeight()->getTexID());
   } else {
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
   }
   counter++;
 
   // 4. Metallic
   ctx.shader.setInt("u_MetallicTex", counter);
-  if (m_material.getMetallic()) {
-    glBindTextureUnit(counter, m_material.getMetallic()->getTexID());
+  if (material.getMetallic()) {
+    glBindTextureUnit(counter, material.getMetallic()->getTexID());
   } else {
     // Default Metallic = 0.0 (Black)
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_BLACK_TEXTURE)->getTexID());
   }
   counter++;
 
   // 5. Roughness
   ctx.shader.setInt("u_RoughnessTex", counter);
-  if (m_material.getRoughness()) {
-    glBindTextureUnit(counter, m_material.getRoughness()->getTexID());
+  if (material.getRoughness()) {
+    glBindTextureUnit(counter, material.getRoughness()->getTexID());
   } else {
     // Default Roughness = 1.0 (White)
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
   }
   counter++;
 
   // 6. AO
   ctx.shader.setInt("u_AOTex", counter);
-  if (m_material.getAO()) {
-    glBindTextureUnit(counter, m_material.getAO()->getTexID());
+  if (material.getAO()) {
+    glBindTextureUnit(counter, material.getAO()->getTexID());
   } else {
     glBindTextureUnit(
-        counter,
-        TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
+        counter, TextureManager::getTexture(STATIC_WHITE_TEXTURE)->getTexID());
   }
   counter++;
 
   // Factors
   bool usePackedMR = false;
-  if (m_material.getMetallic() && m_material.getRoughness() &&
-      m_material.getMetallic()->getTexID() ==
-          m_material.getRoughness()->getTexID()) {
+  if (material.getMetallic() && material.getRoughness() &&
+      material.getMetallic()->getTexID() ==
+          material.getRoughness()->getTexID()) {
     usePackedMR = true;
   }
   ctx.shader.setBool("u_UsePackedMR", usePackedMR);
 
   ctx.shader.setVec3("u_BaseColor", m_baseColor);
   ctx.shader.setFloat("u_Opacity", m_opacity);
-  ctx.shader.setFloat("u_MetallicFactor", m_material.getMetallicFactor());
-  ctx.shader.setFloat("u_RoughnessFactor", m_material.getRoughnessFactor());
-  ctx.shader.setFloat("u_AOFactor", m_material.getAOFactor());
+  ctx.shader.setFloat("u_MetallicFactor", material.getMetallicFactor());
+  ctx.shader.setFloat("u_RoughnessFactor", material.getRoughnessFactor());
+  ctx.shader.setFloat("u_AOFactor", material.getAOFactor());
 
   glBindVertexArray(m_vao);
   glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 }
+

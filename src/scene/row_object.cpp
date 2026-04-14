@@ -1,4 +1,5 @@
 #include "row_object.hpp"
+#include "glm/fwd.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/mesh.hpp"
 
@@ -12,68 +13,122 @@ float RowObject::s_minClipY = 0.0f;
 float RowObject::s_maxClipY = 0.0f;
 bool RowObject::s_useClipY = false;
 
-RowObject::RowObject(std::shared_ptr<Model> model,
-                     glm::vec2 pos,
-                     float z_offset,
-                     glm::vec3 scale,
-                     glm::vec3 rotation,
+RowObject::RowObject(std::shared_ptr<Model> model, glm::vec2 pos,
+                     float z_offset, glm::vec3 scale, glm::vec3 rotation,
                      bool defer_aabb_calculation)
     : m_model(std::move(model)), m_position({pos, z_offset}),
-      m_rotation(rotation), m_scale(scale),
-      m_baseAABB((!defer_aabb_calculation && m_model) ? _calculateAABB(*m_model)
-                                                      : AABB{}) {
+      m_rotation({0.0f, 0.0f, 0.0f}), m_rotationY(rotation.y), m_scale(scale) {
+
   if (!m_model) {
     std::println(stderr, "Warning: Object created with null Model!");
   }
-  _updateLocalAABB(true);
-}
 
-void RowObject::_updateLocalAABB(bool deep_scan) {
-  if (!m_model)
-    return;
+  // Set rotation components and policy (Y is by default excluded for variety)
+  m_rotation = {rotation.x, 0.0f, rotation.z};
+  m_rotationY = rotation.y;
 
-  glm::mat4 transform = glm::mat4(1.0f);
-  transform = glm::rotate(transform, m_rotation.x, glm::vec3(1, 0, 0));
-  transform = glm::rotate(transform, m_rotation.y, glm::vec3(0, 1, 0));
-  transform = glm::rotate(transform, m_rotation.z, glm::vec3(0, 0, 1));
-  transform = glm::scale(transform, m_scale);
-
-  if (deep_scan) {
-    if (s_useClipY) {
-      m_localAABB = _calculateAABB(*m_model, transform, s_minClipY, s_maxClipY);
-    } else {
-      m_localAABB = _calculateAABB(*m_model, transform);
-    }
+  if (defer_aabb_calculation) {
+    m_baseAABB = AABB::empty();
+    m_localAABB = AABB::empty();
   } else {
-    m_localAABB = m_baseAABB;
-    m_localAABB.transform(transform);
+    recalculateAABB();
   }
 }
 
-void RowObject::setScale(glm::vec3 scale, bool recalculate_aabb) {
+RowObject RowObject::createWithDeferedState(std::shared_ptr<Model> model) {
+  return RowObject(std::move(model), glm::vec2(0.0f), 0.0f, glm::vec3(0.0f),
+                   glm::vec3(0.0f), true);
+}
+
+void RowObject::recalculateAABB() {
+  if (!m_model)
+    return;
+
+  if (s_useClipY) {
+    if (std::abs(m_scale.y) > 0.0001f) {
+      float localMinY = s_minClipY / m_scale.y;
+      float localMaxY = s_maxClipY / m_scale.y;
+
+      if (m_scale.y < 0.0f)
+        std::swap(localMinY, localMaxY);
+
+      m_baseAABB =
+          _calculateAABB(*m_model, glm::mat4(1.0f), localMinY, localMaxY);
+
+    } else {
+      m_baseAABB = AABB::empty();
+    }
+  } else {
+    m_baseAABB = _calculateAABB(*m_model, glm::mat4(1.0f));
+  }
+
+  // 4. Finally, build your runtime AABB
+  _updateLocalAABB();
+}
+
+void RowObject::_updateLocalAABB() {
+  if (!m_model)
+    return;
+
+  glm::mat4 transform(1.0f);
+  transform = glm::rotate(transform, m_rotation.x, glm::vec3(1, 0, 0));
+  transform = glm::rotate(transform, m_rotation.z, glm::vec3(0, 0, 1));
+
+  transform = glm::scale(transform, m_scale);
+
+  m_localAABB = m_baseAABB;
+  m_localAABB.transform(transform);
+
+  // rotate around Y again (with m_localAABB center)
+  if (m_includeYInAABB) {
+    glm::vec3 local_aabb_center = m_localAABB.getCenter();
+    glm::vec3 pivot(local_aabb_center.x, 0.0f, local_aabb_center.z);
+
+    glm::mat4 transform(1.0f);
+    transform = glm::translate(transform, pivot);
+
+    transform = glm::rotate(transform, m_rotationY, glm::vec3(0, 1, 0));
+
+    transform = glm::translate(transform, -pivot);
+    m_localAABB.transform(transform);
+  }
+
+  m_isDirty = true;
+}
+
+void RowObject::setScale(glm::vec3 scale) {
   m_scale = scale;
-  _updateLocalAABB(recalculate_aabb);
-  m_isDirty = true;
+  recalculateAABB();
 }
 
-void RowObject::setScale(float scale, bool recalculate_aabb) {
-  setScale(glm::vec3(scale), recalculate_aabb);
+void RowObject::setScale(float scale) { setScale(glm::vec3(scale)); }
+
+void RowObject::setRotationXZ(glm::vec2 rads, bool include_y_in_aabb) {
+  m_rotation = {rads.x, 0.0f, rads.y};
+  m_includeYInAABB = include_y_in_aabb;
+  recalculateAABB();
 }
 
-void RowObject::setRotation(glm::vec3 rads, bool recalculate_aabb) {
-  m_rotation = rads;
-  _updateLocalAABB(recalculate_aabb);
-  m_isDirty = true;
+void RowObject::setRotationY(float rads) {
+  m_rotationY = rads;
+  _updateLocalAABB();
 }
 
-void RowObject::rotate(glm::vec3 rads, bool recalculate_aabb) {
-  m_rotation += rads;
-  _updateLocalAABB(recalculate_aabb);
-  m_isDirty = true;
+void RowObject::rotate(glm::vec3 rads) {
+  m_rotation.x += rads.x;
+  m_rotation.z += rads.z;
+  m_rotationY += rads.y;
+  recalculateAABB();
 }
 
-glm::vec3 RowObject::getWorldAABBCenter() const {
-  return m_localAABB.getCenter();
+glm::vec3 RowObject::getWorldAABBCenter(float z) const {
+  if (m_isDirty || m_lastZ != z) {
+    _updateGlobalAABB(z);
+    m_isDirty = false;
+    m_lastZ = z;
+  }
+
+  return m_worldAABB.getCenter();
 }
 
 const AABB &RowObject::getWorldAABB(float z) const {
@@ -89,14 +144,22 @@ const AABB &RowObject::getWorldAABB(float z) const {
 void RowObject::draw(const RenderContext &ctx, float z) {
   glm::mat4 model = glm::mat4(1.0f);
 
+  // use this to rotate around pivot (localAABB center) instead of normal
+  // rotation
+  glm::vec3 local_aabb_center = m_localAABB.getCenter();
+  glm::vec3 pivot(local_aabb_center.x, 0.0f, local_aabb_center.z);
+
   // m_position.z is the relative offset within the row
-  model =
-      glm::translate(model,
-                     glm::vec3(m_position.x, m_position.y, z + m_position.z));
+  model = glm::translate(
+      model, glm::vec3(m_position.x, m_position.y, z + m_position.z));
+
+  model = glm::translate(model, pivot);
 
   model = glm::rotate(model, m_rotation.x, glm::vec3(1, 0, 0));
-  model = glm::rotate(model, m_rotation.y, glm::vec3(0, 1, 0));
+  model = glm::rotate(model, m_rotationY, glm::vec3(0, 1, 0));
   model = glm::rotate(model, m_rotation.z, glm::vec3(0, 0, 1));
+
+  model = glm::translate(model, -pivot);
 
   model = glm::scale(model, m_scale);
 
@@ -114,8 +177,11 @@ bool RowObject::collided(AABB bounding_box) {
 
 void RowObject::setHeightClip(float min_y, float max_y) {
   if (m_model) {
-    m_localAABB = _calculateAABB(*m_model, glm::mat4(1.0f), min_y, max_y);
-    m_isDirty = true;
+    // Re-scan the vertices with the new clip boundaries
+    m_baseAABB = _calculateAABB(*m_model, glm::mat4(1.0f), min_y, max_y);
+
+    // Apply the current rotation and scale to the newly clipped base
+    _updateLocalAABB();
   }
 }
 
@@ -127,10 +193,8 @@ void RowObject::_updateGlobalAABB(float z) const {
   m_worldAABB = updated_AABB;
 }
 
-AABB RowObject::_calculateAABB(const Model &model,
-                               const glm::mat4 &transform,
-                               float min_y,
-                               float max_y) {
+AABB RowObject::_calculateAABB(const Model &model, const glm::mat4 &transform,
+                               float min_y, float max_y) {
   AABB aabb = AABB::empty();
 
   for (const Mesh &mesh : model.getMeshes()) {

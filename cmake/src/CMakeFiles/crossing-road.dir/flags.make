@@ -6,5 +6,5 @@ CXX_DEFINES = -DASSETS_PATH=\"../assets\" -DGLAD_API_CALL_EXPORT
 
 CXX_INCLUDES = -I/home/okumnas/Cedt/game_engine/projects/crossing_road/src -I/home/okumnas/Cedt/game_engine/projects/crossing_road/include -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glfw-src/include -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/gladsources/glad_gl_core_46/include -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/glm-src/glm/.. -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/assimp-src/code/../include -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/assimp-build/code/../include
 
-CXX_FLAGS = -g -std=c++23
+CXX_FLAGS = -O3 -DNDEBUG -std=c++23
 

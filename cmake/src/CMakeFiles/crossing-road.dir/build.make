@@ -69,21 +69,21 @@ include src/CMakeFiles/crossing-road.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/CMakeFiles/crossing-road.dir/flags.make
 
+src/generated_shaders/debug.frag.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/debug.frag.glsl
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Embedding shader debug.frag.glsl"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i debug.frag.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/debug.frag.glsl.h
+
+src/generated_shaders/debug.vert.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/debug.vert.glsl
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Embedding shader debug.vert.glsl"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i debug.vert.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/debug.vert.glsl.h
+
 src/generated_shaders/irradiance.frag.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/irradiance.frag.glsl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Embedding shader irradiance.frag.glsl"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Embedding shader irradiance.frag.glsl"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i irradiance.frag.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/irradiance.frag.glsl.h
 
 src/generated_shaders/irradiance.vert.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/irradiance.vert.glsl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Embedding shader irradiance.vert.glsl"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Embedding shader irradiance.vert.glsl"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i irradiance.vert.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/irradiance.vert.glsl.h
-
-src/generated_shaders/model_loading.frag.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/model_loading.frag.glsl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Embedding shader model_loading.frag.glsl"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i model_loading.frag.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/model_loading.frag.glsl.h
-
-src/generated_shaders/model_loading.vert.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/model_loading.vert.glsl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Embedding shader model_loading.vert.glsl"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i model_loading.vert.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/model_loading.vert.glsl.h
 
 src/generated_shaders/pbr.frag.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/pbr.frag.glsl
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Embedding shader pbr.frag.glsl"
@@ -117,13 +117,17 @@ src/generated_shaders/ui.vert.glsl.h: /home/okumnas/Cedt/game_engine/projects/cr
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Embedding shader ui.vert.glsl"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i ui.vert.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/ui.vert.glsl.h
 
+src/generated_shaders/water.frag.glsl.h: /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/water.frag.glsl
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Embedding shader water.frag.glsl"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders && xxd -i water.frag.glsl > /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/generated_shaders/water.frag.glsl.h
+
 src/CMakeFiles/crossing-road.dir/codegen:
 .PHONY : src/CMakeFiles/crossing-road.dir/codegen
 
 src/CMakeFiles/crossing-road.dir/core/app.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/core/app.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/core/app.cpp
 src/CMakeFiles/crossing-road.dir/core/app.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object src/CMakeFiles/crossing-road.dir/core/app.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object src/CMakeFiles/crossing-road.dir/core/app.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/core/app.cpp.o -MF CMakeFiles/crossing-road.dir/core/app.cpp.o.d -o CMakeFiles/crossing-road.dir/core/app.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/core/app.cpp
 
 src/CMakeFiles/crossing-road.dir/core/app.cpp.i: cmake_force
@@ -137,7 +141,7 @@ src/CMakeFiles/crossing-road.dir/core/app.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/core/main.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/core/main.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/core/main.cpp
 src/CMakeFiles/crossing-road.dir/core/main.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object src/CMakeFiles/crossing-road.dir/core/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object src/CMakeFiles/crossing-road.dir/core/main.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/core/main.cpp.o -MF CMakeFiles/crossing-road.dir/core/main.cpp.o.d -o CMakeFiles/crossing-road.dir/core/main.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/core/main.cpp
 
 src/CMakeFiles/crossing-road.dir/core/main.cpp.i: cmake_force
@@ -151,7 +155,7 @@ src/CMakeFiles/crossing-road.dir/core/main.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/game/game.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/game/game.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/game.cpp
 src/CMakeFiles/crossing-road.dir/game/game.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object src/CMakeFiles/crossing-road.dir/game/game.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/CMakeFiles/crossing-road.dir/game/game.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/game.cpp.o -MF CMakeFiles/crossing-road.dir/game/game.cpp.o.d -o CMakeFiles/crossing-road.dir/game/game.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/game.cpp
 
 src/CMakeFiles/crossing-road.dir/game/game.cpp.i: cmake_force
@@ -165,7 +169,7 @@ src/CMakeFiles/crossing-road.dir/game/game.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/map_manager.cpp
 src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o -MF CMakeFiles/crossing-road.dir/game/map_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/game/map_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/map_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.i: cmake_force
@@ -176,24 +180,80 @@ src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/map_manager.cpp.s"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/map_manager.cpp -o CMakeFiles/crossing-road.dir/game/map_manager.cpp.s
 
-src/CMakeFiles/crossing-road.dir/game/row.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
-src/CMakeFiles/crossing-road.dir/game/row.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.cpp
-src/CMakeFiles/crossing-road.dir/game/row.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/CMakeFiles/crossing-road.dir/game/row.cpp.o"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/row.cpp.o -MF CMakeFiles/crossing-road.dir/game/row.cpp.o.d -o CMakeFiles/crossing-road.dir/game/row.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.cpp
+src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.cpp
+src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o -MF CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o.d -o CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.cpp
 
-src/CMakeFiles/crossing-road.dir/game/row.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/row.cpp.i"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.cpp > CMakeFiles/crossing-road.dir/game/row.cpp.i
+src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.cpp > CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.i
 
-src/CMakeFiles/crossing-road.dir/game/row.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/row.cpp.s"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.cpp -o CMakeFiles/crossing-road.dir/game/row.cpp.s
+src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.cpp -o CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.s
+
+src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.cpp
+src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o -MF CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o.d -o CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.cpp
+
+src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.cpp > CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.i
+
+src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.cpp -o CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.s
+
+src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.cpp
+src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o -MF CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o.d -o CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.cpp
+
+src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.cpp > CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.i
+
+src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.cpp -o CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.s
+
+src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.cpp
+src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o -MF CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o.d -o CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.cpp
+
+src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.cpp > CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.i
+
+src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.cpp -o CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.s
+
+src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.cpp
+src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o -MF CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o.d -o CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.cpp
+
+src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.cpp > CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.i
+
+src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.cpp -o CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.s
 
 src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/camera.cpp
 src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/camera.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/camera.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/camera.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.i: cmake_force
@@ -204,10 +264,24 @@ src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/graphics/camera.cpp.s"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/camera.cpp -o CMakeFiles/crossing-road.dir/graphics/camera.cpp.s
 
+src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.cpp
+src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.cpp
+
+src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.cpp > CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.i
+
+src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.cpp -o CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.s
+
 src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/ibl_generator.cpp
 src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/ibl_generator.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.i: cmake_force
@@ -221,7 +295,7 @@ src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/mesh.cpp
 src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/mesh.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.i: cmake_force
@@ -235,7 +309,7 @@ src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/model.cpp
 src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/model.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/model.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/model.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/model.cpp.i: cmake_force
@@ -249,7 +323,7 @@ src/CMakeFiles/crossing-road.dir/graphics/model.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/shader.cpp
 src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/shader.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/shader.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/shader.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.i: cmake_force
@@ -263,7 +337,7 @@ src/CMakeFiles/crossing-road.dir/graphics/shader.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/skybox.cpp
 src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/skybox.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/skybox.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.i: cmake_force
@@ -277,7 +351,7 @@ src/CMakeFiles/crossing-road.dir/graphics/skybox.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/texture.cpp
 src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.o -MF CMakeFiles/crossing-road.dir/graphics/texture.cpp.o.d -o CMakeFiles/crossing-road.dir/graphics/texture.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/texture.cpp
 
 src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.i: cmake_force
@@ -291,7 +365,7 @@ src/CMakeFiles/crossing-road.dir/graphics/texture.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/lighting_manager.cpp
 src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o -MF CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/lighting_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.i: cmake_force
@@ -305,7 +379,7 @@ src/CMakeFiles/crossing-road.dir/resource/lighting_manager.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/material_manager.cpp
 src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o -MF CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/resource/material_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/material_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.i: cmake_force
@@ -319,7 +393,7 @@ src/CMakeFiles/crossing-road.dir/resource/material_manager.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/model_manager.cpp
 src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o -MF CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/model_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.i: cmake_force
@@ -333,7 +407,7 @@ src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/shader_manager.cpp
 src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o -MF CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/shader_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.i: cmake_force
@@ -347,7 +421,7 @@ src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/texture_manager.cpp
 src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o -MF CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/texture_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.i: cmake_force
@@ -358,24 +432,24 @@ src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.s"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/texture_manager.cpp -o CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.s
 
-src/CMakeFiles/crossing-road.dir/scene/object.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
-src/CMakeFiles/crossing-road.dir/scene/object.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.cpp
-src/CMakeFiles/crossing-road.dir/scene/object.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object src/CMakeFiles/crossing-road.dir/scene/object.cpp.o"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/scene/object.cpp.o -MF CMakeFiles/crossing-road.dir/scene/object.cpp.o.d -o CMakeFiles/crossing-road.dir/scene/object.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.cpp
+src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
+src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.cpp
+src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o -MF CMakeFiles/crossing-road.dir/scene/row_object.cpp.o.d -o CMakeFiles/crossing-road.dir/scene/row_object.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.cpp
 
-src/CMakeFiles/crossing-road.dir/scene/object.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/scene/object.cpp.i"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.cpp > CMakeFiles/crossing-road.dir/scene/object.cpp.i
+src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/crossing-road.dir/scene/row_object.cpp.i"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.cpp > CMakeFiles/crossing-road.dir/scene/row_object.cpp.i
 
-src/CMakeFiles/crossing-road.dir/scene/object.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/scene/object.cpp.s"
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.cpp -o CMakeFiles/crossing-road.dir/scene/object.cpp.s
+src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/crossing-road.dir/scene/row_object.cpp.s"
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.cpp -o CMakeFiles/crossing-road.dir/scene/row_object.cpp.s
 
 src/CMakeFiles/crossing-road.dir/ui/font.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/ui/font.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/font.cpp
 src/CMakeFiles/crossing-road.dir/ui/font.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object src/CMakeFiles/crossing-road.dir/ui/font.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object src/CMakeFiles/crossing-road.dir/ui/font.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/ui/font.cpp.o -MF CMakeFiles/crossing-road.dir/ui/font.cpp.o.d -o CMakeFiles/crossing-road.dir/ui/font.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/font.cpp
 
 src/CMakeFiles/crossing-road.dir/ui/font.cpp.i: cmake_force
@@ -389,7 +463,7 @@ src/CMakeFiles/crossing-road.dir/ui/font.cpp.s: cmake_force
 src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o: src/CMakeFiles/crossing-road.dir/flags.make
 src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o: /home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/ui_manager.cpp
 src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o -MF CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o.d -o CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o -c /home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/ui_manager.cpp
 
 src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.i: cmake_force
@@ -406,8 +480,13 @@ crossing__road_OBJECTS = \
 "CMakeFiles/crossing-road.dir/core/main.cpp.o" \
 "CMakeFiles/crossing-road.dir/game/game.cpp.o" \
 "CMakeFiles/crossing-road.dir/game/map_manager.cpp.o" \
-"CMakeFiles/crossing-road.dir/game/row.cpp.o" \
+"CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o" \
+"CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o" \
+"CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o" \
+"CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o" \
+"CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o" \
 "CMakeFiles/crossing-road.dir/graphics/camera.cpp.o" \
+"CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o" \
 "CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o" \
 "CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o" \
 "CMakeFiles/crossing-road.dir/graphics/model.cpp.o" \
@@ -419,7 +498,7 @@ crossing__road_OBJECTS = \
 "CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o" \
 "CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o" \
 "CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o" \
-"CMakeFiles/crossing-road.dir/scene/object.cpp.o" \
+"CMakeFiles/crossing-road.dir/scene/row_object.cpp.o" \
 "CMakeFiles/crossing-road.dir/ui/font.cpp.o" \
 "CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o"
 
@@ -430,8 +509,13 @@ bin/crossing-road: src/CMakeFiles/crossing-road.dir/core/app.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/core/main.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/game.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.o
-bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/row.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/graphics/ibl_generator.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/graphics/mesh.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/graphics/model.cpp.o
@@ -443,18 +527,18 @@ bin/crossing-road: src/CMakeFiles/crossing-road.dir/resource/material_manager.cp
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/resource/model_manager.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/resource/shader_manager.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.o
-bin/crossing-road: src/CMakeFiles/crossing-road.dir/scene/object.cpp.o
+bin/crossing-road: src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/ui/font.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/ui/ui_manager.cpp.o
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/build.make
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/compiler_depend.ts
-bin/crossing-road: lib/libglfwd.so.3.3
-bin/crossing-road: lib/libglad_gl_core_46d.so
-bin/crossing-road: lib/libassimpd.so.5.4.3
+bin/crossing-road: lib/libglfw.so.3.3
+bin/crossing-road: lib/libglad_gl_core_46.so
+bin/crossing-road: lib/libassimp.so.5.4.3
 bin/crossing-road: /usr/lib/libz.so
 bin/crossing-road: /usr/lib/libminizip.so
 bin/crossing-road: src/CMakeFiles/crossing-road.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Linking CXX executable ../bin/crossing-road"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Linking CXX executable ../bin/crossing-road"
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/crossing-road.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -465,10 +549,10 @@ src/CMakeFiles/crossing-road.dir/clean:
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src && $(CMAKE_COMMAND) -P CMakeFiles/crossing-road.dir/cmake_clean.cmake
 .PHONY : src/CMakeFiles/crossing-road.dir/clean
 
+src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/debug.frag.glsl.h
+src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/debug.vert.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/irradiance.frag.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/irradiance.vert.glsl.h
-src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/model_loading.frag.glsl.h
-src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/model_loading.vert.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/pbr.frag.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/pbr.vert.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/shadow.frag.glsl.h
@@ -477,6 +561,7 @@ src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/skybox.frag.glsl.
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/skybox.vert.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/ui.frag.glsl.h
 src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/ui.vert.glsl.h
+src/CMakeFiles/crossing-road.dir/depend: src/generated_shaders/water.frag.glsl.h
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/okumnas/Cedt/game_engine/projects/crossing_road /home/okumnas/Cedt/game_engine/projects/crossing_road/src /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/src/CMakeFiles/crossing-road.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : src/CMakeFiles/crossing-road.dir/depend
 

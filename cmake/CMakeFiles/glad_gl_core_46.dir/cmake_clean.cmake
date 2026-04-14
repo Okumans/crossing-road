@@ -6,8 +6,8 @@ file(REMOVE_RECURSE
   "gladsources/glad_gl_core_46/include/KHR/khrplatform.h"
   "gladsources/glad_gl_core_46/include/glad/gl.h"
   "gladsources/glad_gl_core_46/src/gl.c"
-  "lib/libglad_gl_core_46d.pdb"
-  "lib/libglad_gl_core_46d.so"
+  "lib/libglad_gl_core_46.pdb"
+  "lib/libglad_gl_core_46.so"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -61,10 +61,11 @@ void RoadRow::_spawnCar(std::optional<float> override_x) {
   car->setSpeed(m_laneSpeed * m_direction);
 
   // Orient car based on direction
+  car->setRotationXZ({0.0f, 0.0f}, true); // Enable Y in AABB
   if (m_direction > 0.0f) {
-    car->setRotation({0, glm::radians(90.0f), 0});
+    car->setRotationY(glm::radians(90.0f));
   } else {
-    car->setRotation({0, glm::radians(-90.0f), 0});
+    car->setRotationY(glm::radians(-90.0f));
   }
 
   float x;

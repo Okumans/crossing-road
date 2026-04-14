@@ -272,29 +272,125 @@ game/map_manager.cpp.s:
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/map_manager.cpp.s
 .PHONY : game/map_manager.cpp.s
 
-game/row.o: game/row.cpp.o
-.PHONY : game/row.o
+game/rows/grass_row.o: game/rows/grass_row.cpp.o
+.PHONY : game/rows/grass_row.o
 
 # target to build an object file
-game/row.cpp.o:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/row.cpp.o
-.PHONY : game/row.cpp.o
+game/rows/grass_row.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.o
+.PHONY : game/rows/grass_row.cpp.o
 
-game/row.i: game/row.cpp.i
-.PHONY : game/row.i
+game/rows/grass_row.i: game/rows/grass_row.cpp.i
+.PHONY : game/rows/grass_row.i
 
 # target to preprocess a source file
-game/row.cpp.i:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/row.cpp.i
-.PHONY : game/row.cpp.i
+game/rows/grass_row.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.i
+.PHONY : game/rows/grass_row.cpp.i
 
-game/row.s: game/row.cpp.s
-.PHONY : game/row.s
+game/rows/grass_row.s: game/rows/grass_row.cpp.s
+.PHONY : game/rows/grass_row.s
 
 # target to generate assembly for a file
-game/row.cpp.s:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/row.cpp.s
-.PHONY : game/row.cpp.s
+game/rows/grass_row.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/grass_row.cpp.s
+.PHONY : game/rows/grass_row.cpp.s
+
+game/rows/road_row.o: game/rows/road_row.cpp.o
+.PHONY : game/rows/road_row.o
+
+# target to build an object file
+game/rows/road_row.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.o
+.PHONY : game/rows/road_row.cpp.o
+
+game/rows/road_row.i: game/rows/road_row.cpp.i
+.PHONY : game/rows/road_row.i
+
+# target to preprocess a source file
+game/rows/road_row.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.i
+.PHONY : game/rows/road_row.cpp.i
+
+game/rows/road_row.s: game/rows/road_row.cpp.s
+.PHONY : game/rows/road_row.s
+
+# target to generate assembly for a file
+game/rows/road_row.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/road_row.cpp.s
+.PHONY : game/rows/road_row.cpp.s
+
+game/rows/texture_row.o: game/rows/texture_row.cpp.o
+.PHONY : game/rows/texture_row.o
+
+# target to build an object file
+game/rows/texture_row.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.o
+.PHONY : game/rows/texture_row.cpp.o
+
+game/rows/texture_row.i: game/rows/texture_row.cpp.i
+.PHONY : game/rows/texture_row.i
+
+# target to preprocess a source file
+game/rows/texture_row.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.i
+.PHONY : game/rows/texture_row.cpp.i
+
+game/rows/texture_row.s: game/rows/texture_row.cpp.s
+.PHONY : game/rows/texture_row.s
+
+# target to generate assembly for a file
+game/rows/texture_row.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/texture_row.cpp.s
+.PHONY : game/rows/texture_row.cpp.s
+
+game/rows/water_row.o: game/rows/water_row.cpp.o
+.PHONY : game/rows/water_row.o
+
+# target to build an object file
+game/rows/water_row.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.o
+.PHONY : game/rows/water_row.cpp.o
+
+game/rows/water_row.i: game/rows/water_row.cpp.i
+.PHONY : game/rows/water_row.i
+
+# target to preprocess a source file
+game/rows/water_row.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.i
+.PHONY : game/rows/water_row.cpp.i
+
+game/rows/water_row.s: game/rows/water_row.cpp.s
+.PHONY : game/rows/water_row.s
+
+# target to generate assembly for a file
+game/rows/water_row.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/rows/water_row.cpp.s
+.PHONY : game/rows/water_row.cpp.s
+
+game/terrains/road_terrain.o: game/terrains/road_terrain.cpp.o
+.PHONY : game/terrains/road_terrain.o
+
+# target to build an object file
+game/terrains/road_terrain.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.o
+.PHONY : game/terrains/road_terrain.cpp.o
+
+game/terrains/road_terrain.i: game/terrains/road_terrain.cpp.i
+.PHONY : game/terrains/road_terrain.i
+
+# target to preprocess a source file
+game/terrains/road_terrain.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.i
+.PHONY : game/terrains/road_terrain.cpp.i
+
+game/terrains/road_terrain.s: game/terrains/road_terrain.cpp.s
+.PHONY : game/terrains/road_terrain.s
+
+# target to generate assembly for a file
+game/terrains/road_terrain.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/game/terrains/road_terrain.cpp.s
+.PHONY : game/terrains/road_terrain.cpp.s
 
 graphics/camera.o: graphics/camera.cpp.o
 .PHONY : graphics/camera.o
@@ -319,6 +415,30 @@ graphics/camera.s: graphics/camera.cpp.s
 graphics/camera.cpp.s:
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/graphics/camera.cpp.s
 .PHONY : graphics/camera.cpp.s
+
+graphics/debug_drawer.o: graphics/debug_drawer.cpp.o
+.PHONY : graphics/debug_drawer.o
+
+# target to build an object file
+graphics/debug_drawer.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.o
+.PHONY : graphics/debug_drawer.cpp.o
+
+graphics/debug_drawer.i: graphics/debug_drawer.cpp.i
+.PHONY : graphics/debug_drawer.i
+
+# target to preprocess a source file
+graphics/debug_drawer.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.i
+.PHONY : graphics/debug_drawer.cpp.i
+
+graphics/debug_drawer.s: graphics/debug_drawer.cpp.s
+.PHONY : graphics/debug_drawer.s
+
+# target to generate assembly for a file
+graphics/debug_drawer.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/graphics/debug_drawer.cpp.s
+.PHONY : graphics/debug_drawer.cpp.s
 
 graphics/ibl_generator.o: graphics/ibl_generator.cpp.o
 .PHONY : graphics/ibl_generator.o
@@ -584,29 +704,29 @@ resource/texture_manager.cpp.s:
 	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/resource/texture_manager.cpp.s
 .PHONY : resource/texture_manager.cpp.s
 
-scene/object.o: scene/object.cpp.o
-.PHONY : scene/object.o
+scene/row_object.o: scene/row_object.cpp.o
+.PHONY : scene/row_object.o
 
 # target to build an object file
-scene/object.cpp.o:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/object.cpp.o
-.PHONY : scene/object.cpp.o
+scene/row_object.cpp.o:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.o
+.PHONY : scene/row_object.cpp.o
 
-scene/object.i: scene/object.cpp.i
-.PHONY : scene/object.i
+scene/row_object.i: scene/row_object.cpp.i
+.PHONY : scene/row_object.i
 
 # target to preprocess a source file
-scene/object.cpp.i:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/object.cpp.i
-.PHONY : scene/object.cpp.i
+scene/row_object.cpp.i:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.i
+.PHONY : scene/row_object.cpp.i
 
-scene/object.s: scene/object.cpp.s
-.PHONY : scene/object.s
+scene/row_object.s: scene/row_object.cpp.s
+.PHONY : scene/row_object.s
 
 # target to generate assembly for a file
-scene/object.cpp.s:
-	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/object.cpp.s
-.PHONY : scene/object.cpp.s
+scene/row_object.cpp.s:
+	cd /home/okumnas/Cedt/game_engine/projects/crossing_road/cmake && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/crossing-road.dir/build.make src/CMakeFiles/crossing-road.dir/scene/row_object.cpp.s
+.PHONY : scene/row_object.cpp.s
 
 ui/font.o: ui/font.cpp.o
 .PHONY : ui/font.o
@@ -681,12 +801,27 @@ help:
 	@echo "... game/map_manager.o"
 	@echo "... game/map_manager.i"
 	@echo "... game/map_manager.s"
-	@echo "... game/row.o"
-	@echo "... game/row.i"
-	@echo "... game/row.s"
+	@echo "... game/rows/grass_row.o"
+	@echo "... game/rows/grass_row.i"
+	@echo "... game/rows/grass_row.s"
+	@echo "... game/rows/road_row.o"
+	@echo "... game/rows/road_row.i"
+	@echo "... game/rows/road_row.s"
+	@echo "... game/rows/texture_row.o"
+	@echo "... game/rows/texture_row.i"
+	@echo "... game/rows/texture_row.s"
+	@echo "... game/rows/water_row.o"
+	@echo "... game/rows/water_row.i"
+	@echo "... game/rows/water_row.s"
+	@echo "... game/terrains/road_terrain.o"
+	@echo "... game/terrains/road_terrain.i"
+	@echo "... game/terrains/road_terrain.s"
 	@echo "... graphics/camera.o"
 	@echo "... graphics/camera.i"
 	@echo "... graphics/camera.s"
+	@echo "... graphics/debug_drawer.o"
+	@echo "... graphics/debug_drawer.i"
+	@echo "... graphics/debug_drawer.s"
 	@echo "... graphics/ibl_generator.o"
 	@echo "... graphics/ibl_generator.i"
 	@echo "... graphics/ibl_generator.s"
@@ -720,9 +855,9 @@ help:
 	@echo "... resource/texture_manager.o"
 	@echo "... resource/texture_manager.i"
 	@echo "... resource/texture_manager.s"
-	@echo "... scene/object.o"
-	@echo "... scene/object.i"
-	@echo "... scene/object.s"
+	@echo "... scene/row_object.o"
+	@echo "... scene/row_object.i"
+	@echo "... scene/row_object.s"
 	@echo "... ui/font.o"
 	@echo "... ui/font.i"
 	@echo "... ui/font.s"

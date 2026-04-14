@@ -5,10 +5,10 @@ cmake_policy(SET CMP0009 NEW)
 # SHADER_FILES at src/CMakeLists.txt:39 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/*.glsl")
 set(OLD_GLOB
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/debug.frag.glsl"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/debug.vert.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/irradiance.frag.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/irradiance.vert.glsl"
-  "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/model_loading.frag.glsl"
-  "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/model_loading.vert.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/pbr.frag.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/pbr.vert.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/shadow.frag.glsl"
@@ -17,6 +17,7 @@ set(OLD_GLOB
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/skybox.vert.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/ui.frag.glsl"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/ui.vert.glsl"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/assets/shaders/water.frag.glsl"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
@@ -36,6 +37,7 @@ endif()
 # INC_HEADER_FILES at src/CMakeLists.txt:37 (file)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/okumnas/Cedt/game_engine/projects/crossing_road/include/*.hpp")
 set(OLD_GLOB
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/include/external/magic_enum.hpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
@@ -49,8 +51,13 @@ set(OLD_GLOB
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/core/main.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/game.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/map_manager.cpp"
-  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/camera.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/ibl_generator.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/mesh.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/model.cpp"
@@ -62,7 +69,7 @@ set(OLD_GLOB
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/model_manager.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/shader_manager.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/texture_manager.cpp"
-  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.cpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/font.cpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/ui_manager.cpp"
   )
@@ -87,9 +94,20 @@ set(OLD_GLOB
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/game.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/map_manager.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/row_queue.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/grass_row.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/road_row.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/texture_row.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/rows/water_row.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrain.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/grass_terrain.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/hill_terrain.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/game/terrains/road_terrain.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/camera.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/debug_drawer.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/ibl_generator.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/idrawable.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/izdrawable.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/material.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/mesh.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/graphics/model.hpp"
@@ -102,9 +120,10 @@ set(OLD_GLOB
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/shader_manager.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/resource/texture_manager.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/car.hpp"
-  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/object.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/scene/row_object.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/font.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/ui/ui_manager.hpp"
+  "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/utility/enum_map.hpp"
   "/home/okumnas/Cedt/game_engine/projects/crossing_road/src/utility/utility.hpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

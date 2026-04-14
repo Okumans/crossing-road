@@ -11,9 +11,10 @@ in vec4 FragPosLightSpace;
 uniform sampler2D u_DiffuseTex;
 uniform sampler2D u_NormalTex;
 uniform sampler2D u_HeightTex;
-uniform sampler2D u_MetallicRoughnessTex;
+uniform sampler2D u_MetallicTex;
+uniform sampler2D u_RoughnessTex;
 uniform sampler2D u_AOTex;
-uniform samplerCube u_Skybox; // Pre-filtered map (Specular IBL)
+uniform samplerCube u_SpecularEnvMap; // Pre-filtered map (Specular IBL)
 uniform samplerCube u_IrradianceMap; // Diffuse IBL
 uniform sampler2D u_ShadowMap;
 
@@ -25,6 +26,7 @@ uniform float u_RoughnessFactor;
 uniform float u_AOFactor;
 uniform float u_HeightScale;
 uniform float u_AmbientIntensity;
+uniform bool u_UsePackedMR;
 
 // Lights
 struct Light {
@@ -140,15 +142,20 @@ void main()
   if (finalAlpha < 0.5) discard;
 
   vec3 albedo = pow(diffuseSample.rgb, vec3(2.2)) * u_BaseColor;
-  vec3 mrSample = texture(u_MetallicRoughnessTex, texCoords).rgb;
 
-  // If texture is just a default, use the factor.
-  // Standard glTF: metallic = sample.b * u_MetallicFactor, roughness = sample.g * u_RoughnessFactor
-  // But often models just set factors. We use max or multiplication depending on intent.
-  // Using multiplication is standard but fails if default texture is 0.
-  // Let's use max for metallic to allow factors to work.
-  float roughness = clamp(mrSample.g * u_RoughnessFactor, 0.005, 1.0);
-  float metallic = clamp(max(mrSample.b, u_MetallicFactor), 0.0, 1.0);
+  // Sampling separate or packed Metallic and Roughness maps
+  float metallic, roughness;
+  if (u_UsePackedMR) {
+    vec3 mrSample = texture(u_MetallicTex, texCoords).rgb;
+    metallic = mrSample.b * u_MetallicFactor;
+    roughness = mrSample.g * u_RoughnessFactor;
+  } else {
+    metallic = texture(u_MetallicTex, texCoords).r * u_MetallicFactor;
+    roughness = texture(u_RoughnessTex, texCoords).r * u_RoughnessFactor;
+  }
+
+  roughness = clamp(roughness, 0.005, 1.0);
+  metallic = clamp(metallic, 0.0, 1.0);
   float ao = texture(u_AOTex, texCoords).r * u_AOFactor;
 
   vec3 N = normalize(TBN * (texture(u_NormalTex, texCoords).xyz * 2.0 - 1.0));
@@ -178,6 +185,7 @@ void main()
     float NdotL = max(dot(N, L), 0.0);
 
     float shadow = (i == 0) ? ShadowCalculation(FragPosLightSpace, N, L) : 0.0;
+    shadow *= 0.8;
     Lo += (1.0 - shadow) * (kD * albedo / PI + specular) * radiance * NdotL;
   }
 
@@ -194,7 +202,7 @@ void main()
   // Indirect Specular (Pre-filtered Cubemap)
   // Without the BRDF LUT, we use F directly to scale the pre-filtered color.
   const float MAX_REFLECTION_LOD = 4.0;
-  vec3 prefilteredColor = textureLod(u_Skybox, R, roughness * MAX_REFLECTION_LOD).rgb;
+  vec3 prefilteredColor = textureLod(u_SpecularEnvMap, R, roughness * MAX_REFLECTION_LOD).rgb;
   vec3 ambient_specular = prefilteredColor * kS_ambient;
 
   vec3 ambient = (ambient_diffuse + ambient_specular) * ao * u_AmbientIntensity;

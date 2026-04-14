@@ -1,14 +1,16 @@
 #pragma once
 
 #include "graphics/shader.hpp"
+#include "utility/enum_map.hpp"
+#include "utility/utility.hpp"
 #include <memory>
-#include <unordered_map>
 
 enum class ShaderType { UI, PBR, SKYBOX, SHADOW, IRRADIANCE, WATER, DEBUG };
 
 class ShaderManager {
 public:
-  static std::unordered_map<ShaderType, std::unique_ptr<Shader>> shaders;
+  static SettableNotInitialized<EnumMap<ShaderType, std::unique_ptr<Shader>>>
+      s_shaders;
 
   static Shader &loadShader(ShaderType type, const char *vertShaderPath,
                             const char *fragShaderPath);

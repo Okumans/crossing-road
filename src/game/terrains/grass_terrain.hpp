@@ -7,6 +7,7 @@
 #include "graphics/material.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
+#include "scene/row_object.hpp"
 #include "utility/utility.hpp"
 
 #include <cstdint>
@@ -20,11 +21,21 @@ private:
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
   inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
+  inline static NotInitialized<TerrainPopulator> s_terrainPopulator;
+
 public:
   GrassyTerrain(uint32_t startRowidx)
       : Terrain(TerrainType::GRASSY, startRowidx) {
-    _setupPopulator();
+    _ensurePopulator();
   }
+
+  virtual uint32_t generate() override {
+    uint32_t lastest_row_idx = _generateTerrain();
+    s_terrainPopulator.ensureInitialized().populate(*this);
+    return lastest_row_idx;
+  }
+
+  static void setup() { _ensurePopulator(); }
 
 private:
   virtual uint32_t _generateTerrain() override {
@@ -105,7 +116,10 @@ private:
     return last_row_idx;
   }
 
-  void _setupPopulator() {
+  static void _ensurePopulator() {
+    if (s_terrainPopulator.isInitialized())
+      return;
+
     TerrainPopulator greenery;
 
     PlacementRule base{
@@ -117,51 +131,51 @@ private:
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_1)),
+        std::make_unique<RowObject>(RowObject::createWithDeferedState(
+            ModelManager::getModel(ModelName::TREE_1))),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.05f;
-          r.minScale = 0.006f;
-          r.maxScale = 0.006f;
+          r.scale = 0.006f;
         }));
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_2)),
+        std::make_unique<RowObject>(RowObject::createWithDeferedState(
+            ModelManager::getModel(ModelName::BUSH_2))),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.03f;
-          r.minScale = 0.0025f;
-          r.maxScale = 0.0025f;
+          r.scale = 0.0025f;
           r.yOffset = 0.20f;
         }));
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::TREE_2)),
+        std::make_unique<RowObject>(RowObject::createWithDeferedState(
+            ModelManager::getModel(ModelName::TREE_2))),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.03f;
-          r.minScale = 0.4f;
-          r.maxScale = 0.4f;
+          r.scale = 0.4f;
           r.yOffset = -0.10f;
         }));
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::BUSH_1)),
+        std::make_unique<RowObject>(RowObject::createWithDeferedState(
+            ModelManager::getModel(ModelName::BUSH_1))),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.02f;
-          r.minScale = 0.002f;
-          r.maxScale = 0.002f;
+          r.scale = 0.002f;
         }));
 
     greenery.withRule(
         RowType::GRASS,
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::ROCK_1)),
+        std::make_unique<RowObject>(RowObject::createWithDeferedState(
+            ModelManager::getModel(ModelName::ROCK_1))),
         withBase(base, [](PlacementRule &r) {
           r.probability = 0.02f;
-          r.minScale = 0.005f;
-          r.maxScale = 0.005f;
+          r.scale = 0.005f;
         }));
 
-    bind(std::move(greenery));
+    s_terrainPopulator.init(std::move(greenery));
   }
 };

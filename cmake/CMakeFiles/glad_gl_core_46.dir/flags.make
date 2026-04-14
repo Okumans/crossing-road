@@ -6,5 +6,5 @@ C_DEFINES = -DGLAD_API_CALL_EXPORT -DGLAD_API_CALL_EXPORT_BUILD
 
 C_INCLUDES = -I/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/gladsources/glad_gl_core_46/include
 
-C_FLAGS = -g -fPIC
+C_FLAGS = -O3 -DNDEBUG -fPIC
 

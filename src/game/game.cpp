@@ -2,6 +2,8 @@
 #include "game/map_manager.hpp"
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
+#include "game/terrains/grass_terrain.hpp"
+#include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "glm/trigonometric.hpp"
 #include "graphics/debug_drawer.hpp"
@@ -69,7 +71,8 @@ void Game::setup() {
   // Create player first to define collision height clip
   m_player =
       std::make_unique<RowObject>(ModelManager::getModel(ModelName::CHICKEN));
-  m_player->setRotation({0, glm::radians(-90.0f), 0});
+  m_player->setRotationXZ({0.0f, 0.0f}, true); // Enable Y in AABB
+  m_player->setRotationY(glm::radians(-90.0f));
   m_player->setPosition({0.25f, 0.0f});
 
   // Set global collision clip based on player's height
@@ -118,31 +121,10 @@ void Game::setup() {
                              .position = glm::vec3(0.0f, -5.0f, 0.0f),
                              .color = glm::vec3(0.3f, 0.2f, 0.1f) * 5.0f});
 
-  RoadTerrain::setCar(
-      RoadTerrain::CarType::CAR_1,
-      std::make_unique<Car>(ModelManager::getModel(ModelName::CAR_1), 0.0f,
-                            glm::vec2(0.0f), 0.0f, glm::vec3(0.0030f)));
-
-  RoadTerrain::setCar(
-      RoadTerrain::CarType::CAR_2,
-      std::make_unique<Car>(ModelManager::getModel(ModelName::CAR_2), 0.0f,
-                            glm::vec2(0.0f), 0.0f, glm::vec3(0.0022f)));
-
-  RoadTerrain::setCar(
-      RoadTerrain::CarType::TRAIN_1,
-      std::make_unique<Car>(ModelManager::getModel(ModelName::TRAIN_1), 0.0f,
-                            glm::vec2(0.0f), 0.0f, glm::vec3(0.4f)));
-
-  // m_map.addTerrain(TerrainType::GRASSY);
-  // m_map.addTerrain(TerrainType::ROAD);
-  // m_map.addTerrain(TerrainType::HILLY);
-  // m_map.addTerrain(TerrainType::ROAD);
-  // m_map.addTerrain(TerrainType::GRASSY);
-  // m_map.addTerrain(TerrainType::ROAD);
-  // m_map.addTerrain(TerrainType::ROAD);
-  // m_map.addTerrain(TerrainType::HILLY);
-  // m_map.addTerrain(TerrainType::ROAD);
-  // m_map.addTerrain(TerrainType::GRASSY);
+  // setup terrains shared object
+  RoadTerrain::setup();
+  GrassyTerrain::setup();
+  HillTerrain::setup();
 }
 
 void Game::update(double delta_time) {

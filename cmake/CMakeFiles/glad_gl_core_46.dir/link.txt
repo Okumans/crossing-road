@@ -1,1 +1,1 @@
-/usr/bin/cc -fPIC -g -Wl,--dependency-file=CMakeFiles/glad_gl_core_46.dir/link.d -shared -Wl,-soname,libglad_gl_core_46d.so -o lib/libglad_gl_core_46d.so CMakeFiles/glad_gl_core_46.dir/gladsources/glad_gl_core_46/src/gl.c.o  -ldl
+/usr/bin/cc -fPIC -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/glad_gl_core_46.dir/link.d -shared -Wl,-soname,libglad_gl_core_46.so -o lib/libglad_gl_core_46.so CMakeFiles/glad_gl_core_46.dir/gladsources/glad_gl_core_46/src/gl.c.o  -ldl

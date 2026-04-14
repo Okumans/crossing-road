@@ -72,12 +72,15 @@ protected:
 
   AABB m_baseAABB;          // Raw un-transformed AABB from model
   AABB m_localAABB;         // Rotated and Scaled AABB
-  mutable AABB m_worldAABB; // Rotated, Scaled and Traslated AABB
+  mutable AABB m_worldAABB; // Rotated, Scaled Clipped and Traslated AABB
 
 private:
   glm::vec3
       m_position; // (x, y) position, z is control on draw, stored z offset
-  glm::vec3 m_rotation;
+  glm::vec3 m_rotation; // X and Z rotation
+  float m_rotationY = 0.0f;
+  bool m_includeYInAABB = false;
+
   glm::vec3 m_scale;
   mutable bool m_isDirty = true;
   mutable float m_lastZ = 0.0f;
@@ -87,6 +90,8 @@ public:
             float z_offset = 0.0f, glm::vec3 scale = glm::vec3(1.0f),
             glm::vec3 rotation = glm::vec3(0.0f),
             bool defer_aabb_calculation = false);
+
+  static RowObject createWithDeferedState(std::shared_ptr<Model> model);
 
   RowObject(const RowObject &other) = default;
   RowObject(RowObject &&other) noexcept = default;
@@ -112,10 +117,33 @@ public:
     m_isDirty = true;
   }
 
-  void setScale(glm::vec3 scale, bool recalculate_aabb = true);
-  void setScale(float scale, bool recalculate_aabb = true);
-  void setRotation(glm::vec3 rads, bool recalculate_aabb = true);
-  void rotate(glm::vec3 rads, bool recalculate_aabb = true);
+  void setScale(glm::vec3 scale);
+  void setScale(float scale);
+
+  /**
+   * @brief Sets X and Z rotation and defines if Y rotation should be included in
+   * AABB calculations.
+   *
+   * This method triggers a full AABB recalculation from the model.
+   *
+   * @param rads X and Z rotation in radians.
+   * @param include_y_in_aabb If true, subsequent Y rotations will be included
+   * in the axis-aligned bounding box (causing size changes). If false, the
+   * AABB footprint remains consistent despite Y rotation.
+   */
+  void setRotationXZ(glm::vec2 rads, bool include_y_in_aabb = false);
+
+  /**
+   * @brief Sets Y rotation.
+   *
+   * This method only updates the local AABB transform (no full recalculation).
+   * It respects the policy set by the last call to setRotationXZ.
+   *
+   * @param rads Rotation in radians.
+   */
+  void setRotationY(float rads);
+
+  void rotate(glm::vec3 rads);
 
   glm::vec3 getPosition(float z) const {
     return {m_position.x, m_position.y, z + m_position.z};
@@ -124,10 +152,12 @@ public:
   float getZOffset() const { return m_position.z; }
 
   glm::vec3 getScale() const { return m_scale; };
-  glm::vec3 getRotation() const { return m_rotation; }
+  glm::vec3 getRotation() const {
+    return {m_rotation.x, m_rotationY, m_rotation.z};
+  }
 
   const AABB &getLocalAABB() const { return m_localAABB; }
-  glm::vec3 getWorldAABBCenter() const;
+  glm::vec3 getWorldAABBCenter(float z = 0.0f) const;
   const AABB &getWorldAABB(float z = 0.0f) const;
 
   bool collided(const RowObject &other);
@@ -135,8 +165,10 @@ public:
 
   void setHeightClip(float min_y, float max_y);
 
+  void recalculateAABB();
+
 private:
-  void _updateLocalAABB(bool deep_scan);
+  void _updateLocalAABB();
   void _updateGlobalAABB(float z = 0.0f) const;
   static AABB _calculateAABB(const Model &model,
                              const glm::mat4 &transform = glm::mat4(1.0f),
