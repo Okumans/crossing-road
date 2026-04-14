@@ -1,3 +1,0 @@
-/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/groupsourcesbyfolder.cmake-populate.dir
-/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/edit_cache.dir
-/home/okumnas/Cedt/game_engine/projects/crossing_road/cmake/_deps/groupsourcesbyfolder.cmake-subbuild/CMakeFiles/rebuild_cache.dir

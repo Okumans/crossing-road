@@ -1,9 +1,0 @@
-libdir=/home/okumnas/Cedt/game_engine/projects/crossing_road/install/lib
-includedir=/home/okumnas/Cedt/game_engine/projects/crossing_road/install/include
-
-Name: crossing-road
-Description: Import various well-known 3D model formats in an uniform manner.
-Version: 5.4.3
-Libs: -L${libdir} -lassimp
-Libs.private: -lstdc++ -lz
-Cflags: -I${includedir}
