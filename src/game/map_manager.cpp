@@ -4,6 +4,7 @@
 #include "game/terrain.hpp"
 #include "game/terrains/grass_terrain.hpp"
 #include "game/terrains/hill_terrain.hpp"
+#include "game/terrains/river_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "graphics/idrawable.hpp"
 
@@ -30,6 +31,9 @@ void MapManager::addTerrain(TerrainType type) {
     break;
   case TerrainType::HILLY:
     terrain = std::make_unique<HillTerrain>(curr_row_idx);
+    break;
+  case TerrainType::RIVER:
+    terrain = std::make_unique<RiverTerrain>(curr_row_idx);
     break;
   }
 

@@ -161,6 +161,8 @@ public:
     return {m_rotation.x, m_rotationY, m_rotation.z};
   }
 
+  std::shared_ptr<Model> getModel() const { return m_model; }
+
   const AABB &getLocalAABB() const { return m_localAABB; }
   glm::vec3 getWorldAABBCenter(float z = 0.0f) const;
   const AABB &getWorldAABB(float z = 0.0f) const;

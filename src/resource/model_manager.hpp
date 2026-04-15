@@ -22,8 +22,9 @@ enum class ModelName {
 
 class ModelManager {
 public:
-  static SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>,
-                                "s_models">
+  static SettableNotInitialized<
+      EnumMap<ModelName, std::shared_ptr<Model>>, "s_models",
+      EnumMapValidator<EnumMap<ModelName, std::shared_ptr<Model>>>>
       s_models;
 
   static std::shared_ptr<Model>

@@ -24,6 +24,8 @@ public:
 
   virtual void draw(const RenderContext &ctx, float z) override;
 
+  virtual bool collided(const RowObject &target) const override;
+
 private:
   void _setupMesh();
 };

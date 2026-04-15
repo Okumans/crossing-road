@@ -3,7 +3,9 @@
 #include "utility/not_initialized.hpp"
 #include <memory>
 
-SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>, "s_models">
+SettableNotInitialized<
+    EnumMap<ModelName, std::shared_ptr<Model>>, "s_models",
+    EnumMapValidator<EnumMap<ModelName, std::shared_ptr<Model>>>>
     ModelManager::s_models;
 
 std::shared_ptr<Model> ModelManager::loadModel(ModelName name,

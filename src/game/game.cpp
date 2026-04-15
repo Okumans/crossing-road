@@ -4,6 +4,7 @@
 #include "game/row_queue.hpp"
 #include "game/terrains/grass_terrain.hpp"
 #include "game/terrains/hill_terrain.hpp"
+#include "game/terrains/river_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "graphics/debug_drawer.hpp"
 #include "graphics/ibl_generator.hpp"
@@ -76,7 +77,7 @@ void Game::setup() {
 
   // Set global collision clip based on player's height
   RowObject::s_useClipY.init(true);
-  RowObject::s_minClipY.init(m_player->getLocalAABB().min.y);
+  RowObject::s_minClipY.init(0.0f);
   RowObject::s_maxClipY.init(m_player->getLocalAABB().max.y);
 
   // Load Skybox
@@ -125,6 +126,7 @@ void Game::setup() {
   RoadTerrain::setup();
   GrassyTerrain::setup();
   HillTerrain::setup();
+  RiverTerrain::setup();
 }
 
 void Game::update(double delta_time) {

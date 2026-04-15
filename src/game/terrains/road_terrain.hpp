@@ -3,7 +3,6 @@
 #include "game/terrain.hpp"
 #include "scene/car.hpp"
 #include "utility/enum_map.hpp"
-#include "utility/utility.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -29,8 +28,9 @@ private:
     float uvScale;
   };
 
-  inline static SettableNotInitialized<EnumMap<CarType, std::unique_ptr<Car>>,
-                                       "s_carTemplate">
+  inline static SettableNotInitialized<
+      EnumMap<CarType, std::unique_ptr<Car>>, "s_carTemplate",
+      EnumMapValidator<EnumMap<CarType, std::unique_ptr<Car>>>>
       s_carTemplate;
   inline constexpr static EnumMap<RoadMaterialType, RoadMaterialConfig>
       ROAD_MATERIAL_CONFIG = {{{ROAD_1_TEX_NAME, 4.0f},

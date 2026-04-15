@@ -24,7 +24,7 @@ uniform float u_DetailScale = 2.0;
 
 // Fallbacks & Factors
 uniform vec3 u_BaseColor;
-uniform float u_Opacity = 0.8;
+uniform float u_Opacity = 1.0;
 uniform float u_MetallicFactor = 0.0;
 uniform float u_RoughnessFactor = 0.05;
 uniform float u_AOFactor = 1.0;

@@ -1,8 +1,8 @@
-#include "water_row.hpp"
 #include "glad/gl.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/shader.hpp"
 #include "resource/shader_manager.hpp"
+#include "water_row.hpp"
 #include <memory>
 
 WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
@@ -12,6 +12,7 @@ WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
   m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
   _setupMesh();
 }
+bool WaterRow::collided(const RowObject &target) const { return false; }
 
 void WaterRow::draw(const RenderContext &ctx, float z) {
   if (ctx.shader.ID != ShaderManager::getShader(ShaderType::SHADOW).ID) {
@@ -23,7 +24,7 @@ void WaterRow::draw(const RenderContext &ctx, float z) {
     m_waterShader.setVec2("u_WaveSpeed", glm::vec2(0.01f, 0.01f));
     m_waterShader.setVec3("u_BaseColor", glm::vec3(0.0, 0.4, 0.5));
     m_waterShader.setMat4("u_Model",
-                          glm::translate(glm::mat4(1.0f), {0.0f, 0.0f, z}));
+                          glm::translate(glm::mat4(1.0f), {0.0f, m_height, z}));
     m_waterShader.setVec2("u_UVOffset", m_uvOffset);
 
     m_mesh->draw({.shader = m_waterShader,

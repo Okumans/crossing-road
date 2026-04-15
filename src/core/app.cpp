@@ -98,7 +98,7 @@ void App::_setupResources() {
 
   // Load the models
   ModelManager::loadModel(ModelName::CHICKEN,
-                          ASSETS_PATH "/objects/chicken/chicken.glb");
+                          ASSETS_PATH "/objects/chicken/chicken_2.glb");
   ModelManager::loadModel(ModelName::TREE_1,
                           ASSETS_PATH "/objects/tree/tree_1.glb");
   ModelManager::loadModel(ModelName::TREE_2,
@@ -116,7 +116,7 @@ void App::_setupResources() {
   ModelManager::loadModel(ModelName::TRAIN_1,
                           ASSETS_PATH "/objects/car/train_1.glb");
   ModelManager::loadModel(ModelName::LILYPAD_1,
-                          ASSETS_PATH "/objects/lilypad/lilypad_1.glb");
+                          ASSETS_PATH "/objects/lilypad/lilypad_2.glb");
 
   // Load the material & Textures
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");

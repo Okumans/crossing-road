@@ -9,8 +9,9 @@ enum class ShaderType { UI, PBR, SKYBOX, SHADOW, IRRADIANCE, WATER, DEBUG };
 
 class ShaderManager {
 public:
-  static SettableNotInitialized<EnumMap<ShaderType, std::unique_ptr<Shader>>,
-                                "s_shaders">
+  static SettableNotInitialized<
+      EnumMap<ShaderType, std::unique_ptr<Shader>>, "s_shaders",
+      EnumMapValidator<EnumMap<ShaderType, std::unique_ptr<Shader>>>>
       s_shaders;
 
   static Shader &loadShader(ShaderType type, const char *vertShaderPath,
