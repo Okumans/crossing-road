@@ -1,5 +1,6 @@
 #pragma once
 
+#include "external/magic_enum.hpp"
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
 #include "game/rows/grass_row.hpp"
@@ -42,7 +43,6 @@ private:
     enum class GrassMaterialType : uint8_t {
       GRASS_1 = 0,
       GRASS_2,
-      Count // For getting element count
     };
 
     assert(MaterialManager::exists(GRASS_1_TEX_NAME));
@@ -89,9 +89,7 @@ private:
     for (size_t i = 0; i < row_numbers; ++i) {
       GrassMaterialType grass_mat_type = static_cast<GrassMaterialType>(
           (static_cast<uint8_t>(start_grass_type) + i) %
-          static_cast<uint8_t>(GrassMaterialType::Count));
-
-      assert(grass_mat_type != GrassMaterialType::Count);
+          static_cast<uint8_t>(magic_enum::enum_count<GrassMaterialType>()));
 
       std::optional<Material> grass_mat;
       switch (grass_mat_type) {
@@ -101,8 +99,6 @@ private:
       case GrassMaterialType::GRASS_2:
         grass_mat = grass_mat_2;
         break;
-      case GrassMaterialType::Count:
-        std::unreachable();
       }
 
       assert(grass_mat.has_value());

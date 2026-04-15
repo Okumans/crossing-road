@@ -20,7 +20,6 @@ enum class TerrainType {
   GRASSY,
   ROAD,
   HILLY,
-  Count,
 };
 
 struct PlacementRule {

@@ -1,4 +1,5 @@
 #include "map_manager.hpp"
+#include "external/magic_enum.hpp"
 #include "game/row_queue.hpp"
 #include "game/terrain.hpp"
 #include "game/terrains/grass_terrain.hpp"
@@ -21,8 +22,6 @@ void MapManager::addTerrain(TerrainType type) {
 
   uint32_t curr_row_idx = RowQueue::get().getCurrRowIdx();
 
-  assert(type != TerrainType::Count);
-
   switch (type) {
   case TerrainType::GRASSY:
     terrain = std::make_unique<GrassyTerrain>(curr_row_idx);
@@ -33,8 +32,6 @@ void MapManager::addTerrain(TerrainType type) {
   case TerrainType::HILLY:
     terrain = std::make_unique<HillTerrain>(curr_row_idx);
     break;
-  case TerrainType::Count:
-    std::unreachable();
   }
 
   assert(terrain);
@@ -80,11 +77,11 @@ void MapManager::_generateNext() {
     return;
   }
 
-  std::array weights = {5.0f, 8.0f, 2.0f};
+  std::array weights = DEFAULT_TERRAIN_WEIGHT;
 
-  static_assert(static_cast<size_t>(TerrainType::Count) > 0,
+  static_assert(magic_enum::enum_count<TerrainType>() > 0,
                 "At least 1 terrain need to exists");
-  static_assert(weights.size() == static_cast<size_t>(TerrainType::Count),
+  static_assert(weights.size() == magic_enum::enum_count<TerrainType>(),
                 "Weights for all terrain type need to be specify");
 
   // Lower the changes same terrain generate next to each other
@@ -92,37 +89,37 @@ void MapManager::_generateNext() {
 
   TerrainType choosed_type =
       static_cast<TerrainType>(Random::randWeighted<size_t>(
-          0, static_cast<size_t>(TerrainType::Count) - 1, weights));
+          0, magic_enum::enum_count<TerrainType>() - 1, weights));
 
   addTerrain(choosed_type);
 }
 
 void MapManager::draw(const RenderContext &ctx) {
-  Row *prevRow = nullptr;
-  float prevRenderZ = 0.0f;
+  Row *prev_row = nullptr;
+  float prev_render_z = 0.0f;
 
-  for (auto [z, row] : RowQueue::get().getRowsWithZ()) {
+  for (const auto &[z, row] : RowQueue::get().getRowsWithZ()) {
     row->draw(ctx, z);
 
-    float currentHeight = row->getHeight();
-    float prevHeight = prevRow ? prevRow->getHeight() : 0.0f;
+    float current_height = row->getHeight();
+    float prev_height = prev_row ? prev_row->getHeight() : 0.0f;
 
     // Side panel towards previous row
-    if (currentHeight > prevHeight) {
-      row->drawSidePanel(ctx, z, prevHeight, true);
+    if (current_height > prev_height) {
+      row->drawSidePanel(ctx, z, prev_height, true);
     }
 
     // Previous row side panel towards current row
-    if (prevRow && prevRow->getHeight() > currentHeight) {
-      prevRow->drawSidePanel(ctx, prevRenderZ, currentHeight, false);
+    if (prev_row && prev_row->getHeight() > current_height) {
+      prev_row->drawSidePanel(ctx, prev_render_z, current_height, false);
     }
 
-    prevRow = row;
-    prevRenderZ = z;
+    prev_row = row;
+    prev_render_z = z;
   }
 
   // Final row side panel to ground level
-  if (prevRow && prevRow->getHeight() > 0.0f) {
-    prevRow->drawSidePanel(ctx, prevRenderZ, 0.0f, false);
+  if (prev_row && prev_row->getHeight() > 0.0f) {
+    prev_row->drawSidePanel(ctx, prev_render_z, 0.0f, false);
   }
 }
