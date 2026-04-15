@@ -67,6 +67,8 @@ public:
   static float s_maxClipY;
   static bool s_useClipY;
 
+  inline static const float AABB_COLLISION_SCALE_FACTOR = 0.8f;
+
 protected:
   std::shared_ptr<Model> m_model;
 
@@ -121,8 +123,8 @@ public:
   void setScale(float scale);
 
   /**
-   * @brief Sets X and Z rotation and defines if Y rotation should be included in
-   * AABB calculations.
+   * @brief Sets X and Z rotation and defines if Y rotation should be included
+   * in AABB calculations.
    *
    * This method triggers a full AABB recalculation from the model.
    *

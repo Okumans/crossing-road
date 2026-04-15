@@ -17,7 +17,7 @@ enum class ModelName {
   CAR_1,
   CAR_2,
   TRAIN_1,
-  LILLYPAD_1,
+  LILYPAD_1,
 };
 
 class ModelManager {

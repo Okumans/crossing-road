@@ -130,6 +130,8 @@ void App::_setupResources() {
                           ASSETS_PATH "/objects/car/car_2.glb");
   ModelManager::loadModel(ModelName::TRAIN_1,
                           ASSETS_PATH "/objects/car/train_1.glb");
+  ModelManager::loadModel(ModelName::LILYPAD_1,
+                          ASSETS_PATH "/objects/lilypad/lilypad_1.glb");
 
   // Load the material & Textures
   loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
@@ -151,7 +153,7 @@ void App::_setupResources() {
 
   // Load other resources
   m_game.setup();
-  // m_game.toggleDebugAABB();
+  m_game.setDebugAABB(true);
   m_font.loadDefaultFont();
 }
 

@@ -48,7 +48,7 @@ public:
   void moveLeft(double delta_time);
   void moveRight(double delta_time);
 
-  void toggleDebugAABB() { m_debugAABB = !m_debugAABB; }
+  void setDebugAABB(bool state) { m_debugAABB = state; }
 
   glm::vec3 getPlayerPosition() const;
 };
