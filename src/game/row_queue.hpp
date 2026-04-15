@@ -93,7 +93,8 @@ public:
     return m_storage | std::views::take(m_capacity) | std::views::enumerate |
            std::views::transform([this](std::tuple<long, Row *> tup) {
              auto &[idx, row] = tup;
-             return std::make_pair(getZ(static_cast<uint32_t>(idx) + m_firstStoredIdx), row);
+             return std::make_pair(
+                 getZ(static_cast<uint32_t>(idx) + m_firstStoredIdx), row);
            });
   }
 

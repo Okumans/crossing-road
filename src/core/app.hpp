@@ -34,7 +34,6 @@ class App {
 private:
   GLFWwindow *m_window;
 
-  Camera m_camera;
   Game m_game;
 
   AppState m_appState;

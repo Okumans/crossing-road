@@ -2,7 +2,7 @@
 
 #include "graphics/model.hpp"
 #include "utility/enum_map.hpp"
-#include "utility/utility.hpp"
+#include "utility/not_initialized.hpp"
 
 #include <memory>
 
@@ -22,7 +22,8 @@ enum class ModelName {
 
 class ModelManager {
 public:
-  static SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>>
+  static SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>,
+                                "s_models">
       s_models;
 
   static std::shared_ptr<Model>

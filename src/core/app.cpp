@@ -25,29 +25,14 @@ void App::render(double delta_time) {
   _handleProcessInput(delta_time);
 
   m_game.update(delta_time);
-  // }
-
-  // Update Camera to follow player with lerp for smoothness
-  glm::vec3 playerPos = m_game.getPlayerPosition();
-  glm::vec3 targetCameraPos =
-      glm::vec3(0, playerPos.y, playerPos.z) + glm::vec3(8.0f, 8.0f, 8.0f);
-  float lerpFactor = 5.0f;
-  m_camera.Position = glm::mix(m_camera.Position, targetCameraPos,
-                               (float)delta_time * lerpFactor);
 
   _updateUIElements(delta_time);
 
-  m_game.render(delta_time, m_camera);
+  m_game.render(delta_time);
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
 }
 
-App::App(GLFWwindow *window)
-    : m_window(window), m_camera(glm::vec3(8.25f, 8.0f, 8.25f)) {
-
-  m_camera.setPitch(-35.264f);
-  m_camera.setYaw(-107.25f);
-  m_camera.Zoom = 30.0f;
-
+App::App(GLFWwindow *window) : m_window(window) {
   glfwSetWindowUserPointer(m_window, (void *)this);
 
   glfwSetKeyCallback(m_window, _glfwKeyCallback);
@@ -65,7 +50,7 @@ App::App(GLFWwindow *window)
   m_appState.windowWidth = width;
   m_appState.windowHeight = height;
 
-  m_camera.updateSceneSize(width, height);
+  m_game.getCamera().updateSceneSize(width, height);
 }
 
 App::~App() = default;
@@ -221,7 +206,7 @@ void App::_handleFramebufferSizeCallback(int width, int height) {
   glViewport(0, 0, width, height);
   m_appState.windowWidth = width;
   m_appState.windowHeight = height;
-  m_camera.updateSceneSize(width, height);
+  m_game.getCamera().updateSceneSize(width, height);
 }
 
 // GLFW static callbacks adapters

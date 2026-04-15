@@ -3,6 +3,7 @@
 #include "graphics/idrawable.hpp"
 #include "graphics/izdrawable.hpp"
 #include "graphics/model.hpp"
+#include "utility/not_initialized.hpp"
 
 #include <glm/glm.hpp>
 
@@ -63,9 +64,9 @@ struct AABB {
 
 class RowObject : public IZDrawable {
 public:
-  static float s_minClipY;
-  static float s_maxClipY;
-  static bool s_useClipY;
+  static inline NotInitialized<float, "s_minClipY"> s_minClipY;
+  static inline NotInitialized<float, "s_maxClipY"> s_maxClipY;
+  static inline NotInitialized<bool, "s_useClipY"> s_useClipY;
 
   inline static const float AABB_COLLISION_SCALE_FACTOR = 0.8f;
 
@@ -133,7 +134,7 @@ public:
    * in the axis-aligned bounding box (causing size changes). If false, the
    * AABB footprint remains consistent despite Y rotation.
    */
-  void setRotationXZ(glm::vec2 degrees, bool include_y_in_aabb = false);
+  void setRotationXZ(glm::vec2 degrees);
 
   /**
    * @brief Sets Y rotation.
@@ -144,6 +145,8 @@ public:
    * @param degree in degrees
    */
   void setRotationY(float degree);
+
+  void setIncludeYRotationInAABB(bool is_enable);
 
   void rotate(glm::vec3 degrees);
 

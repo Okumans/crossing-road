@@ -6,7 +6,7 @@
 #include "graphics/idrawable.hpp"
 #include "scene/row_object.hpp"
 #include "utility/enum_map.hpp"
-#include "utility/utility.hpp"
+#include "utility/random.hpp"
 
 #include <cstdint>
 #include <memory>

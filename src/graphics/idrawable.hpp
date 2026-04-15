@@ -5,7 +5,7 @@
 
 struct RenderContext {
   Shader &shader;
-  const Camera &camera;
+  Camera &camera;
   double deltaTime;
 };
 

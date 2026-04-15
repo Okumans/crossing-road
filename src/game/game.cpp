@@ -5,13 +5,11 @@
 #include "game/terrains/grass_terrain.hpp"
 #include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
-#include "glm/trigonometric.hpp"
 #include "graphics/debug_drawer.hpp"
 #include "graphics/ibl_generator.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/shader.hpp"
 #include "resource/lighting_manager.hpp"
-#include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
 #include "resource/texture_manager.hpp"
 #include "scene/row_object.hpp"
@@ -23,8 +21,13 @@
 #include <memory>
 
 Game::Game()
-    : m_player(nullptr), m_skybox(std::make_unique<Skybox>()),
-      m_shadowMapFBO(0), m_shadowMapTex(0) {}
+    : m_camera(glm::vec3(8.25f, 8.0f, 8.25f)), m_player(nullptr),
+      m_skybox(std::make_unique<Skybox>()), m_shadowMapFBO(0),
+      m_shadowMapTex(0) {
+  m_camera.setPitch(-35.264f);
+  m_camera.setYaw(-107.25f);
+  m_camera.Zoom = 30.0f;
+}
 
 Game::~Game() {
   glDeleteFramebuffers(1, &m_shadowMapFBO);
@@ -69,35 +72,32 @@ void Game::setup() {
                            TextureManager::generateStaticPBRDefaultTexture());
 
   // Create player first to define collision height clip
-  m_player =
-      std::make_unique<RowObject>(ModelManager::getModel(ModelName::CHICKEN));
-  m_player->setRotationXZ({0.0f, 0.0f}, true); // Enable Y in AABB
-  m_player->setRotationY(-90.0f);
-  m_player->setPosition({0.25f, 0.0f});
+  m_player = std::make_unique<Player>(Player::getDefault());
 
   // Set global collision clip based on player's height
-  RowObject::s_useClipY = true;
-  RowObject::s_minClipY = m_player->getLocalAABB().min.y;
-  RowObject::s_maxClipY = m_player->getLocalAABB().max.y;
+  RowObject::s_useClipY.init(true);
+  RowObject::s_minClipY.init(m_player->getObject().getLocalAABB().min.y);
+  RowObject::s_maxClipY.init(m_player->getObject().getLocalAABB().max.y);
 
   // Load Skybox
   TextureManager::loadCubemap(
       TextureName("skybox"),
       {
-          ASSETS_PATH "/textures/skybox/sky_3/px.hdr", // +X
-          ASSETS_PATH "/textures/skybox/sky_3/nx.hdr", // -X
-          ASSETS_PATH "/textures/skybox/sky_3/py.hdr", // +Y
-          ASSETS_PATH "/textures/skybox/sky_3/ny.hdr", // -Y
-          ASSETS_PATH "/textures/skybox/sky_3/pz.hdr", // +Z
-          ASSETS_PATH "/textures/skybox/sky_3/nz.hdr", // -Z
+          (ASSETS_PATH "/textures/skybox/sky_3/px.hdr"), // +X
+          (ASSETS_PATH "/textures/skybox/sky_3/nx.hdr"), // -X
+          (ASSETS_PATH "/textures/skybox/sky_3/py.hdr"), // +Y
+          (ASSETS_PATH "/textures/skybox/sky_3/ny.hdr"), // -Y
+          (ASSETS_PATH "/textures/skybox/sky_3/pz.hdr"), // +Z
+          (ASSETS_PATH "/textures/skybox/sky_3/nz.hdr"), // -Z
       });
 
   // Generate Irradiance Map
-  auto skybox_tex = TextureManager::getTexture(TextureName("skybox"));
+  std::shared_ptr<Texture> skybox_tex =
+      TextureManager::getTexture(TextureName("skybox"));
   m_skybox->setTexture(skybox_tex);
 
-  auto &irradiance_shader = ShaderManager::getShader(ShaderType::IRRADIANCE);
-  auto irradiance_map = IBLGenerator::generateIrradianceMap(
+  Shader &irradiance_shader = ShaderManager::getShader(ShaderType::IRRADIANCE);
+  std::shared_ptr<Texture> irradiance_map = IBLGenerator::generateIrradianceMap(
       *skybox_tex, *m_skybox, irradiance_shader);
   TextureManager::manage(TextureName("irradiance_map"),
                          std::move(*irradiance_map));
@@ -143,19 +143,18 @@ void Game::update(double delta_time) {
   // -----------------------------
 
   m_map.update(delta_time);
+  m_player->update(delta_time);
+  _updateCamera(delta_time);
 }
 
-void Game::render(double delta_time, Camera &camera) {
+void Game::render(double delta_time) {
   glEnable(GL_DEPTH_TEST);
 
   const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
-  float player_z =
-      RowQueue::get().getZ(m_playerRowIdx) - curr_row->getDepth() / 2.0f;
-  m_player->setPosition({m_player->getPosition().x, curr_row->getHeight()});
 
   // 1. Shadow Pass
-  m_lightSpaceMatrix = LightingManager::calculateLightSpaceMatrix(
-      m_player->getPosition(RowQueue::get().getZ(m_playerRowIdx)));
+  m_lightSpaceMatrix =
+      LightingManager::calculateLightSpaceMatrix(m_player->getPosition());
 
   Shader &shadow_shader = ShaderManager::getShader(ShaderType::SHADOW);
   shadow_shader.use();
@@ -168,17 +167,18 @@ void Game::render(double delta_time, Camera &camera) {
 
   {
     RenderContext shadow_draw_ctx = {
-        .shader = shadow_shader, .camera = camera, .deltaTime = delta_time};
+        .shader = shadow_shader, .camera = m_camera, .deltaTime = delta_time};
 
     m_map.draw(shadow_draw_ctx);
-    m_player->draw(shadow_draw_ctx, player_z);
+    m_player->draw(shadow_draw_ctx);
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glCullFace(GL_BACK); // Restore back-face culling
 
   // 2. Main Pass
-  glViewport(0, 0, (int)camera.getSceneWidth(), (int)camera.getSceneHeight());
+  glViewport(0, 0, (int)m_camera.getSceneWidth(),
+             (int)m_camera.getSceneHeight());
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Bind and draw Skybox first (as background)
@@ -188,7 +188,7 @@ void Game::render(double delta_time, Camera &camera) {
 
   m_skybox->draw({
       .shader = skybox_shader,
-      .camera = camera,
+      .camera = m_camera,
       .deltaTime = delta_time,
   });
 
@@ -197,14 +197,14 @@ void Game::render(double delta_time, Camera &camera) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glm::mat4 projection = camera.getProjectionMatrix();
-  glm::mat4 view = camera.getViewMatrix();
+  glm::mat4 projection = m_camera.getProjectionMatrix();
+  glm::mat4 view = m_camera.getViewMatrix();
 
   Shader &pbr_shader = ShaderManager::getShader(ShaderType::PBR);
   pbr_shader.use();
   pbr_shader.setMat4("u_Projection", projection);
   pbr_shader.setMat4("u_View", view);
-  pbr_shader.setVec3("u_CameraPos", camera.Position);
+  pbr_shader.setVec3("u_CameraPos", m_camera.Position);
   pbr_shader.setMat4("u_LightSpaceMatrix", m_lightSpaceMatrix);
 
   // Bind Skybox for reflections
@@ -233,7 +233,7 @@ void Game::render(double delta_time, Camera &camera) {
   water_shader.use();
   water_shader.setMat4("u_Projection", projection);
   water_shader.setMat4("u_View", view);
-  water_shader.setVec3("u_CameraPos", camera.Position);
+  water_shader.setVec3("u_CameraPos", m_camera.Position);
   water_shader.setMat4("u_LightSpaceMatrix", m_lightSpaceMatrix);
   water_shader.setInt("u_SpecularEnvMap", 10);
   water_shader.setInt("u_IrradianceMap", 12);
@@ -247,23 +247,22 @@ void Game::render(double delta_time, Camera &camera) {
 
   // Draw Map
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
-  m_map.draw({.shader = pbr_shader, .camera = camera, .deltaTime = delta_time});
+  m_map.draw(
+      {.shader = pbr_shader, .camera = m_camera, .deltaTime = delta_time});
 
   // Draw Player (Last for transparency blending)
   // Lower base color slightly to avoid "overblown" look under strong light
   pbr_shader.setVec3("u_BaseColor", glm::vec3(0.8f));
   pbr_shader.setVec2("u_UVOffset", glm::vec2(0.0f));
   m_player->draw(
-      {.shader = pbr_shader, .camera = camera, .deltaTime = delta_time},
-      player_z);
+      {.shader = pbr_shader, .camera = m_camera, .deltaTime = delta_time});
   pbr_shader.setVec3("u_BaseColor", glm::vec3(1.0f));
 
   if (m_debugAABB) {
     RenderContext debugCtx = {
-        .shader = pbr_shader, .camera = camera, .deltaTime = delta_time};
+        .shader = pbr_shader, .camera = m_camera, .deltaTime = delta_time};
 
-    DebugDrawer::drawAABB(debugCtx, m_player->getWorldAABB(player_z),
-                          {1.0f, 1.0f, 0.0f});
+    DebugDrawer::drawAABB(debugCtx, m_player->getAABB(), {1.0f, 1.0f, 0.0f});
 
     if (curr_row) {
       float row_z = RowQueue::get().getZ(m_playerRowIdx);
@@ -283,9 +282,8 @@ void Game::render(double delta_time, Camera &camera) {
 }
 
 void Game::moveForward() {
-  if (m_player) {
-    m_playerRowIdx++;
-
+  if (m_player && m_player->canJumpForward()) {
+    m_player->jumpForward(++m_playerRowIdx);
     m_map.updatePlayerRowIdx(m_playerRowIdx);
   }
 }
@@ -306,10 +304,15 @@ void Game::moveRight(double delta_time) {
   }
 }
 
-glm::vec3 Game::getPlayerPosition() const {
-  float z = RowQueue::get().getZ(m_playerRowIdx);
+void Game::_updateCamera(double delta_time) {
+  const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
+  float curr_row_z = RowQueue::get().getZ(m_playerRowIdx);
+  float curr_row_height = curr_row ? curr_row->getHeight() : 0.0f;
 
-  if (m_player)
-    return m_player->getPosition(z);
-  return glm::vec3(0.0f);
+  glm::vec3 target_camera_pos =
+      glm::vec3(0, curr_row_height, curr_row_z) + glm::vec3(8.0f, 8.0f, 8.0f);
+  float lerpFactor = 5.0f;
+
+  m_camera.Position = glm::mix(m_camera.Position, target_camera_pos,
+                               (float)delta_time * lerpFactor);
 }

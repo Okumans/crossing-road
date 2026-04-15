@@ -1,9 +1,9 @@
 #include "model_manager.hpp"
 #include "utility/enum_map.hpp"
-#include "utility/utility.hpp"
+#include "utility/not_initialized.hpp"
 #include <memory>
 
-SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>>
+SettableNotInitialized<EnumMap<ModelName, std::shared_ptr<Model>>, "s_models">
     ModelManager::s_models;
 
 std::shared_ptr<Model> ModelManager::loadModel(ModelName name,

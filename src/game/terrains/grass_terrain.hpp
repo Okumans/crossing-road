@@ -22,7 +22,8 @@ private:
   inline static const char *GRASS_2_TEX_NAME = "grass_2";
   inline static const char *GRASS_SIDE_TEX_NAME = "road_4";
 
-  inline static NotInitialized<TerrainPopulator> s_terrainPopulator;
+  inline static NotInitialized<TerrainPopulator, "s_terrainPopulator">
+      s_terrainPopulator;
 
 public:
   GrassyTerrain(uint32_t startRowidx)

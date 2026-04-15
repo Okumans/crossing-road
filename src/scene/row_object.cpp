@@ -10,10 +10,6 @@
 #include <memory>
 #include <print>
 
-float RowObject::s_minClipY = 0.0f;
-float RowObject::s_maxClipY = 0.0f;
-bool RowObject::s_useClipY = false;
-
 RowObject::RowObject(std::shared_ptr<Model> model, glm::vec2 pos,
                      float z_offset, glm::vec3 scale, glm::vec3 rotation,
                      bool defer_aabb_calculation)
@@ -45,10 +41,10 @@ void RowObject::recalculateAABB() {
   if (!m_model)
     return;
 
-  if (s_useClipY) {
+  if (s_useClipY.isInitialized() && s_useClipY.ensureInitialized()) {
     if (std::abs(m_scale.y) > 0.0001f) {
-      float localMinY = s_minClipY / m_scale.y;
-      float localMaxY = s_maxClipY / m_scale.y;
+      float localMinY = s_minClipY.ensureInitialized() / m_scale.y;
+      float localMaxY = s_maxClipY.ensureInitialized() / m_scale.y;
 
       if (m_scale.y < 0.0f)
         std::swap(localMinY, localMaxY);
@@ -107,10 +103,13 @@ void RowObject::setScale(glm::vec3 scale) {
 
 void RowObject::setScale(float scale) { setScale(glm::vec3(scale)); }
 
-void RowObject::setRotationXZ(glm::vec2 degrees, bool include_y_in_aabb) {
+void RowObject::setRotationXZ(glm::vec2 degrees) {
   m_rotation = {degrees.x, 0.0f, degrees.y};
-  m_includeYInAABB = include_y_in_aabb;
   recalculateAABB();
+}
+
+void RowObject::setIncludeYRotationInAABB(bool is_enable) {
+  m_includeYInAABB = is_enable;
 }
 
 void RowObject::setRotationY(float degree) {

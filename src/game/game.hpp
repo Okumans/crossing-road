@@ -3,7 +3,7 @@
 #include "graphics/camera.hpp"
 #include "graphics/skybox.hpp"
 #include "map_manager.hpp"
-#include "scene/row_object.hpp"
+#include "scene/player.hpp"
 
 #include <glad/gl.h>
 #include <glm/glm.hpp>
@@ -20,7 +20,8 @@
 
 class Game {
 private:
-  std::unique_ptr<RowObject> m_player;
+  Camera m_camera;
+  std::unique_ptr<Player> m_player;
   MapManager m_map;
   std::unique_ptr<Skybox> m_skybox;
 
@@ -40,7 +41,7 @@ public:
   ~Game();
 
   void update(double delta_time);
-  void render(double delta_time, Camera &camera);
+  void render(double delta_time);
 
   void setup();
 
@@ -50,5 +51,8 @@ public:
 
   void setDebugAABB(bool state) { m_debugAABB = state; }
 
-  glm::vec3 getPlayerPosition() const;
+  Camera &getCamera() { return m_camera; }
+
+private:
+  void _updateCamera(double delta_time);
 };

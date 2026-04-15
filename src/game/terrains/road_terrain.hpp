@@ -29,7 +29,8 @@ private:
     float uvScale;
   };
 
-  inline static SettableNotInitialized<EnumMap<CarType, std::unique_ptr<Car>>>
+  inline static SettableNotInitialized<EnumMap<CarType, std::unique_ptr<Car>>,
+                                       "s_carTemplate">
       s_carTemplate;
   inline constexpr static EnumMap<RoadMaterialType, RoadMaterialConfig>
       ROAD_MATERIAL_CONFIG = {{{ROAD_1_TEX_NAME, 4.0f},

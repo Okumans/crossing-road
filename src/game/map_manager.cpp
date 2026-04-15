@@ -6,7 +6,6 @@
 #include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
 #include "graphics/idrawable.hpp"
-#include "utility/utility.hpp"
 
 #include <array>
 #include <cassert>
@@ -15,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-MapManager::MapManager() : m_playerRowIdx(0) { RowQueue::init(19, 3.0f); }
+MapManager::MapManager() : m_playerRowIdx(0) { RowQueue::init(19, 0.0f); }
 
 void MapManager::addTerrain(TerrainType type) {
   std::unique_ptr<Terrain> terrain = nullptr;

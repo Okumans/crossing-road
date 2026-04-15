@@ -1,10 +1,11 @@
 #include "shader_manager.hpp"
 #include "utility/enum_map.hpp"
-#include "utility/utility.hpp"
+#include "utility/not_initialized.hpp"
 
 #include <memory>
 
-SettableNotInitialized<EnumMap<ShaderType, std::unique_ptr<Shader>>>
+SettableNotInitialized<EnumMap<ShaderType, std::unique_ptr<Shader>>,
+                       "s_shaders">
     ShaderManager::s_shaders;
 
 Shader &ShaderManager::loadShader(ShaderType type, const char *vertShaderPath,
