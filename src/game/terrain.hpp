@@ -196,7 +196,7 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
           obj->setZOffset(config.rule.zOffset);
 
           if (config.rule.randomRotation) {
-            obj->setRotationY(Random::randFloat(0.0f, glm::two_pi<float>()));
+            obj->setRotationY(Random::randFloat(0.0f, 360.0f));
           }
 
           if (!row->collided(*obj)) {

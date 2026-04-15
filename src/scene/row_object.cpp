@@ -1,5 +1,6 @@
 #include "row_object.hpp"
 #include "glm/fwd.hpp"
+#include "glm/trigonometric.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/mesh.hpp"
 
@@ -70,9 +71,12 @@ void RowObject::_updateLocalAABB() {
   if (!m_model)
     return;
 
+  glm::vec3 rotation({glm::radians(m_rotation.x), glm::radians(m_rotationY),
+                      glm::radians(m_rotation.z)});
+
   glm::mat4 transform(1.0f);
-  transform = glm::rotate(transform, m_rotation.x, glm::vec3(1, 0, 0));
-  transform = glm::rotate(transform, m_rotation.z, glm::vec3(0, 0, 1));
+  transform = glm::rotate(transform, rotation.x, glm::vec3(1, 0, 0));
+  transform = glm::rotate(transform, rotation.z, glm::vec3(0, 0, 1));
 
   transform = glm::scale(transform, m_scale);
 
@@ -87,7 +91,7 @@ void RowObject::_updateLocalAABB() {
     glm::mat4 transform(1.0f);
     transform = glm::translate(transform, pivot);
 
-    transform = glm::rotate(transform, m_rotationY, glm::vec3(0, 1, 0));
+    transform = glm::rotate(transform, rotation.y, glm::vec3(0, 1, 0));
 
     transform = glm::translate(transform, -pivot);
     m_localAABB.transform(transform);
@@ -103,21 +107,21 @@ void RowObject::setScale(glm::vec3 scale) {
 
 void RowObject::setScale(float scale) { setScale(glm::vec3(scale)); }
 
-void RowObject::setRotationXZ(glm::vec2 rads, bool include_y_in_aabb) {
-  m_rotation = {rads.x, 0.0f, rads.y};
+void RowObject::setRotationXZ(glm::vec2 degrees, bool include_y_in_aabb) {
+  m_rotation = {degrees.x, 0.0f, degrees.y};
   m_includeYInAABB = include_y_in_aabb;
   recalculateAABB();
 }
 
-void RowObject::setRotationY(float rads) {
-  m_rotationY = rads;
+void RowObject::setRotationY(float degree) {
+  m_rotationY = degree;
   _updateLocalAABB();
 }
 
-void RowObject::rotate(glm::vec3 rads) {
-  m_rotation.x += rads.x;
-  m_rotation.z += rads.z;
-  m_rotationY += rads.y;
+void RowObject::rotate(glm::vec3 degrees) {
+  m_rotation.x += degrees.x;
+  m_rotation.z += degrees.z;
+  m_rotationY += degrees.y;
   recalculateAABB();
 }
 
@@ -142,6 +146,8 @@ const AABB &RowObject::getWorldAABB(float z) const {
 }
 
 void RowObject::draw(const RenderContext &ctx, float z) {
+  glm::vec3 rotation({glm::radians(m_rotation.x), glm::radians(m_rotationY),
+                      glm::radians(m_rotation.z)});
   glm::mat4 model = glm::mat4(1.0f);
 
   // use this to rotate around pivot (localAABB center) instead of normal
@@ -155,9 +161,9 @@ void RowObject::draw(const RenderContext &ctx, float z) {
 
   model = glm::translate(model, pivot);
 
-  model = glm::rotate(model, m_rotation.x, glm::vec3(1, 0, 0));
-  model = glm::rotate(model, m_rotationY, glm::vec3(0, 1, 0));
-  model = glm::rotate(model, m_rotation.z, glm::vec3(0, 0, 1));
+  model = glm::rotate(model, rotation.x, glm::vec3(1, 0, 0));
+  model = glm::rotate(model, rotation.y, glm::vec3(0, 1, 0));
+  model = glm::rotate(model, rotation.z, glm::vec3(0, 0, 1));
 
   model = glm::translate(model, -pivot);
 

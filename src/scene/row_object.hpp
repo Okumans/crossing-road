@@ -128,12 +128,12 @@ public:
    *
    * This method triggers a full AABB recalculation from the model.
    *
-   * @param rads X and Z rotation in radians.
+   * @param degrees X and Z rotation in degrees.
    * @param include_y_in_aabb If true, subsequent Y rotations will be included
    * in the axis-aligned bounding box (causing size changes). If false, the
    * AABB footprint remains consistent despite Y rotation.
    */
-  void setRotationXZ(glm::vec2 rads, bool include_y_in_aabb = false);
+  void setRotationXZ(glm::vec2 degrees, bool include_y_in_aabb = false);
 
   /**
    * @brief Sets Y rotation.
@@ -141,11 +141,11 @@ public:
    * This method only updates the local AABB transform (no full recalculation).
    * It respects the policy set by the last call to setRotationXZ.
    *
-   * @param rads Rotation in radians.
+   * @param degree in degrees
    */
-  void setRotationY(float rads);
+  void setRotationY(float degree);
 
-  void rotate(glm::vec3 rads);
+  void rotate(glm::vec3 degrees);
 
   glm::vec3 getPosition(float z) const {
     return {m_position.x, m_position.y, z + m_position.z};

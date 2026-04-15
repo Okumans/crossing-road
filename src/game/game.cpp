@@ -72,7 +72,7 @@ void Game::setup() {
   m_player =
       std::make_unique<RowObject>(ModelManager::getModel(ModelName::CHICKEN));
   m_player->setRotationXZ({0.0f, 0.0f}, true); // Enable Y in AABB
-  m_player->setRotationY(glm::radians(-90.0f));
+  m_player->setRotationY(-90.0f);
   m_player->setPosition({0.25f, 0.0f});
 
   // Set global collision clip based on player's height
