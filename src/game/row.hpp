@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/fwd.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/izdrawable.hpp"
 #include "scene/row_object.hpp"
@@ -12,8 +13,9 @@ enum class RowType { GRASS, ROAD, WATER };
 
 class Row : public IZDrawable {
 public:
-  inline static const float WIDTH = 22.0f;
   inline static const float SLOT_WIDTH = 1.0f;
+  inline static const uint32_t SLOT_AMOUNT = 22;
+  inline static const float WIDTH = SLOT_WIDTH * SLOT_AMOUNT;
 
 protected:
   float m_depth;

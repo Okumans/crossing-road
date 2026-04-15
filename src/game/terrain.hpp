@@ -39,12 +39,21 @@ struct SpawnConfig {
   PlacementRule rule;
 };
 
+struct PopulatorSettings {
+  float minEdgeWeight = 0.4f;
+  float maxEdgeWeight = 1.0f;
+  float gapMarginStart = 0.2f; // Gap won't spawn in the first 20% of the road
+  float gapMarginEnd = 0.8f;   // Gap won't spawn in the last 20% of the road
+};
+
 class TerrainPopulator {
 private:
   EnumMap<RowType, std::optional<std::vector<SpawnConfig>>> m_rules;
+  PopulatorSettings m_settings;
 
 public:
   TerrainPopulator() = default;
+  TerrainPopulator(PopulatorSettings settings) : m_settings(settings) {}
   TerrainPopulator(TerrainPopulator &&) = default;
   TerrainPopulator &operator=(TerrainPopulator &&) = default;
 
@@ -104,7 +113,7 @@ protected:
 
 public:
   Terrain(TerrainType type, uint32_t start_row)
-      : m_type(type), m_startRowIdx(start_row), m_currRelativeZ(0.0f) {}
+      : m_type(type), m_startRowIdx(start_row) {}
 
   virtual ~Terrain() = default;
 
@@ -112,11 +121,7 @@ public:
     uint32_t row_idx = RowQueue::get().registerRow(row.get());
     float row_depth = row->getDepth();
 
-    m_rowsInfo.push_back({.row = std::move(row),
-                          .rowIdx = row_idx,
-                          .relativeZ = m_currRelativeZ});
-
-    m_currRelativeZ -= row_depth;
+    m_rowsInfo.push_back({.row = std::move(row), .rowIdx = row_idx});
 
     return row_idx;
   }
@@ -127,8 +132,8 @@ public:
   }
 
   virtual void draw(const RenderContext &ctx, float z) {
-    for (auto &[row, idx, z] : m_rowsInfo)
-      row->draw(ctx, z);
+    for (auto &[row, idx, local_z] : m_rowsInfo)
+      row->draw(ctx, local_z + z);
   }
 
   virtual uint32_t generate() {
@@ -150,23 +155,32 @@ protected:
 inline void TerrainPopulator::populate(Terrain &terrain) {
   for (auto &[row, idx, z] : terrain.m_rowsInfo) {
     RowType type = row->getType();
-    if (!m_rules[type])
+
+    const std::optional<std::vector<SpawnConfig>> &spawn_opt = m_rules[type];
+    if (!spawn_opt.has_value())
       continue;
 
-    const auto &rules = m_rules[type].value();
+    const std::vector<SpawnConfig> &rules = m_rules[type].value();
+    const uint32_t total_slots = row->SLOT_AMOUNT;
 
-    // Grid-based spawning (25 slots)
-    // Randomly pick one slot in the playable area to definitely be a gap
-    int guaranteed_gap = Random::randInt(5, 19);
+    assert(total_slots > 0);
 
-    for (int i = 0; i < 25; ++i) {
-      if (i == guaranteed_gap)
+    const float center_index = (total_slots - 1) / 2.0f;
+
+    // Calculate gap range based on percentages in m_settings
+    int gap_min = static_cast<int>(total_slots * m_settings.gapMarginStart);
+    int gap_max = static_cast<int>(total_slots * m_settings.gapMarginEnd);
+    int guaranteed_gap = Random::randInt(gap_min, gap_max);
+
+    for (uint32_t i = 0; i < row->SLOT_AMOUNT; ++i) {
+      if (static_cast<int>(i) == guaranteed_gap)
         continue;
 
-      // Weight probability to be higher at edges (0.0 to 12.0 distance)
-      float dist_from_center = std::abs(i - 12) / 12.0f;
+      float dist_from_center = std::abs(static_cast<float>(i) - 12) / 12.0f;
+
+      float weight_range = m_settings.maxEdgeWeight - m_settings.minEdgeWeight;
       float edge_weight =
-          0.4f + 0.6f * dist_from_center; // 0.4 center, 1.0 edges
+          m_settings.minEdgeWeight + (weight_range * dist_from_center);
 
       for (const auto &config : rules) {
         if (Random::randChance(config.rule.probability * edge_weight)) {
@@ -176,12 +190,11 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
               std::make_unique<RowObject>(*config.object);
 
           // scale is already set, with recalculateAABB on withRule
-          float x = -12.0f + (float)i;
-          float z = config.rule.zOffset;
+          float x = static_cast<float>(i) - center_index;
           float y = row->getHeight() + config.rule.yOffset;
 
           obj->setPosition({x, y});
-          obj->setZOffset(z);
+          obj->setZOffset(config.rule.zOffset);
 
           if (config.rule.randomRotation) {
             obj->setRotationY(Random::randFloat(0.0f, glm::two_pi<float>()));
@@ -189,7 +202,7 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
 
           if (!row->collided(*obj)) {
             row->addObject(std::move(obj));
-            break; // One object per slot
+            break;
           }
         }
       }

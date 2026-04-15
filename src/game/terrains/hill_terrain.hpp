@@ -92,8 +92,10 @@ private:
 
     TerrainPopulator greenery;
 
-    PlacementRule base{
-        .attempts = 45, .minX = -13.0f, .maxX = 13.0f, .zOffset = 0.25f};
+    PlacementRule base{.attempts = 45,
+                       .minX = GrassRow::WIDTH / -2.0f,
+                       .maxX = GrassRow::WIDTH / 2.0f,
+                       .zOffset = 0.25f};
 
     greenery.withRule(
         RowType::GRASS,
