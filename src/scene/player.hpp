@@ -5,11 +5,9 @@
 #include "resource/model_manager.hpp"
 #include "scene/row_object.hpp"
 #include <cstdint>
-#include <memory>
 
-class Player : public IDrawable {
+class Player : private RowObject, public IDrawable {
 private:
-  std::unique_ptr<RowObject> m_object;
   uint32_t m_currRowIdx;
   float m_z;
 
@@ -22,9 +20,8 @@ private:
   glm::vec3 m_targetPos;
 
 public:
-  Player(std::unique_ptr<RowObject> &&player_base_object,
-         uint32_t curr_row_idx = 0)
-      : m_object(std::move(player_base_object)), m_currRowIdx(curr_row_idx) {}
+  Player(RowObject &&player_base_object, uint32_t curr_row_idx = 0)
+      : RowObject(std::move(player_base_object)), m_currRowIdx(curr_row_idx) {}
 
   bool canJumpForward() { return !m_isJumping; }
 
@@ -49,7 +46,7 @@ public:
     m_currRowIdx = target_row_idx;
   }
 
-  void update(double delta_time) {
+  void update(double delta_time) override {
     if (!m_isJumping) {
       return;
     }
@@ -74,35 +71,34 @@ public:
     float current_y = base_y + arc_y;
 
     // Apply the newly calculated positions
-    m_object->setPosition(glm::vec2(getPosition().x, current_y));
+    setPosition(glm::vec2(getPosition().x, current_y));
     m_z = current_z;
   }
 
   virtual void draw(const RenderContext &ctx) override {
-    m_object->draw(ctx, m_z);
+    RowObject::draw(ctx, m_z);
   }
 
-  void setPosition(glm::vec2 xy) { m_object->setPosition(xy); }
-  void setRotationY(float degrees) { m_object->setRotationY(degrees); }
+  void setPosition(glm::vec2 xy) { RowObject::setPosition(xy); }
+  void setRotationY(float degrees) { RowObject::setRotationY(degrees); }
   void setRowIdx(uint32_t row_idx) {
     m_currRowIdx = row_idx;
     m_z = RowQueue::get().getZ(m_currRowIdx) -
           (RowQueue::get().getRow(m_currRowIdx)->getDepth() / 2.0f);
   }
 
-  const glm::vec3 getRotation() const { return m_object->getRotation(); }
-  const glm::vec3 getPosition() const { return m_object->getPosition(m_z); }
-  const glm::vec3 getScale() const { return m_object->getScale(); }
-  const AABB &getAABB() const { return m_object->getWorldAABB(m_z); }
-  const RowObject &getObject() const { return *m_object; }
+  const glm::vec3 getRotation() const { return RowObject::getRotation(); }
+  const glm::vec3 getPosition() const { return RowObject::getPosition(m_z); }
+  const glm::vec3 getScale() const { return RowObject::getScale(); }
+  const AABB &getWorldAABB() const { return RowObject::getWorldAABB(m_z); }
+  const AABB &getLocalAABB() const { return RowObject::getLocalAABB(); }
 
   static Player getDefault() {
-    std::unique_ptr<RowObject> object =
-        std::make_unique<RowObject>(ModelManager::getModel(ModelName::CHICKEN));
+    RowObject object(ModelManager::getModel(ModelName::CHICKEN));
 
-    object->setIncludeYRotationInAABB(true);
-    object->setRotationY(-90.0f);
-    object->setPosition({0.25f, 0.0f});
+    object.setIncludeYRotationInAABB(true);
+    object.setRotationY(-90.0f);
+    object.setPosition({0.25f, 0.0f});
 
     return Player(std::move(object));
   }

@@ -76,8 +76,8 @@ void Game::setup() {
 
   // Set global collision clip based on player's height
   RowObject::s_useClipY.init(true);
-  RowObject::s_minClipY.init(m_player->getObject().getLocalAABB().min.y);
-  RowObject::s_maxClipY.init(m_player->getObject().getLocalAABB().max.y);
+  RowObject::s_minClipY.init(m_player->getLocalAABB().min.y);
+  RowObject::s_maxClipY.init(m_player->getLocalAABB().max.y);
 
   // Load Skybox
   TextureManager::loadCubemap(
@@ -262,7 +262,8 @@ void Game::render(double delta_time) {
     RenderContext debugCtx = {
         .shader = pbr_shader, .camera = m_camera, .deltaTime = delta_time};
 
-    DebugDrawer::drawAABB(debugCtx, m_player->getAABB(), {1.0f, 1.0f, 0.0f});
+    DebugDrawer::drawAABB(debugCtx, m_player->getWorldAABB(),
+                          {1.0f, 1.0f, 0.0f});
 
     if (curr_row) {
       float row_z = RowQueue::get().getZ(m_playerRowIdx);
