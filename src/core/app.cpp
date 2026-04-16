@@ -1,5 +1,6 @@
 #include "core/app.hpp"
 
+#include "game/game.hpp"
 #include "glad/gl.h"
 
 #include "GLFW/glfw3.h"
@@ -24,11 +25,36 @@ static std::string arr_to_str(unsigned char *arr, unsigned int len) {
 void App::render(double delta_time) {
   _handleProcessInput(delta_time);
 
-  m_game.update(delta_time);
+  if (m_game.getState() == GameState::LOADING) {
+    if (m_currentLoadingTask < m_loadingTasks.size()) {
+      const auto &task = m_loadingTasks[m_currentLoadingTask];
+      if (auto *status = dynamic_cast<TextElement *>(
+              m_uiManager.getElement("loading_status"))) {
+        status->text = "Loading: " + task.name;
+      }
+      task.task();
+      m_currentLoadingTask++;
+    } else {
+      // All tasks finished, switch to menu (don't call reset again if
+      // m_game.setup already did) Actually Game::setup might have already set
+      // the state to START_MENU if we are not careful But we initialized it to
+      // LOADING in constructor. Let's manually trigger the state change here.
+      m_game.reset(); // This will set state to START_MENU
+    }
+  } else {
+    m_game.update(delta_time);
+  }
 
   _updateUIElements(delta_time);
 
-  m_game.render(delta_time);
+  if (m_game.getState() != GameState::LOADING) {
+    m_game.render(delta_time);
+  } else {
+    // Clear screen for loading
+    glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+
   m_uiManager.render(m_appState.windowWidth, m_appState.windowHeight);
 }
 
@@ -41,8 +67,22 @@ App::App(GLFWwindow *window) : m_window(window) {
   glfwSetScrollCallback(m_window, _glfwScrollCallback);
   glfwSetFramebufferSizeCallback(m_window, _glfwFramebufferSizeCallback);
 
-  _setupResources();
+  // 1. Initial Resources (UI & Font)
+#ifdef EMBED_SHADER
+  ShaderManager::loadShaderSource(
+      ShaderType::UI, arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
+      arr_to_str(ui_frag_glsl, ui_frag_glsl_len).c_str());
+#else
+  ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
+                            UI_FRAGMENT_SHADER_PATH);
+#endif
+  m_font.loadDefaultFont();
+
+  // 2. Setup UI
   _setupUIElements();
+
+  // 3. Queue other resources
+  _setupResources();
 
   int width, height;
   glfwGetWindowSize(m_window, &width, &height);
@@ -56,108 +96,158 @@ App::App(GLFWwindow *window) : m_window(window) {
 App::~App() = default;
 
 void App::_setupResources() {
-  // Load Shader
-#ifdef EMBED_SHADER
-  ShaderManager::loadShaderSource(
-      ShaderType::UI, arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
-      arr_to_str(ui_frag_glsl, ui_frag_glsl_len).c_str());
-#else
-  ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
-                            UI_FRAGMENT_SHADER_PATH);
-  ShaderManager::loadShader(ShaderType::PBR, SHADER_PATH "/pbr.vert.glsl",
-                            SHADER_PATH "/pbr.frag.glsl");
-  ShaderManager::loadShader(ShaderType::SKYBOX, SHADER_PATH "/skybox.vert.glsl",
-                            SHADER_PATH "/skybox.frag.glsl");
-  ShaderManager::loadShader(ShaderType::SHADOW, SHADER_PATH "/shadow.vert.glsl",
-                            SHADER_PATH "/shadow.frag.glsl");
-  ShaderManager::loadShader(ShaderType::IRRADIANCE,
-                            SHADER_PATH "/irradiance.vert.glsl",
-                            SHADER_PATH "/irradiance.frag.glsl");
-  ShaderManager::loadShader(ShaderType::WATER, SHADER_PATH "/pbr.vert.glsl",
-                            SHADER_PATH "/water.frag.glsl");
-  ShaderManager::loadShader(ShaderType::DEBUG, SHADER_PATH "/debug.vert.glsl",
-                            SHADER_PATH "/debug.frag.glsl");
-#endif
+  // Shaders
+  m_loadingTasks.push_back(
+      {"Shaders", []() {
+         ShaderManager::loadShader(ShaderType::PBR,
+                                   SHADER_PATH "/pbr.vert.glsl",
+                                   SHADER_PATH "/pbr.frag.glsl");
+         ShaderManager::loadShader(ShaderType::SKYBOX,
+                                   SHADER_PATH "/skybox.vert.glsl",
+                                   SHADER_PATH "/skybox.frag.glsl");
+         ShaderManager::loadShader(ShaderType::SHADOW,
+                                   SHADER_PATH "/shadow.vert.glsl",
+                                   SHADER_PATH "/shadow.frag.glsl");
+         ShaderManager::loadShader(ShaderType::IRRADIANCE,
+                                   SHADER_PATH "/irradiance.vert.glsl",
+                                   SHADER_PATH "/irradiance.frag.glsl");
+         ShaderManager::loadShader(ShaderType::WATER,
+                                   SHADER_PATH "/pbr.vert.glsl",
+                                   SHADER_PATH "/water.frag.glsl");
+         ShaderManager::loadShader(ShaderType::DEBUG,
+                                   SHADER_PATH "/debug.vert.glsl",
+                                   SHADER_PATH "/debug.frag.glsl");
+       }});
 
-  // Ensure the existence of static generated textures
-  if (!TextureManager::exists(STATIC_BLACK_TEXTURE))
-    TextureManager::manage(STATIC_BLACK_TEXTURE,
-                           TextureManager::generateStaticBlackTexture());
+  // Static Textures
+  m_loadingTasks.push_back(
+      {"Static Textures", []() {
+         if (!TextureManager::exists(STATIC_BLACK_TEXTURE))
+           TextureManager::manage(STATIC_BLACK_TEXTURE,
+                                  TextureManager::generateStaticBlackTexture());
+         if (!TextureManager::exists(STATIC_WHITE_TEXTURE))
+           TextureManager::manage(STATIC_WHITE_TEXTURE,
+                                  TextureManager::generateStaticWhiteTexture());
+         if (!TextureManager::exists(STATIC_NORMAL_TEXTURE))
+           TextureManager::manage(
+               STATIC_NORMAL_TEXTURE,
+               TextureManager::generateStaticNormalTexture());
+         if (!TextureManager::exists(STATIC_PBR_DEFAULT_TEXTURE))
+           TextureManager::manage(
+               STATIC_PBR_DEFAULT_TEXTURE,
+               TextureManager::generateStaticPBRDefaultTexture());
+       }});
 
-  if (!TextureManager::exists(STATIC_WHITE_TEXTURE))
-    TextureManager::manage(STATIC_WHITE_TEXTURE,
-                           TextureManager::generateStaticWhiteTexture());
+  // Models
+  auto loadModel = [](ModelName name, const std::string &path) {
+    return [name, path]() { ModelManager::loadModel(name, path.c_str()); };
+  };
 
-  if (!TextureManager::exists(STATIC_NORMAL_TEXTURE))
-    TextureManager::manage(STATIC_NORMAL_TEXTURE,
-                           TextureManager::generateStaticNormalTexture());
+  m_loadingTasks.push_back(
+      {"Model: Chicken", loadModel(ModelName::CHICKEN, ASSETS_PATH
+                                   "/objects/chicken/chicken_2.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Tree 1",
+       loadModel(ModelName::TREE_1, ASSETS_PATH "/objects/tree/tree_1.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Tree 2",
+       loadModel(ModelName::TREE_2, ASSETS_PATH "/objects/tree/tree_2.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Bush 1",
+       loadModel(ModelName::BUSH_1, ASSETS_PATH "/objects/tree/bush_1.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Bush 2",
+       loadModel(ModelName::BUSH_2, ASSETS_PATH "/objects/tree/bush_2.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Rock",
+       loadModel(ModelName::ROCK_1, ASSETS_PATH "/objects/rock/rock_1.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Car 1",
+       loadModel(ModelName::CAR_1, ASSETS_PATH "/objects/car/car_1.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Car 2",
+       loadModel(ModelName::CAR_2, ASSETS_PATH "/objects/car/car_2.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Train",
+       loadModel(ModelName::TRAIN_1, ASSETS_PATH "/objects/car/train_1.glb")});
+  m_loadingTasks.push_back(
+      {"Model: Lilypad", loadModel(ModelName::LILYPAD_1, ASSETS_PATH
+                                   "/objects/lilypad/lilypad_2.glb")});
 
-  if (!TextureManager::exists(STATIC_PBR_DEFAULT_TEXTURE))
-    TextureManager::manage(STATIC_PBR_DEFAULT_TEXTURE,
-                           TextureManager::generateStaticPBRDefaultTexture());
+  // Materials
+  m_loadingTasks.push_back({"Material: Grass 1", []() {
+                              loadMaterialFolder("grass_1", ASSETS_PATH
+                                                 "/textures/grass/1");
+                            }});
+  m_loadingTasks.push_back({"Material: Grass 2", []() {
+                              loadMaterialFolder("grass_2", ASSETS_PATH
+                                                 "/textures/grass/2");
+                            }});
+  m_loadingTasks.push_back(
+      {"Material: Road 1",
+       []() { loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3"); }});
+  m_loadingTasks.push_back(
+      {"Material: Road 2",
+       []() { loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2"); }});
+  m_loadingTasks.push_back(
+      {"Material: Road 3",
+       []() { loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5"); }});
+  m_loadingTasks.push_back(
+      {"Material: Road 4",
+       []() { loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4"); }});
+  m_loadingTasks.push_back(
+      {"Material: Road 5",
+       []() { loadMaterialFolder("road_5", ASSETS_PATH "/textures/road/6"); }});
+  m_loadingTasks.push_back(
+      {"Material: Water",
+       []() { loadMaterialFolder("water_1", ASSETS_PATH "/textures/water"); }});
+  m_loadingTasks.push_back(
+      {"Finalizing Materials", []() {
+         MaterialManager::addMaterial(
+             "water_1",
+             Material::builder(MaterialManager::getMaterial("water_1"))
+                 .setRoughnessFactor(0.07f)
+                 .setMetallicFactor(0.0f)
+                 .create());
+         MaterialManager::addMaterial(
+             "road_2", Material::builder(MaterialManager::getMaterial("road_2"))
+                           .setMetallicFactor(2.0f)
+                           .create());
+       }});
 
-  // Load the models
-  ModelManager::loadModel(ModelName::CHICKEN,
-                          ASSETS_PATH "/objects/chicken/chicken_2.glb");
-  ModelManager::loadModel(ModelName::TREE_1,
-                          ASSETS_PATH "/objects/tree/tree_1.glb");
-  ModelManager::loadModel(ModelName::TREE_2,
-                          ASSETS_PATH "/objects/tree/tree_2.glb");
-  ModelManager::loadModel(ModelName::BUSH_1,
-                          ASSETS_PATH "/objects/tree/bush_1.glb");
-  ModelManager::loadModel(ModelName::BUSH_2,
-                          ASSETS_PATH "/objects/tree/bush_2.glb");
-  ModelManager::loadModel(ModelName::ROCK_1,
-                          ASSETS_PATH "/objects/rock/rock_1.glb");
-  ModelManager::loadModel(ModelName::CAR_1,
-                          ASSETS_PATH "/objects/car/car_1.glb");
-  ModelManager::loadModel(ModelName::CAR_2,
-                          ASSETS_PATH "/objects/car/car_2.glb");
-  ModelManager::loadModel(ModelName::TRAIN_1,
-                          ASSETS_PATH "/objects/car/train_1.glb");
-  ModelManager::loadModel(ModelName::LILYPAD_1,
-                          ASSETS_PATH "/objects/lilypad/lilypad_2.glb");
+  // Skybox
+  m_loadingTasks.push_back(
+      {"Skybox", []() {
+         TextureManager::loadCubemap(
+             TextureName("skybox"),
+             {
+                 (ASSETS_PATH "/textures/skybox/sky_4/px.hdr"), // +X
+                 (ASSETS_PATH "/textures/skybox/sky_4/nx.hdr"), // -X
+                 (ASSETS_PATH "/textures/skybox/sky_4/py.hdr"), // +Y
+                 (ASSETS_PATH "/textures/skybox/sky_4/ny.hdr"), // -Y
+                 (ASSETS_PATH "/textures/skybox/sky_4/pz.hdr"), // +Z
+                 (ASSETS_PATH "/textures/skybox/sky_4/nz.hdr"), // -Z
+             });
+       }});
 
-  // Load the material & Textures
-  loadMaterialFolder("grass_1", ASSETS_PATH "/textures/grass/1");
-  loadMaterialFolder("grass_2", ASSETS_PATH "/textures/grass/2");
-  loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3");
-  loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
-  loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5");
-  loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4");
-  loadMaterialFolder("road_5", ASSETS_PATH "/textures/road/6");
-  loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
-  MaterialManager::addMaterial(
-      "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
-                     .setRoughnessFactor(0.07f)
-                     .setMetallicFactor(0.0f)
-                     .create());
-  MaterialManager::addMaterial(
-      "road_2", Material::builder(MaterialManager::getMaterial("road_2"))
-                    .setMetallicFactor(2.0f)
-                    .create());
-
-  // Load Skybox
-  TextureManager::loadCubemap(
-      TextureName("skybox"),
-      {
-          (ASSETS_PATH "/textures/skybox/sky_4/px.hdr"), // +X
-          (ASSETS_PATH "/textures/skybox/sky_4/nx.hdr"), // -X
-          (ASSETS_PATH "/textures/skybox/sky_4/py.hdr"), // +Y
-          (ASSETS_PATH "/textures/skybox/sky_4/ny.hdr"), // -Y
-          (ASSETS_PATH "/textures/skybox/sky_4/pz.hdr"), // +Z
-          (ASSETS_PATH "/textures/skybox/sky_4/nz.hdr"), // -Z
-      });
-
-  // Load other resources
-  m_game.setup();
-  m_game.setDebugAABB(true);
-  m_font.loadDefaultFont();
+  // Game Setup
+  m_loadingTasks.push_back({"Game Engine Initializing", [this]() {
+                              m_game.setup();
+                              m_game.setDebugAABB(true);
+                            }});
 }
 
 void App::_setupUIElements() {
   m_uiManager.addTextElement("fps_counter", {1.0f, 1.0f, 0.0f, 0.0f}, "FPS: 0",
                              m_font, {1.0f, 1.0f, 1.0f, 1.0f}, 0.15f);
+
+  // Loading Screen
+  m_uiManager.addTextElement("loading_title", {0.0f, 15.0f, 0.0f, 0.0f},
+                             "LOADING...", m_font, {1.0f, 1.0f, 1.0f, 1.0f},
+                             0.4f);
+  m_uiManager.addTextElement("loading_status", {0.0f, 22.0f, 0.0f, 0.0f},
+                             "Initializing...", m_font,
+                             {0.7f, 0.7f, 0.7f, 1.0f}, 0.15f);
 
   // Darken Screen Overlay (added first so it's behind text)
   m_uiManager.addInteractiveElement(
@@ -213,6 +303,20 @@ void App::_updateUIElements(double delta_time) {
 
   float vWidth = m_uiManager.getVirtualWidth();
   GameState state = m_game.getState();
+
+  // Handle Loading Screen
+  if (auto *title = dynamic_cast<TextElement *>(
+          m_uiManager.getElement("loading_title"))) {
+    title->visible = (state == GameState::LOADING);
+    float w = m_font.getTextWidth(title->text, title->scale);
+    title->bounds.x = (vWidth - w) / 2.0f;
+  }
+  if (auto *status = dynamic_cast<TextElement *>(
+          m_uiManager.getElement("loading_status"))) {
+    status->visible = (state == GameState::LOADING);
+    float w = m_font.getTextWidth(status->text, status->scale);
+    status->bounds.x = (vWidth - w) / 2.0f;
+  }
 
   // Update Score
   if (auto *scoreElement = dynamic_cast<TextElement *>(
@@ -285,6 +389,8 @@ void App::_handleKeyCallback(int key, int scancode, int action, int mods) {
       break;
     case GameState::GAME_OVER:
       m_game.reset();
+      break;
+    case GameState::LOADING:
       break;
     }
   }

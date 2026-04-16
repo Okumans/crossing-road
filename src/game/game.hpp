@@ -19,7 +19,7 @@
 #define ICONS_PATH ASSETS_PATH "/icons"
 #endif
 
-enum class GameState { START_MENU, PLAYING, GAME_OVER };
+enum class GameState { LOADING, START_MENU, PLAYING, GAME_OVER };
 
 class Game {
 private:

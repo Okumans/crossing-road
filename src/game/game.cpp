@@ -26,7 +26,7 @@ Game::Game()
     : m_camera(glm::vec3(8.25f, 8.0f, 8.25f)),
       m_cameraController(m_camera, glm::vec3(8.0f, 8.0f, 8.0f)),
       m_player(nullptr), m_skybox(std::make_unique<Skybox>()),
-      m_shadowMapFBO(0), m_shadowMapTex(0) {
+      m_shadowMapFBO(0), m_shadowMapTex(0), m_state(GameState::LOADING) {
   m_camera.setPitch(-35.264f);
   m_camera.setYaw(-107.25f);
   m_camera.Zoom = 30.0f;

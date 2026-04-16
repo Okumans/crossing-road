@@ -30,6 +30,15 @@ struct AppState {
   bool gameStarted = false;
 };
 
+#include <functional>
+#include <string>
+#include <vector>
+
+struct LoadingTask {
+  std::string name;
+  std::function<void()> task;
+};
+
 class App {
 private:
   GLFWwindow *m_window;
@@ -40,6 +49,9 @@ private:
 
   UIManager m_uiManager;
   BitmapFont m_font;
+
+  std::vector<LoadingTask> m_loadingTasks;
+  size_t m_currentLoadingTask = 0;
 
 public:
   App(GLFWwindow *window);
