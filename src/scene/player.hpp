@@ -96,8 +96,13 @@ public:
   const glm::vec3 getRotation() const { return RowObject::getRotation(); }
   const glm::vec3 getPosition() const { return RowObject::getPosition(m_z); }
   const glm::vec3 getScale() const { return RowObject::getScale(); }
-  const AABB &getWorldAABB() const { return RowObject::getWorldAABB(m_z); }
-  const AABB &getLocalAABB() const { return RowObject::getLocalAABB(); }
+  const AABB &getWorldAABB(float z = 0.0f) const override {
+    (void)z;
+    return RowObject::getWorldAABB(m_z);
+  }
+  const AABB &getLocalAABB() const override {
+    return RowObject::getLocalAABB();
+  }
 
   static Player getDefault() {
     RowObject object(ModelManager::getModel(ModelName::CHICKEN));

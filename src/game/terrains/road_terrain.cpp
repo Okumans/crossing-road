@@ -101,7 +101,10 @@ void RoadTerrain::setup() {
          std::make_unique<Car>(ModelManager::getModel(ModelName::CAR_2), 0.0f,
                                glm::vec2(0.0f), 0.0f, glm::vec3(0.0022f)));
 
-  setCar(CarType::TRAIN_1,
-         std::make_unique<Car>(ModelManager::getModel(ModelName::TRAIN_1), 0.0f,
-                               glm::vec2(0.0f), 0.0f, glm::vec3(0.4f)));
+  std::unique_ptr<Car> train_object =
+      std::make_unique<Car>(ModelManager::getModel(ModelName::TRAIN_1), 0.0f,
+                            glm::vec2(0.0f), 0.0f, glm::vec3(0.4f));
+  train_object->setEnableAABBCollisionScaleFactor(false);
+
+  setCar(CarType::TRAIN_1, std::move(train_object));
 }

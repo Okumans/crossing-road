@@ -13,14 +13,16 @@ WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
   _setupMesh();
 }
 
-bool WaterRow::collided(const RowObject &target) const {
-  return Row::collided(target);
+bool WaterRow::collided(const RowObject &target,
+                        std::optional<float> row_z) const {
+  return Row::collided(target, row_z);
 }
 
-bool WaterRow::isSafe(const RowObject &target) const {
+bool WaterRow::isSafe(const RowObject &target,
+                      std::optional<float> row_z) const {
   // In water Row, you are only safe if you ARE colliding with a lilypad or in
   // the air
-  return Row::collided(target) || target.getWorldAABB().min.y > 0;
+  return Row::collided(target, row_z) || target.getWorldAABB().min.y > 0;
 }
 
 void WaterRow::draw(const RenderContext &ctx, float z) {

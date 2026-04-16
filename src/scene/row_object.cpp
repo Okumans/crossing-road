@@ -176,8 +176,16 @@ bool RowObject::collided(const RowObject &other) {
   return getWorldAABB().intersects(other.getWorldAABB());
 }
 
+bool RowObject::collided(const RowObject &other, float z) {
+  return getWorldAABB(z).intersects(other.getWorldAABB());
+}
+
 bool RowObject::collided(AABB bounding_box) {
   return getWorldAABB().intersects(bounding_box);
+}
+
+bool RowObject::collided(AABB bounding_box, float z) {
+  return getWorldAABB(z).intersects(bounding_box);
 }
 
 void RowObject::setHeightClip(float min_y, float max_y) {

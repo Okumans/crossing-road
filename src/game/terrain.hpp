@@ -160,6 +160,15 @@ protected:
 };
 
 inline void TerrainPopulator::populate(Terrain &terrain) {
+  const uint32_t total_slots = Row::SLOT_AMOUNT;
+  assert(total_slots > 0);
+
+  // Calculate a common guaranteed slot for the entire terrain to ensure a
+  // traversable path
+  int gap_min = static_cast<int>(total_slots * m_settings.gapMarginStart);
+  int gap_max = static_cast<int>(total_slots * m_settings.gapMarginEnd);
+  int common_guaranteed_slot = Random::randInt(gap_min, gap_max);
+
   for (auto &[row, idx, z] : terrain.m_rowsInfo) {
     RowType type = row->getType();
 
@@ -168,29 +177,26 @@ inline void TerrainPopulator::populate(Terrain &terrain) {
       continue;
 
     const std::vector<SpawnConfig> &rules = m_rules[type].value();
-    const uint32_t total_slots = row->SLOT_AMOUNT;
-
-    assert(total_slots > 0);
-
     const float center_index = (total_slots - 1) / 2.0f;
 
-    // Calculate gap range based on percentages in m_settings
-    int gap_min = static_cast<int>(total_slots * m_settings.gapMarginStart);
-    int gap_max = static_cast<int>(total_slots * m_settings.gapMarginEnd);
-    int guaranteed_gap = Random::randInt(gap_min, gap_max);
+    for (uint32_t i = 0; i < total_slots; ++i) {
+      bool is_guaranteed_slot = (static_cast<int>(i) == common_guaranteed_slot);
 
-    for (uint32_t i = 0; i < row->SLOT_AMOUNT; ++i) {
-      if (static_cast<int>(i) == guaranteed_gap)
+      // For non-water rows, the guaranteed slot is a GAP (no objects)
+      if (type != RowType::WATER && is_guaranteed_slot)
         continue;
 
-      float dist_from_center = std::abs(static_cast<float>(i) - 12) / 12.0f;
+      float dist_from_center =
+          std::abs(static_cast<float>(i) - center_index) / center_index;
 
       float weight_range = m_settings.maxEdgeWeight - m_settings.minEdgeWeight;
       float edge_weight =
           m_settings.minEdgeWeight + (weight_range * dist_from_center);
 
       for (const auto &config : rules) {
-        if (Random::randChance(config.rule.probability * edge_weight)) {
+        // For water rows, the guaranteed slot MUST have an object (lilypad)
+        if ((type == RowType::WATER && is_guaranteed_slot) ||
+            Random::randChance(config.rule.probability * edge_weight)) {
 
           // Clone object (skip AABB recalculation)
           std::unique_ptr<RowObject> obj =

@@ -4,8 +4,8 @@
 #include "graphics/idrawable.hpp"
 #include "graphics/izdrawable.hpp"
 #include "scene/row_object.hpp"
-
 #include <glad/gl.h>
+
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -57,17 +57,27 @@ public:
     m_objects.push_back(std::move(object));
   }
 
-  virtual bool collided(const RowObject &target) const {
+  virtual bool collided(const RowObject &target,
+                        std::optional<float> row_z = std::nullopt) const {
     for (const std::unique_ptr<RowObject> &object : m_objects) {
-      if (object->collided(target))
+      float current_obj_z = 0.0f;
+
+      if (row_z.has_value()) {
+        float center_z = -(m_depth / 2.0f);
+        current_obj_z =
+            row_z.value() + center_z - object->getWorldAABBCenter().z;
+      }
+
+      if (object->collided(target, current_obj_z))
         return true;
     }
 
     return false;
   }
 
-  virtual bool isSafe(const RowObject &target) const {
-    return !collided(target);
+  virtual bool isSafe(const RowObject &target,
+                      std::optional<float> row_z = std::nullopt) const {
+    return !collided(target, row_z);
   }
 
   virtual float getDepth() const { return m_depth; }

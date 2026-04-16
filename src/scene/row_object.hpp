@@ -178,12 +178,14 @@ public:
 
   std::shared_ptr<Model> getModel() const { return m_model; }
 
-  const AABB &getLocalAABB() const { return m_localAABB; }
+  virtual const AABB &getLocalAABB() const { return m_localAABB; }
   glm::vec3 getWorldAABBCenter(float z = 0.0f) const;
-  const AABB &getWorldAABB(float z = 0.0f) const;
+  virtual const AABB &getWorldAABB(float z = 0.0f) const;
 
   bool collided(const RowObject &other);
+  bool collided(const RowObject &other, float z);
   bool collided(AABB bounding_box);
+  bool collided(AABB bounding_box, float z);
 
   void setHeightClip(float min_y, float max_y);
 

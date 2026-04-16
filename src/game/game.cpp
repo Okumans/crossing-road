@@ -167,7 +167,8 @@ void Game::update(double delta_time) {
   // Hazard detection
   if (m_state == GameState::PLAYING) {
     const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
-    if (curr_row && !curr_row->isSafe(*m_player)) {
+    float row_z = RowQueue::get().getZ(m_playerRowIdx);
+    if (curr_row && !curr_row->isSafe(*m_player, row_z)) {
       m_state = GameState::GAME_OVER;
       m_cameraController.shake(0.5f, 0.4f);
     }
