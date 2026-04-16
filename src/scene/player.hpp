@@ -5,8 +5,9 @@
 #include "resource/model_manager.hpp"
 #include "scene/row_object.hpp"
 #include <cstdint>
+#include <stdexcept>
 
-class Player : private RowObject, public IDrawable {
+class Player : public RowObject, public IDrawable {
 private:
   uint32_t m_currRowIdx;
   float m_z;
@@ -82,7 +83,12 @@ public:
   void setPosition(glm::vec2 xy) { RowObject::setPosition(xy); }
   void setRotationY(float degrees) { RowObject::setRotationY(degrees); }
   void setRowIdx(uint32_t row_idx) {
+    if (!RowQueue::get().exists(row_idx))
+      throw std::runtime_error(std::format(
+          "Read Error: row queue with index {} doesn't exists yet", row_idx));
+
     m_currRowIdx = row_idx;
+
     m_z = RowQueue::get().getZ(m_currRowIdx) -
           (RowQueue::get().getRow(m_currRowIdx)->getDepth() / 2.0f);
   }

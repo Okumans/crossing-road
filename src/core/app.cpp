@@ -156,7 +156,38 @@ void App::_setupResources() {
 
 void App::_setupUIElements() {
   m_uiManager.addTextElement("fps_counter", {1.0f, 1.0f, 0.0f, 0.0f}, "FPS: 0",
-                             m_font, {1.0f, 1.0f, 1.0f, 1.0f}, 0.2f);
+                             m_font, {1.0f, 1.0f, 1.0f, 1.0f}, 0.15f);
+
+  // Darken Screen Overlay (added first so it's behind text)
+  m_uiManager.addInteractiveElement(
+      "darken_screen", {0.0f, 0.0f, 100.0f, 40.0f}, {0.0f, 0.0f, 0.0f, 0.5f},
+      [this]() {
+        if (m_game.getState() == GameState::START_MENU)
+          m_game.startGame();
+        else if (m_game.getState() == GameState::GAME_OVER)
+          m_game.reset();
+      });
+
+  // HUD
+  m_uiManager.addTextElement("score_counter", {1.0f, 3.0f, 0.0f, 0.0f},
+                             "SCORE: 0", m_font, {1.0f, 1.0f, 1.0f, 1.0f},
+                             0.2f);
+
+  // Start Screen
+  m_uiManager.addTextElement("start_title", {0.0f, 15.0f, 0.0f, 0.0f},
+                             "CROSSING ROAD", m_font, {1.0f, 1.0f, 0.0f, 1.0f},
+                             0.6f);
+  m_uiManager.addTextElement("start_hint", {0.0f, 22.0f, 0.0f, 0.0f},
+                             "CLICK TO START", m_font,
+                             {1.0f, 1.0f, 1.0f, 1.0f}, 0.25f);
+
+  // Game Over Screen
+  m_uiManager.addTextElement("gameover_title", {0.0f, 15.0f, 0.0f, 0.0f},
+                             "GAME OVER", m_font, {1.0f, 0.0f, 0.0f, 1.0f},
+                             0.6f);
+  m_uiManager.addTextElement("gameover_hint", {0.0f, 22.0f, 0.0f, 0.0f},
+                             "CLICK TO TRY AGAIN", m_font,
+                             {1.0f, 1.0f, 1.0f, 1.0f}, 0.25f);
 }
 
 void App::_updateUIElements(double delta_time) {
@@ -178,6 +209,53 @@ void App::_updateUIElements(double delta_time) {
       fpsElement->text = std::format("FPS: {}", static_cast<int>(lastFps));
     }
   }
+
+  float vWidth = m_uiManager.getVirtualWidth();
+  GameState state = m_game.getState();
+
+  // Update Score
+  if (auto *scoreElement =
+          dynamic_cast<TextElement *>(m_uiManager.getElement("score_counter"))) {
+    scoreElement->text = std::format("SCORE: {}", m_game.getScore());
+    scoreElement->visible = (state == GameState::PLAYING);
+  }
+
+  // Handle Menu Screens
+  bool isMenu = (state != GameState::PLAYING);
+  m_uiManager.getElement("darken_screen")->visible = isMenu;
+  m_uiManager.getElement("darken_screen")->bounds.w = vWidth;
+
+  // Fading and Centering for Start Screen
+  if (auto *title =
+          dynamic_cast<TextElement *>(m_uiManager.getElement("start_title"))) {
+    title->visible = (state == GameState::START_MENU);
+    float w = m_font.getTextWidth(title->text, title->scale);
+    title->bounds.x = (vWidth - w) / 2.0f;
+  }
+
+  if (auto *hint =
+          dynamic_cast<TextElement *>(m_uiManager.getElement("start_hint"))) {
+    hint->visible = (state == GameState::START_MENU);
+    float w = m_font.getTextWidth(hint->text, hint->scale);
+    hint->bounds.x = (vWidth - w) / 2.0f;
+    hint->color.a = 0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
+  }
+
+  // Fading and Centering for Game Over Screen
+  if (auto *title =
+          dynamic_cast<TextElement *>(m_uiManager.getElement("gameover_title"))) {
+    title->visible = (state == GameState::GAME_OVER);
+    float w = m_font.getTextWidth(title->text, title->scale);
+    title->bounds.x = (vWidth - w) / 2.0f;
+  }
+
+  if (auto *hint =
+          dynamic_cast<TextElement *>(m_uiManager.getElement("gameover_hint"))) {
+    hint->visible = (state == GameState::GAME_OVER);
+    float w = m_font.getTextWidth(hint->text, hint->scale);
+    hint->bounds.x = (vWidth - w) / 2.0f;
+    hint->color.a = 0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
+  }
 }
 
 void App::_handleProcessInput(double delta_time) {
@@ -195,7 +273,17 @@ void App::_handleKeyCallback(int key, int scancode, int action, int mods) {
     return;
 
   if (key == GLFW_KEY_SPACE) {
-    m_game.moveForward();
+    switch (m_game.getState()) {
+    case GameState::START_MENU:
+      m_game.startGame();
+      break;
+    case GameState::PLAYING:
+      m_game.moveForward();
+      break;
+    case GameState::GAME_OVER:
+      m_game.reset();
+      break;
+    }
   }
 }
 

@@ -23,7 +23,10 @@ public:
   void update(double delta_time);
   void draw(const RenderContext &ctx);
 
+  void reset();
+
   void updatePlayerRowIdx(uint32_t idx) { m_playerRowIdx = idx; }
+  uint32_t getPlayerRowIdx() const { return m_playerRowIdx; }
 
   const std::vector<std::unique_ptr<Terrain>> &getTerrain() const {
     return m_terrains;

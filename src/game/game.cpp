@@ -116,6 +116,26 @@ void Game::setup() {
   GrassyTerrain::setup();
   HillTerrain::setup();
   RiverTerrain::setup();
+
+  reset();
+}
+
+void Game::reset() {
+  m_playerRowIdx = 0;
+  m_maxRowReached = 0;
+  m_state = GameState::START_MENU;
+
+  m_map.reset();
+
+  m_player = std::make_unique<Player>(Player::getDefault());
+  m_player->setRowIdx(m_playerRowIdx);
+  m_map.updatePlayerRowIdx(m_playerRowIdx);
+}
+
+void Game::startGame() {
+  if (m_state == GameState::START_MENU) {
+    m_state = GameState::PLAYING;
+  }
 }
 
 void Game::update(double delta_time) {
@@ -136,6 +156,14 @@ void Game::update(double delta_time) {
   m_map.update(delta_time);
   m_player->update(delta_time);
   _updateCamera(delta_time);
+
+  // Hazard detection
+  if (m_state == GameState::PLAYING && m_player) {
+    const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
+    if (curr_row && !curr_row->isSafe(*m_player)) {
+      m_state = GameState::GAME_OVER;
+    }
+  }
 }
 
 void Game::render(double delta_time) {
@@ -274,14 +302,18 @@ void Game::render(double delta_time) {
 }
 
 void Game::moveForward() {
-  if (m_player && m_player->canJumpForward()) {
+  if (m_state == GameState::PLAYING && m_player && m_player->canJumpForward()) {
     m_player->jumpForward(++m_playerRowIdx);
     m_map.updatePlayerRowIdx(m_playerRowIdx);
+
+    if (m_playerRowIdx > m_maxRowReached) {
+      m_maxRowReached = m_playerRowIdx;
+    }
   }
 }
 
 void Game::moveLeft(double delta_time) {
-  if (m_player) {
+  if (m_state == GameState::PLAYING && m_player) {
     glm::vec2 pos = m_player->getPosition();
     pos.x -= 2.0f * (float)delta_time;
     m_player->setPosition(pos);
@@ -289,7 +321,7 @@ void Game::moveLeft(double delta_time) {
 }
 
 void Game::moveRight(double delta_time) {
-  if (m_player) {
+  if (m_state == GameState::PLAYING && m_player) {
     glm::vec2 pos = m_player->getPosition();
     pos.x += 2.0f * (float)delta_time;
     m_player->setPosition(pos);

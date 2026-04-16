@@ -18,6 +18,8 @@
 #define ICONS_PATH ASSETS_PATH "/icons"
 #endif
 
+enum class GameState { START_MENU, PLAYING, GAME_OVER };
+
 class Game {
 private:
   Camera m_camera;
@@ -33,8 +35,10 @@ private:
 
   float m_currentTime = 0.0f;
   uint32_t m_playerRowIdx = 0;
+  uint32_t m_maxRowReached = 0;
 
   bool m_debugAABB = true;
+  GameState m_state = GameState::START_MENU;
 
 public:
   Game();
@@ -44,6 +48,9 @@ public:
   void render(double delta_time);
 
   void setup();
+  void reset();
+
+  void startGame();
 
   void moveForward();
   void moveLeft(double delta_time);
@@ -52,6 +59,8 @@ public:
   void setDebugAABB(bool state) { m_debugAABB = state; }
 
   Camera &getCamera() { return m_camera; }
+  GameState getState() const { return m_state; }
+  uint32_t getScore() const { return m_maxRowReached; }
 
 private:
   void _updateCamera(double delta_time);

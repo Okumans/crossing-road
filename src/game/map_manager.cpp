@@ -127,3 +127,11 @@ void MapManager::draw(const RenderContext &ctx) {
     prev_row->drawSidePanel(ctx, prev_render_z, 0.0f, false);
   }
 }
+
+void MapManager::reset() {
+  m_terrains.clear();
+  m_playerRowIdx = 0;
+
+  RowQueue::reset(19, 0.0f);
+  update(0.0f); // trigger _generateNext, makeing the RowQueue index 0 valid
+}

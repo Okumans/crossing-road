@@ -34,6 +34,10 @@ public:
     }
   }
 
+  static void reset(uint32_t capacity, float start_z) {
+    s_instance = std::unique_ptr<RowQueue>(new RowQueue(capacity, start_z));
+  }
+
   static RowQueue &get() {
     if (!s_instance) {
       throw std::runtime_error("Please initialize RowQueue first");

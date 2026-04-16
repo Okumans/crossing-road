@@ -18,8 +18,9 @@ bool WaterRow::collided(const RowObject &target) const {
 }
 
 bool WaterRow::isSafe(const RowObject &target) const {
-  // In water, you are only safe if you ARE colliding with a lilypad
-  return Row::collided(target);
+  // In water Row, you are only safe if you ARE colliding with a lilypad or in
+  // the air
+  return Row::collided(target) || target.getWorldAABB().min.y > 0;
 }
 
 void WaterRow::draw(const RenderContext &ctx, float z) {
