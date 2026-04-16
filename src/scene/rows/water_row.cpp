@@ -1,8 +1,11 @@
 #include "water_row.hpp"
-#include "glad/gl.h"
-#include "glm/ext/matrix_transform.hpp"
+
 #include "graphics/shader.hpp"
 #include "resource/shader_manager.hpp"
+
+#include <glad/gl.h>
+#include <glm/ext/matrix_transform.hpp>
+
 #include <memory>
 
 WaterRow::WaterRow(const Material &water_material, Shader &water_shader,

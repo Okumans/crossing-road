@@ -24,8 +24,9 @@ public:
 
   virtual void draw(const RenderContext &ctx, float z) override;
 
-  virtual bool collided(const RowObject &target,
-                        std::optional<float> row_z = std::nullopt) const override;
+  virtual bool
+  collided(const RowObject &target,
+           std::optional<float> row_z = std::nullopt) const override;
   virtual bool isSafe(const RowObject &target,
                       std::optional<float> row_z = std::nullopt) const override;
 

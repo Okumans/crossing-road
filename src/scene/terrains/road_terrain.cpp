@@ -2,11 +2,11 @@
 
 #include "external/magic_enum.hpp"
 #include "game/row.hpp"
-#include "game/rows/road_row.hpp"
 #include "graphics/material.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
 #include "scene/car.hpp"
+#include "scene/rows/road_row.hpp"
 
 #include <cassert>
 #include <cstdint>

@@ -14,8 +14,19 @@
 #include "utility/utility.hpp"
 
 #ifdef EMBED_SHADER
+#include "debug.frag.glsl.h"
+#include "debug.vert.glsl.h"
+#include "irradiance.frag.glsl.h"
+#include "irradiance.vert.glsl.h"
+#include "pbr.frag.glsl.h"
+#include "pbr.vert.glsl.h"
+#include "shadow.frag.glsl.h"
+#include "shadow.vert.glsl.h"
+#include "skybox.frag.glsl.h"
+#include "skybox.vert.glsl.h"
 #include "ui.frag.glsl.h"
 #include "ui.vert.glsl.h"
+#include "water.frag.glsl.h"
 
 static std::string arr_to_str(unsigned char *arr, unsigned int len) {
   return std::string(reinterpret_cast<char *>(arr), len);
@@ -35,11 +46,7 @@ void App::render(double delta_time) {
       task.task();
       m_currentLoadingTask++;
     } else {
-      // All tasks finished, switch to menu (don't call reset again if
-      // m_game.setup already did) Actually Game::setup might have already set
-      // the state to START_MENU if we are not careful But we initialized it to
-      // LOADING in constructor. Let's manually trigger the state change here.
-      m_game.reset(); // This will set state to START_MENU
+      m_game.reset(); // Set state to START_MENU
     }
   } else {
     m_game.update(delta_time);
@@ -72,6 +79,34 @@ App::App(GLFWwindow *window) : m_window(window) {
   ShaderManager::loadShaderSource(
       ShaderType::UI, arr_to_str(ui_vert_glsl, ui_vert_glsl_len).c_str(),
       arr_to_str(ui_frag_glsl, ui_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::PBR, arr_to_str(pbr_vert_glsl, pbr_vert_glsl_len).c_str(),
+      arr_to_str(pbr_frag_glsl, pbr_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::SKYBOX,
+      arr_to_str(skybox_vert_glsl, skybox_vert_glsl_len).c_str(),
+      arr_to_str(skybox_frag_glsl, skybox_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::SHADOW,
+      arr_to_str(shadow_vert_glsl, shadow_vert_glsl_len).c_str(),
+      arr_to_str(shadow_frag_glsl, shadow_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::IRRADIANCE,
+      arr_to_str(irradiance_vert_glsl, irradiance_vert_glsl_len).c_str(),
+      arr_to_str(irradiance_frag_glsl, irradiance_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::WATER, arr_to_str(pbr_vert_glsl, pbr_vert_glsl_len).c_str(),
+      arr_to_str(water_frag_glsl, water_frag_glsl_len).c_str());
+
+  ShaderManager::loadShaderSource(
+      ShaderType::DEBUG,
+      arr_to_str(debug_vert_glsl, debug_vert_glsl_len).c_str(),
+      arr_to_str(debug_frag_glsl, debug_frag_glsl_len).c_str());
 #else
   ShaderManager::loadShader(ShaderType::UI, UI_VERTEX_SHADER_PATH,
                             UI_FRAGMENT_SHADER_PATH);
@@ -97,6 +132,7 @@ App::~App() = default;
 
 void App::_setupResources() {
   // Shaders
+#ifndef EMBED_SHADER
   m_loadingTasks.push_back(
       {"Shaders", []() {
          ShaderManager::loadShader(ShaderType::PBR,
@@ -118,6 +154,7 @@ void App::_setupResources() {
                                    SHADER_PATH "/debug.vert.glsl",
                                    SHADER_PATH "/debug.frag.glsl");
        }});
+#endif
 
   // Static Textures
   m_loadingTasks.push_back(

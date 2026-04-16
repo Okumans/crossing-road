@@ -1,12 +1,13 @@
 #include "river_terrain.hpp"
 
-#include "game/rows/water_row.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
 #include "resource/shader_manager.hpp"
 #include "scene/row_object.hpp"
+#include "scene/rows/water_row.hpp"
 #include "utility/random.hpp"
 #include "utility/utility.hpp"
+
 #include <cstdint>
 #include <memory>
 

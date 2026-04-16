@@ -3,6 +3,7 @@
 #include "game/row.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/material.hpp"
+
 #include <optional>
 
 class TextureRow : public Row {

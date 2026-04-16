@@ -1,4 +1,5 @@
 #include "grass_row.hpp"
+
 #include "glm/ext/matrix_transform.hpp"
 
 GrassRow::GrassRow(const Material &material, float depth, float height,

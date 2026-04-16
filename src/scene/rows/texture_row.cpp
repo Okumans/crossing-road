@@ -1,6 +1,6 @@
 #include "texture_row.hpp"
+
 #include "game/row.hpp"
-#include "glad/gl.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/idrawable.hpp"
 #include <memory>

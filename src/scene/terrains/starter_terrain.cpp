@@ -1,8 +1,8 @@
 #include "starter_terrain.hpp"
 
-#include "game/rows/grass_row.hpp"
-#include "game/rows/texture_row.hpp"
 #include "resource/material_manager.hpp"
+#include "scene/rows/grass_row.hpp"
+#include "scene/rows/texture_row.hpp"
 
 #include <cassert>
 #include <cstdint>

@@ -3,12 +3,12 @@
 #include "external/magic_enum.hpp"
 #include "game/row_queue.hpp"
 #include "game/terrain.hpp"
-#include "game/terrains/grass_terrain.hpp"
-#include "game/terrains/hill_terrain.hpp"
-#include "game/terrains/river_terrain.hpp"
-#include "game/terrains/road_terrain.hpp"
-#include "game/terrains/starter_terrain.hpp"
 #include "graphics/idrawable.hpp"
+#include "scene/terrains/grass_terrain.hpp"
+#include "scene/terrains/hill_terrain.hpp"
+#include "scene/terrains/river_terrain.hpp"
+#include "scene/terrains/road_terrain.hpp"
+#include "scene/terrains/starter_terrain.hpp"
 
 #include <array>
 #include <cassert>

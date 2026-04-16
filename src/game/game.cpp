@@ -3,10 +3,6 @@
 #include "game/map_manager.hpp"
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
-#include "game/terrains/grass_terrain.hpp"
-#include "game/terrains/hill_terrain.hpp"
-#include "game/terrains/river_terrain.hpp"
-#include "game/terrains/road_terrain.hpp"
 #include "graphics/debug_drawer.hpp"
 #include "graphics/ibl_generator.hpp"
 #include "graphics/idrawable.hpp"
@@ -15,6 +11,10 @@
 #include "resource/shader_manager.hpp"
 #include "resource/texture_manager.hpp"
 #include "scene/row_object.hpp"
+#include "scene/terrains/grass_terrain.hpp"
+#include "scene/terrains/hill_terrain.hpp"
+#include "scene/terrains/river_terrain.hpp"
+#include "scene/terrains/road_terrain.hpp"
 
 #include <glad/gl.h>
 #include <glm/fwd.hpp>
