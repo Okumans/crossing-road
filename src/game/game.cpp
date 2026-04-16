@@ -121,8 +121,8 @@ void Game::setup() {
 }
 
 void Game::reset() {
-  m_playerRowIdx = 0;
-  m_maxRowReached = 0;
+  m_playerRowIdx = INITIAL_PLAYER_ROW;
+  m_maxRowReached = INITIAL_PLAYER_ROW;
   m_state = GameState::START_MENU;
 
   m_map.reset();

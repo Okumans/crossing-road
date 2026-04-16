@@ -125,6 +125,7 @@ void App::_setupResources() {
   loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2");
   loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5");
   loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4");
+  loadMaterialFolder("road_5", ASSETS_PATH "/textures/road/6");
   loadMaterialFolder("water_1", ASSETS_PATH "/textures/water");
   MaterialManager::addMaterial(
       "water_1", Material::builder(MaterialManager::getMaterial("water_1"))
@@ -176,18 +177,18 @@ void App::_setupUIElements() {
   // Start Screen
   m_uiManager.addTextElement("start_title", {0.0f, 15.0f, 0.0f, 0.0f},
                              "CROSSING ROAD", m_font, {1.0f, 1.0f, 0.0f, 1.0f},
-                             0.6f);
-  m_uiManager.addTextElement("start_hint", {0.0f, 22.0f, 0.0f, 0.0f},
-                             "CLICK TO START", m_font,
-                             {1.0f, 1.0f, 1.0f, 1.0f}, 0.25f);
+                             0.4f);
+  m_uiManager.addTextElement("start_hint", {0.0f, 20.0f, 0.0f, 0.0f},
+                             "CLICK TO START", m_font, {1.0f, 1.0f, 1.0f, 1.0f},
+                             0.15f);
 
   // Game Over Screen
   m_uiManager.addTextElement("gameover_title", {0.0f, 15.0f, 0.0f, 0.0f},
                              "GAME OVER", m_font, {1.0f, 0.0f, 0.0f, 1.0f},
-                             0.6f);
+                             0.4f);
   m_uiManager.addTextElement("gameover_hint", {0.0f, 22.0f, 0.0f, 0.0f},
                              "CLICK TO TRY AGAIN", m_font,
-                             {1.0f, 1.0f, 1.0f, 1.0f}, 0.25f);
+                             {1.0f, 1.0f, 1.0f, 1.0f}, 0.15f);
 }
 
 void App::_updateUIElements(double delta_time) {
@@ -214,8 +215,8 @@ void App::_updateUIElements(double delta_time) {
   GameState state = m_game.getState();
 
   // Update Score
-  if (auto *scoreElement =
-          dynamic_cast<TextElement *>(m_uiManager.getElement("score_counter"))) {
+  if (auto *scoreElement = dynamic_cast<TextElement *>(
+          m_uiManager.getElement("score_counter"))) {
     scoreElement->text = std::format("SCORE: {}", m_game.getScore());
     scoreElement->visible = (state == GameState::PLAYING);
   }
@@ -238,23 +239,25 @@ void App::_updateUIElements(double delta_time) {
     hint->visible = (state == GameState::START_MENU);
     float w = m_font.getTextWidth(hint->text, hint->scale);
     hint->bounds.x = (vWidth - w) / 2.0f;
-    hint->color.a = 0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
+    hint->color.a =
+        0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
   }
 
   // Fading and Centering for Game Over Screen
-  if (auto *title =
-          dynamic_cast<TextElement *>(m_uiManager.getElement("gameover_title"))) {
+  if (auto *title = dynamic_cast<TextElement *>(
+          m_uiManager.getElement("gameover_title"))) {
     title->visible = (state == GameState::GAME_OVER);
     float w = m_font.getTextWidth(title->text, title->scale);
     title->bounds.x = (vWidth - w) / 2.0f;
   }
 
-  if (auto *hint =
-          dynamic_cast<TextElement *>(m_uiManager.getElement("gameover_hint"))) {
+  if (auto *hint = dynamic_cast<TextElement *>(
+          m_uiManager.getElement("gameover_hint"))) {
     hint->visible = (state == GameState::GAME_OVER);
     float w = m_font.getTextWidth(hint->text, hint->scale);
     hint->bounds.x = (vWidth - w) / 2.0f;
-    hint->color.a = 0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
+    hint->color.a =
+        0.3f + 0.7f * (0.5f * (std::cos(glfwGetTime() * 4.0) + 1.0f));
   }
 }
 

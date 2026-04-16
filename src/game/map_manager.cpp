@@ -7,6 +7,7 @@
 #include "game/terrains/hill_terrain.hpp"
 #include "game/terrains/river_terrain.hpp"
 #include "game/terrains/road_terrain.hpp"
+#include "game/terrains/starter_terrain.hpp"
 #include "graphics/idrawable.hpp"
 
 #include <array>
@@ -16,14 +17,18 @@
 #include <utility>
 #include <vector>
 
-MapManager::MapManager() : m_playerRowIdx(0) { RowQueue::init(19, 0.0f); }
+MapManager::MapManager() : m_playerRowIdx(0) { RowQueue::init(30, 0.0f); }
 
-void MapManager::addTerrain(TerrainType type) {
+void MapManager::addTerrain(TerrainType type,
+                            std::optional<uint32_t> row_numbers) {
   std::unique_ptr<Terrain> terrain = nullptr;
 
   uint32_t curr_row_idx = RowQueue::get().getCurrRowIdx();
 
   switch (type) {
+  case TerrainType::STARTER:
+    terrain = std::make_unique<StarterTerrain>(curr_row_idx);
+    break;
   case TerrainType::GRASSY:
     terrain = std::make_unique<GrassyTerrain>(curr_row_idx);
     break;
@@ -40,7 +45,11 @@ void MapManager::addTerrain(TerrainType type) {
 
   assert(terrain);
 
-  terrain->generate();
+  if (row_numbers.has_value())
+    terrain->generate(row_numbers.value());
+  else
+    terrain->generate();
+
   m_terrains.push_back(std::move(terrain));
 }
 
@@ -60,7 +69,7 @@ void MapManager::update(double delta_time) {
     _generateNext();
   }
 
-  const uint32_t minimum_buffer = 4;
+  const uint32_t minimum_buffer = 5;
   if (m_playerRowIdx - row_queue.getFirstStoredRowIdx() > minimum_buffer) {
     RowQueue::get().step((m_playerRowIdx - row_queue.getFirstStoredRowIdx()) -
                          minimum_buffer);
@@ -76,8 +85,8 @@ void MapManager::update(double delta_time) {
 
 void MapManager::_generateNext() {
   if (m_terrains.empty()) {
-    addTerrain(TerrainType::GRASSY);
-    addTerrain(TerrainType::GRASSY);
+    addTerrain(TerrainType::HILLY, 3);
+    addTerrain(TerrainType::STARTER);
     return;
   }
 
@@ -102,7 +111,7 @@ void MapManager::draw(const RenderContext &ctx) {
   Row *prev_row = nullptr;
   float prev_render_z = 0.0f;
 
-  for (const auto &[z, row] : RowQueue::get().getRowsWithZ()) {
+  for (const auto &[z, row] : RowQueue::get().getRowsWithZ(19)) {
     row->draw(ctx, z);
 
     float current_height = row->getHeight();
@@ -131,7 +140,6 @@ void MapManager::draw(const RenderContext &ctx) {
 void MapManager::reset() {
   m_terrains.clear();
   m_playerRowIdx = 0;
-
-  RowQueue::reset(19, 0.0f);
-  update(0.0f); // trigger _generateNext, makeing the RowQueue index 0 valid
+  RowQueue::reset(30, 0.0f);
+  update(0.0f); // trigger _generateNext, making the RowQueue index valid
 }

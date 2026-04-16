@@ -7,9 +7,15 @@
 #include "scene/row_object.hpp"
 #include "utility/random.hpp"
 #include "utility/utility.hpp"
+#include <cstdint>
 
 uint32_t RiverTerrain::_generateTerrain() {
   size_t row_numbers = Random::randInt(2, 4);
+
+  return _generateTerrain(row_numbers);
+}
+
+uint32_t RiverTerrain::_generateTerrain(uint32_t row_numbers) {
   float row_height = Random::randFloat(-0.3f, -0.02f);
 
   const Material &water_mat = MaterialManager::getMaterial("water_1");

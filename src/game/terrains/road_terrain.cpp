@@ -14,15 +14,19 @@
 #include <utility>
 
 uint32_t RoadTerrain::_generateTerrain() {
+  size_t row_numbers =
+      Random::randWeighted<size_t>(1, 5, {15.0, 10.0, 5.0, 2.0, 1.0});
+
+  return _generateTerrain(row_numbers);
+}
+
+uint32_t RoadTerrain::_generateTerrain(uint32_t row_numbers) {
   for (const auto &[type, car] : s_carTemplate.ensureInitialized().pairs()) {
     if (!car)
       throw std::runtime_error(
           std::format("Car with type=\"{}\" need to be set first",
                       magic_enum::enum_name(type)));
   }
-
-  size_t row_numbers =
-      Random::randWeighted<size_t>(1, 5, {15.0, 10.0, 5.0, 2.0, 1.0});
 
   RoadMaterialType start_road_type = RoadMaterialType::ROAD_1;
 

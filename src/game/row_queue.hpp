@@ -91,10 +91,14 @@ public:
     return !exists(row_idx);
   }
 
+  auto getRows(uint32_t render_amount) const {
+    return m_storage | std::views::take(std::min(render_amount, m_capacity));
+  }
+
   auto getRows() const { return m_storage | std::views::take(m_capacity); }
 
-  auto getRowsWithZ() const {
-    return m_storage | std::views::take(m_capacity) | std::views::enumerate |
+  auto getRowsWithZ(uint32_t render_amount) const {
+    return m_storage | std::views::take(render_amount) | std::views::enumerate |
            std::views::transform([this](std::tuple<long, Row *> tup) {
              auto &[idx, row] = tup;
              return std::make_pair(

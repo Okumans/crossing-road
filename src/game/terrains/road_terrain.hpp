@@ -40,11 +40,13 @@ private:
 public:
   RoadTerrain(uint32_t start_z) : Terrain(TerrainType::ROAD, start_z) {}
 
-  virtual uint32_t _generateTerrain() override;
-
   static void setCar(CarType type, std::unique_ptr<Car> &&car) {
     s_carTemplate.set(type, std::move(car));
   }
 
   static void setup();
+
+protected:
+  virtual uint32_t _generateTerrain() override;
+  virtual uint32_t _generateTerrain(uint32_t row_number) override;
 };

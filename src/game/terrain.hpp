@@ -17,6 +17,7 @@
 class Terrain;
 
 enum class TerrainType {
+  STARTER,
   GRASSY,
   ROAD,
   HILLY,
@@ -141,6 +142,11 @@ public:
     return lastest_row_idx;
   }
 
+  virtual uint32_t generate(uint32_t row_numbers) {
+    uint32_t lastest_row_idx = _generateTerrain(row_numbers);
+    return lastest_row_idx;
+  }
+
   TerrainType getType() const { return m_type; }
   const auto &getRowsInfo() const { return m_rowsInfo; }
   auto getRows() {
@@ -150,6 +156,7 @@ public:
 
 protected:
   virtual uint32_t _generateTerrain() = 0;
+  virtual uint32_t _generateTerrain(uint32_t row_numbers) = 0;
 };
 
 inline void TerrainPopulator::populate(Terrain &terrain) {

@@ -37,6 +37,8 @@ private:
   uint32_t m_playerRowIdx = 0;
   uint32_t m_maxRowReached = 0;
 
+  inline static const uint32_t INITIAL_PLAYER_ROW = 4;
+
   bool m_debugAABB = true;
   GameState m_state = GameState::START_MENU;
 
@@ -60,7 +62,11 @@ public:
 
   Camera &getCamera() { return m_camera; }
   GameState getState() const { return m_state; }
-  uint32_t getScore() const { return m_maxRowReached; }
+  uint32_t getScore() const {
+    return (m_maxRowReached > INITIAL_PLAYER_ROW)
+               ? (m_maxRowReached - INITIAL_PLAYER_ROW)
+               : 0;
+  }
 
 private:
   void _updateCamera(double delta_time);

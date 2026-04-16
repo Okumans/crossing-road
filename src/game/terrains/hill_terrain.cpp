@@ -13,6 +13,13 @@
 #include <numbers>
 
 uint32_t HillTerrain::_generateTerrain() {
+  size_t row_numbers =
+      Random::randWeighted<size_t>(1, 5, {5.0, 0.0, 10.0f, 0.0, 3.0});
+
+  return _generateTerrain(row_numbers);
+}
+
+uint32_t HillTerrain::_generateTerrain(uint32_t row_numbers) {
   assert(MaterialManager::exists(GRASS_1_TEX_NAME));
   assert(MaterialManager::exists(GRASS_2_TEX_NAME));
 
@@ -21,8 +28,6 @@ uint32_t HillTerrain::_generateTerrain() {
   const Material &grass_side_mat =
       MaterialManager::getMaterial(GRASS_SIDE_TEX_NAME);
 
-  size_t row_numbers =
-      Random::randWeighted<size_t>(1, 5, {5.0, 0.0, 10.0f, 0.0, 3.0});
   float peak_height = Random::randFloat(0.4f, 1.0f);
 
   const Row *row_before = RowQueue::get().getRow(m_startRowIdx - 1);
@@ -45,12 +50,11 @@ uint32_t HillTerrain::_generateTerrain() {
                      : (start_mat == &grass_mat_1 ? grass_mat_2 : grass_mat_1);
 
     // Hill shape: height = peak * sin(pi * (i + 1) / (row_numbers + 1))
-    float h =
-        peak_height * std::sin(std::numbers::pi_v<float> * (float)(i + 1) /
-                               (float)(row_numbers + 1));
+    float h = peak_height * std::sin(std::numbers::pi_v<float> *
+                                     (float)(i + 1) / (float)(row_numbers + 1));
 
-    std::unique_ptr<GrassRow> grass_row = std::make_unique<GrassRow>(
-        current_mat, 1.0f, h, grass_side_mat, 8.0f);
+    std::unique_ptr<GrassRow> grass_row =
+        std::make_unique<GrassRow>(current_mat, 1.0f, h, grass_side_mat, 8.0f);
 
     last_row_idx = addRow(std::move(grass_row));
   }

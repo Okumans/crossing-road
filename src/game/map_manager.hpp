@@ -6,12 +6,13 @@
 
 #include <generator>
 #include <memory>
+#include <optional>
 #include <vector>
 
 class MapManager : public IDrawable {
 private:
-  inline static const std::array DEFAULT_TERRAIN_WEIGHT = {5.0f, 8.0f, 2.0f,
-                                                           1.5f};
+  inline static const std::array DEFAULT_TERRAIN_WEIGHT = {0.0f, 5.0f, 8.0f,
+                                                           2.0f, 1.5f};
 
   std::vector<std::unique_ptr<Terrain>> m_terrains;
   uint32_t m_playerRowIdx;
@@ -19,7 +20,8 @@ private:
 public:
   MapManager();
 
-  void addTerrain(TerrainType type);
+  void addTerrain(TerrainType type,
+                  std::optional<uint32_t> row_numbers = std::nullopt);
   void update(double delta_time);
   void draw(const RenderContext &ctx);
 

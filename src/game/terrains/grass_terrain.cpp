@@ -10,8 +10,16 @@
 #include "utility/utility.hpp"
 
 #include <cassert>
+#include <cstdint>
 
 uint32_t GrassyTerrain::_generateTerrain() {
+  size_t row_numbers =
+      Random::randWeighted<size_t>(1, 5, {20.0, 15.0, 5.0, 2.0, 1.0});
+
+  return _generateTerrain(row_numbers);
+}
+
+uint32_t GrassyTerrain::_generateTerrain(uint32_t row_numbers) {
   enum class GrassMaterialType : uint8_t {
     GRASS_1 = 0,
     GRASS_2,
@@ -23,8 +31,6 @@ uint32_t GrassyTerrain::_generateTerrain() {
   const Material &grass_mat_1 = MaterialManager::getMaterial(GRASS_1_TEX_NAME);
   const Material &grass_mat_2 = MaterialManager::getMaterial(GRASS_2_TEX_NAME);
 
-  size_t row_numbers =
-      Random::randWeighted<size_t>(1, 5, {20.0, 15.0, 5.0, 2.0, 1.0});
   GrassMaterialType start_grass_type =
       GrassMaterialType::GRASS_1; // default value
 
