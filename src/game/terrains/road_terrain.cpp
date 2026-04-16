@@ -7,7 +7,6 @@
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"
 #include "scene/car.hpp"
-#include "utility/utility.hpp"
 
 #include <cassert>
 #include <cstdint>

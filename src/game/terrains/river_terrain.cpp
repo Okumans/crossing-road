@@ -1,4 +1,5 @@
 #include "river_terrain.hpp"
+
 #include "game/rows/water_row.hpp"
 #include "resource/material_manager.hpp"
 #include "resource/model_manager.hpp"

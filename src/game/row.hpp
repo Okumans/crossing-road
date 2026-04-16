@@ -66,6 +66,10 @@ public:
     return false;
   }
 
+  virtual bool isSafe(const RowObject &target) const {
+    return !collided(target);
+  }
+
   virtual float getDepth() const { return m_depth; }
   virtual float getHeight() const { return m_height; }
   virtual RowType getType() const { return m_type; }

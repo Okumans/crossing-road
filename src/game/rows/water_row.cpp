@@ -1,8 +1,8 @@
+#include "water_row.hpp"
 #include "glad/gl.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "graphics/shader.hpp"
 #include "resource/shader_manager.hpp"
-#include "water_row.hpp"
 #include <memory>
 
 WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
@@ -12,7 +12,15 @@ WaterRow::WaterRow(const Material &water_material, Shader &water_shader,
   m_uvOffset = glm::vec2((float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
   _setupMesh();
 }
-bool WaterRow::collided(const RowObject &target) const { return false; }
+
+bool WaterRow::collided(const RowObject &target) const {
+  return Row::collided(target);
+}
+
+bool WaterRow::isSafe(const RowObject &target) const {
+  // In water, you are only safe if you ARE colliding with a lilypad
+  return Row::collided(target);
+}
 
 void WaterRow::draw(const RenderContext &ctx, float z) {
   if (ctx.shader.ID != ShaderManager::getShader(ShaderType::SHADOW).ID) {

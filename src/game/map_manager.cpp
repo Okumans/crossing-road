@@ -1,4 +1,5 @@
 #include "map_manager.hpp"
+
 #include "external/magic_enum.hpp"
 #include "game/row_queue.hpp"
 #include "game/terrain.hpp"

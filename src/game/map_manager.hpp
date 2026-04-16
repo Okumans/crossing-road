@@ -11,7 +11,7 @@
 class MapManager : public IDrawable {
 private:
   inline static const std::array DEFAULT_TERRAIN_WEIGHT = {5.0f, 8.0f, 2.0f,
-                                                           111.5f};
+                                                           1.5f};
 
   std::vector<std::unique_ptr<Terrain>> m_terrains;
   uint32_t m_playerRowIdx;

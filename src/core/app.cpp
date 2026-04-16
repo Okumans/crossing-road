@@ -136,6 +136,18 @@ void App::_setupResources() {
                     .setMetallicFactor(2.0f)
                     .create());
 
+  // Load Skybox
+  TextureManager::loadCubemap(
+      TextureName("skybox"),
+      {
+          (ASSETS_PATH "/textures/skybox/sky_4/px.hdr"), // +X
+          (ASSETS_PATH "/textures/skybox/sky_4/nx.hdr"), // -X
+          (ASSETS_PATH "/textures/skybox/sky_4/py.hdr"), // +Y
+          (ASSETS_PATH "/textures/skybox/sky_4/ny.hdr"), // -Y
+          (ASSETS_PATH "/textures/skybox/sky_4/pz.hdr"), // +Z
+          (ASSETS_PATH "/textures/skybox/sky_4/nz.hdr"), // -Z
+      });
+
   // Load other resources
   m_game.setup();
   m_game.setDebugAABB(true);

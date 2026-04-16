@@ -2,6 +2,7 @@
 
 #include "game/terrain.hpp"
 #include "utility/not_initialized.hpp"
+
 #include <cstdint>
 
 class RiverTerrain : public Terrain {

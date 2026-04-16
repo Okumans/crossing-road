@@ -1,4 +1,5 @@
 #include "game.hpp"
+
 #include "game/map_manager.hpp"
 #include "game/row.hpp"
 #include "game/row_queue.hpp"
@@ -79,18 +80,6 @@ void Game::setup() {
   RowObject::s_useClipY.init(true);
   RowObject::s_minClipY.init(0.0f);
   RowObject::s_maxClipY.init(m_player->getLocalAABB().max.y);
-
-  // Load Skybox
-  TextureManager::loadCubemap(
-      TextureName("skybox"),
-      {
-          (ASSETS_PATH "/textures/skybox/sky_3/px.hdr"), // +X
-          (ASSETS_PATH "/textures/skybox/sky_3/nx.hdr"), // -X
-          (ASSETS_PATH "/textures/skybox/sky_3/py.hdr"), // +Y
-          (ASSETS_PATH "/textures/skybox/sky_3/ny.hdr"), // -Y
-          (ASSETS_PATH "/textures/skybox/sky_3/pz.hdr"), // +Z
-          (ASSETS_PATH "/textures/skybox/sky_3/nz.hdr"), // -Z
-      });
 
   // Generate Irradiance Map
   std::shared_ptr<Texture> skybox_tex =
