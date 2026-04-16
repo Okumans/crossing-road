@@ -23,9 +23,10 @@
 #include <memory>
 
 Game::Game()
-    : m_camera(glm::vec3(8.25f, 8.0f, 8.25f)), m_player(nullptr),
-      m_skybox(std::make_unique<Skybox>()), m_shadowMapFBO(0),
-      m_shadowMapTex(0) {
+    : m_camera(glm::vec3(8.25f, 8.0f, 8.25f)),
+      m_cameraController(m_camera, glm::vec3(8.0f, 8.0f, 8.0f)),
+      m_player(nullptr), m_skybox(std::make_unique<Skybox>()),
+      m_shadowMapFBO(0), m_shadowMapTex(0) {
   m_camera.setPitch(-35.264f);
   m_camera.setYaw(-107.25f);
   m_camera.Zoom = 30.0f;
@@ -130,6 +131,8 @@ void Game::reset() {
   m_player = std::make_unique<Player>(Player::getDefault());
   m_player->setRowIdx(m_playerRowIdx);
   m_map.updatePlayerRowIdx(m_playerRowIdx);
+
+  m_cameraController.setTarget(m_player->getPosition(), true);
 }
 
 void Game::startGame() {
@@ -153,15 +156,20 @@ void Game::update(double delta_time) {
   LightingManager::setLight(0, sun);
   // -----------------------------
 
-  m_map.update(delta_time);
-  m_player->update(delta_time);
+  if (m_state != GameState::GAME_OVER) {
+    m_map.update(delta_time);
+    m_player->update(delta_time);
+  }
+
   _updateCamera(delta_time);
+  m_cameraController.update(static_cast<float>(delta_time));
 
   // Hazard detection
-  if (m_state == GameState::PLAYING && m_player) {
+  if (m_state == GameState::PLAYING) {
     const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
     if (curr_row && !curr_row->isSafe(*m_player)) {
       m_state = GameState::GAME_OVER;
+      m_cameraController.shake(0.5f, 0.4f);
     }
   }
 }
@@ -329,14 +337,11 @@ void Game::moveRight(double delta_time) {
 }
 
 void Game::_updateCamera(double delta_time) {
+  (void)delta_time;
   const Row *curr_row = RowQueue::get().getRow(m_playerRowIdx);
   float curr_row_z = RowQueue::get().getZ(m_playerRowIdx);
   float curr_row_height = curr_row ? curr_row->getHeight() : 0.0f;
 
-  glm::vec3 target_camera_pos =
-      glm::vec3(0, curr_row_height, curr_row_z) + glm::vec3(8.0f, 8.0f, 8.0f);
-  float lerpFactor = 5.0f;
-
-  m_camera.Position = glm::mix(m_camera.Position, target_camera_pos,
-                               (float)delta_time * lerpFactor);
+  glm::vec3 target_pos = glm::vec3(0.0f, curr_row_height, curr_row_z);
+  m_cameraController.follow(target_pos);
 }

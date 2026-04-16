@@ -1,10 +1,12 @@
 #pragma once
 
+#include "glm/fwd.hpp"
 #include "graphics/idrawable.hpp"
 #include "graphics/izdrawable.hpp"
 #include "graphics/model.hpp"
 #include "utility/not_initialized.hpp"
 
+#include <cassert>
 #include <glm/glm.hpp>
 
 #include <memory>
@@ -68,7 +70,8 @@ public:
   static inline NotInitialized<float, "s_maxClipY"> s_maxClipY;
   static inline NotInitialized<bool, "s_useClipY"> s_useClipY;
 
-  inline static const float AABB_COLLISION_SCALE_FACTOR = 0.8f;
+  inline static const glm::vec3 DEFAULT_AABB_COLLISION_SCALE_FACTOR =
+      glm::vec3(0.8f, 1.0f, 0.7f);
 
 protected:
   std::shared_ptr<Model> m_model;
@@ -76,6 +79,9 @@ protected:
   AABB m_baseAABB;          // Raw un-transformed AABB from model
   AABB m_localAABB;         // Rotated and Scaled AABB
   mutable AABB m_worldAABB; // Rotated, Scaled Clipped and Traslated AABB
+
+  glm::vec3 m_aabbCollisionScaleFactor = DEFAULT_AABB_COLLISION_SCALE_FACTOR;
+  bool m_isEnableAABBCollisionScaleFactor = true; // enable by default
 
 private:
   glm::vec3
@@ -104,6 +110,15 @@ public:
 
   virtual void update(double delta_time) { (void)delta_time; }
   virtual void draw(const RenderContext &ctx, float z) override;
+
+  void setAABBCollisionScaleFactor(glm::vec3 factor) {
+    assert(factor.x >= 0 && factor.y >= 0 && factor.z >= 0);
+    m_aabbCollisionScaleFactor = factor;
+  }
+
+  void setEnableAABBCollisionScaleFactor(bool is_enable) {
+    m_isEnableAABBCollisionScaleFactor = is_enable;
+  }
 
   void setPosition(glm::vec2 pos) {
     m_position = {pos, 0.0f};

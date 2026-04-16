@@ -8,6 +8,7 @@
 #include "utility/random.hpp"
 #include "utility/utility.hpp"
 #include <cstdint>
+#include <memory>
 
 uint32_t RiverTerrain::_generateTerrain() {
   size_t row_numbers = Random::randInt(2, 4);
@@ -42,14 +43,16 @@ void RiverTerrain::_ensurePopulator() {
                      .maxX = Row::SLOT_WIDTH / 2.0f,
                      .zOffset = 0.5f};
 
-  river_populator.withRule(
-      RowType::WATER,
-      std::make_unique<RowObject>(ModelManager::getModel(ModelName::LILYPAD_1)),
-      withBase(base, [](PlacementRule &r) {
-        r.probability = 0.2f;
-        r.scale = 0.8f;
-        r.yOffset = 0.05f;
-      }));
+  std::unique_ptr<RowObject> lilypad_model =
+      std::make_unique<RowObject>(ModelManager::getModel(ModelName::LILYPAD_1));
+  lilypad_model->setEnableAABBCollisionScaleFactor(false);
+
+  river_populator.withRule(RowType::WATER, std::move(lilypad_model),
+                           withBase(base, [](PlacementRule &r) {
+                             r.probability = 0.2f;
+                             r.scale = 0.8f;
+                             r.yOffset = 0.05f;
+                           }));
 
   s_terrainPopulator.init(std::move(river_populator));
 }

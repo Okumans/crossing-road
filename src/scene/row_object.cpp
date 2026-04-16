@@ -196,17 +196,15 @@ void RowObject::_updateGlobalAABB(float z) const {
   updated_aabb.translate(
       glm::vec3(m_position.x, m_position.y, z + m_position.z));
 
-  const glm::vec3 scale_factor(AABB_COLLISION_SCALE_FACTOR, 1.0f,
-                               AABB_COLLISION_SCALE_FACTOR);
+  if (m_isEnableAABBCollisionScaleFactor) {
+    glm::vec3 center = (updated_aabb.min + updated_aabb.max) * 0.5f;
+    glm::vec3 half_extents = (updated_aabb.max - updated_aabb.min) * 0.5f;
 
-  // Scale down by AABB_COLLISION_SCALE_FACTOR (for better UX)
-  glm::vec3 center = (updated_aabb.min + updated_aabb.max) * 0.5f;
-  glm::vec3 half_extents = (updated_aabb.max - updated_aabb.min) * 0.5f;
+    glm::vec3 scaled_half_extents = half_extents * m_aabbCollisionScaleFactor;
 
-  glm::vec3 scaled_half_extents = half_extents * scale_factor;
-
-  updated_aabb.min = center - scaled_half_extents;
-  updated_aabb.max = center + scaled_half_extents;
+    updated_aabb.min = center - scaled_half_extents;
+    updated_aabb.max = center + scaled_half_extents;
+  }
 
   m_worldAABB = updated_aabb;
 }

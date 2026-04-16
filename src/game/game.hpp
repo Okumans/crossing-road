@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/camera.hpp"
+#include "graphics/camera_controller.hpp"
 #include "graphics/skybox.hpp"
 #include "map_manager.hpp"
 #include "scene/player.hpp"
@@ -23,6 +24,7 @@ enum class GameState { START_MENU, PLAYING, GAME_OVER };
 class Game {
 private:
   Camera m_camera;
+  CameraController m_cameraController;
   std::unique_ptr<Player> m_player;
   MapManager m_map;
   std::unique_ptr<Skybox> m_skybox;
@@ -61,6 +63,7 @@ public:
   void setDebugAABB(bool state) { m_debugAABB = state; }
 
   Camera &getCamera() { return m_camera; }
+  CameraController &getCameraController() { return m_cameraController; }
   GameState getState() const { return m_state; }
   uint32_t getScore() const {
     return (m_maxRowReached > INITIAL_PLAYER_ROW)
