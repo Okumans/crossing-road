@@ -2,6 +2,10 @@
 
 A high-fidelity 3D "Crossy Road" clone built using a custom C++ OpenGL game engine. This project demonstrates modern graphics techniques including Physically Based Rendering (PBR), Image-Based Lighting (IBL), and dynamic shadow mapping.
 
+___
+
+https://github.com/user-attachments/assets/3da3dba8-40d0-49d2-b299-7242c22b9946
+
 ## Features
 
 ### Graphics & Rendering
