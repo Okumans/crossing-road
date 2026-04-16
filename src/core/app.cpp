@@ -182,7 +182,7 @@ void App::_setupResources() {
 
   m_loadingTasks.push_back(
       {"Model: Chicken", loadModel(ModelName::CHICKEN, ASSETS_PATH
-                                   "/objects/chicken/chicken_2.glb")});
+                                   "/objects/chicken/chicken.glb")});
   m_loadingTasks.push_back(
       {"Model: Tree 1",
        loadModel(ModelName::TREE_1, ASSETS_PATH "/objects/tree/tree_1.glb")});
@@ -209,7 +209,7 @@ void App::_setupResources() {
        loadModel(ModelName::TRAIN_1, ASSETS_PATH "/objects/car/train_1.glb")});
   m_loadingTasks.push_back(
       {"Model: Lilypad", loadModel(ModelName::LILYPAD_1, ASSETS_PATH
-                                   "/objects/lilypad/lilypad_2.glb")});
+                                   "/objects/lilypad/lilypad_1.glb")});
 
   // Materials
   m_loadingTasks.push_back({"Material: Grass 1", []() {
@@ -222,19 +222,19 @@ void App::_setupResources() {
                             }});
   m_loadingTasks.push_back(
       {"Material: Road 1",
-       []() { loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/3"); }});
+       []() { loadMaterialFolder("road_1", ASSETS_PATH "/textures/road/1"); }});
   m_loadingTasks.push_back(
       {"Material: Road 2",
        []() { loadMaterialFolder("road_2", ASSETS_PATH "/textures/road/2"); }});
   m_loadingTasks.push_back(
       {"Material: Road 3",
-       []() { loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/5"); }});
+       []() { loadMaterialFolder("road_3", ASSETS_PATH "/textures/road/3"); }});
   m_loadingTasks.push_back(
       {"Material: Road 4",
        []() { loadMaterialFolder("road_4", ASSETS_PATH "/textures/road/4"); }});
   m_loadingTasks.push_back(
       {"Material: Road 5",
-       []() { loadMaterialFolder("road_5", ASSETS_PATH "/textures/road/6"); }});
+       []() { loadMaterialFolder("road_5", ASSETS_PATH "/textures/road/5"); }});
   m_loadingTasks.push_back(
       {"Material: Water",
        []() { loadMaterialFolder("water_1", ASSETS_PATH "/textures/water"); }});
@@ -258,12 +258,12 @@ void App::_setupResources() {
          TextureManager::loadCubemap(
              TextureName("skybox"),
              {
-                 (ASSETS_PATH "/textures/skybox/sky_4/px.hdr"), // +X
-                 (ASSETS_PATH "/textures/skybox/sky_4/nx.hdr"), // -X
-                 (ASSETS_PATH "/textures/skybox/sky_4/py.hdr"), // +Y
-                 (ASSETS_PATH "/textures/skybox/sky_4/ny.hdr"), // -Y
-                 (ASSETS_PATH "/textures/skybox/sky_4/pz.hdr"), // +Z
-                 (ASSETS_PATH "/textures/skybox/sky_4/nz.hdr"), // -Z
+                 (ASSETS_PATH "/textures/skybox/sky_1/px.hdr"), // +X
+                 (ASSETS_PATH "/textures/skybox/sky_1/nx.hdr"), // -X
+                 (ASSETS_PATH "/textures/skybox/sky_1/py.hdr"), // +Y
+                 (ASSETS_PATH "/textures/skybox/sky_1/ny.hdr"), // -Y
+                 (ASSETS_PATH "/textures/skybox/sky_1/pz.hdr"), // +Z
+                 (ASSETS_PATH "/textures/skybox/sky_1/nz.hdr"), // -Z
              });
        }});
 
