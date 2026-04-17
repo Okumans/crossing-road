@@ -76,7 +76,6 @@ target_link_libraries(
   m
   glm
   assimp
-  ${MINIZIP_LIBRARIES} # for assimp
 )
 
 install(TARGETS ${CMAKE_PROJECT_NAME}

@@ -65,6 +65,9 @@ CPMAddPackage(
           "ASSIMP_BUILD_ASSIMP_TOOLS OFF"
           "ASSIMP_INSTALL_PDB OFF"
           "BUILD_SHARED_LIBS ON"
+          "ASSIMP_BUILD_MINIZIP ON"
+          "ASSIMP_BUILD_ZLIB ON"
+          "ASSIMP_WARNINGS_AS_ERRORS OFF"
 )
 if(assimp_ADDED)
   make_folder("assimp" assimp)
