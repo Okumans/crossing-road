@@ -55,6 +55,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS OFF
 )
 
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+endif()
+
 file(RELATIVE_PATH
   ASSETS_LOCATION
   ${CMAKE_INSTALL_PREFIX}/bin
