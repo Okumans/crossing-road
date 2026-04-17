@@ -84,9 +84,9 @@ public:
         m_normal(ref_material.getNormal()), m_height(ref_material.getHeight()),
         m_metallic(ref_material.getMetallic()),
         m_roughness(ref_material.getRoughness()), m_ao(ref_material.getAO()),
-        m_aoFactor(ref_material.getAOFactor()),
         m_metallicFactor(ref_material.getMetallicFactor()),
-        m_roughnessFactor(ref_material.getRoughnessFactor()) {}
+        m_roughnessFactor(ref_material.getRoughnessFactor()),
+        m_aoFactor(ref_material.getAOFactor()) {}
 
   MaterialBuilder &setDiffuse(std::shared_ptr<Texture> diffuse) {
     m_diffuse = std::move(diffuse);

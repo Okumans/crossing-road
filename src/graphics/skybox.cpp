@@ -3,7 +3,7 @@
 #include <print>
 
 Skybox::Skybox(std::shared_ptr<Texture> skybox_tex)
-    : m_skyboxTex(skybox_tex), m_vao(0), m_vbo(0) {
+    : m_vao(0), m_vbo(0), m_skyboxTex(skybox_tex) {
   _setupSkybox();
 }
 

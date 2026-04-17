@@ -2,8 +2,8 @@
 #include <cmath>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED),
-      MouseSensitivity(SENSITIVITY), Zoom(ZOOM), m_yaw(yaw), m_pitch(pitch),
+    : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM),
+      m_yaw(yaw), m_pitch(pitch), m_front(glm::vec3(0.0f, 0.0f, -1.0f)),
       m_worldUp(up) {
   Position = position;
   _updateCameraVectors();
@@ -17,8 +17,8 @@ Camera::Camera(float posX,
                float upZ,
                float yaw,
                float pitch)
-    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED),
-      MouseSensitivity(SENSITIVITY), Zoom(ZOOM), m_yaw(yaw), m_pitch(pitch) {
+    : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM),
+      m_yaw(yaw), m_pitch(pitch), m_front(glm::vec3(0.0f, 0.0f, -1.0f)) {
   Position = glm::vec3(posX, posY, posZ);
   m_worldUp = glm::vec3(upX, upY, upZ);
   _updateCameraVectors();

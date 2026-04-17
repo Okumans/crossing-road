@@ -25,7 +25,7 @@ protected:
 
 public:
   Row(RowType type, float depth = 1.0f, float height = 0.0f)
-      : m_type(type), m_depth(depth), m_height(height) {}; // For set later
+      : m_depth(depth), m_height(height), m_type(type) {}; // For set later
 
   virtual ~Row() {}
 
