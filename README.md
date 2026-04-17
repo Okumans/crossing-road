@@ -51,9 +51,9 @@ cmake --build .
 The executable will be located in the `bin` directory of your build folder.
 
 ## Controls
-- **W / Up Arrow:** Jump Forward
-- **A / Left Arrow:** Move Left
-- **D / Right Arrow:** Move Right
+- **Space** Jump Forward
+- **A** Move Left
+- **D** Move Right
 - **Esc:** Exit Game
 
 ## Project Structure
