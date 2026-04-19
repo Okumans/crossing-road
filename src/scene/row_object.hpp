@@ -83,13 +83,13 @@ protected:
   glm::vec3 m_aabbCollisionScaleFactor = DEFAULT_AABB_COLLISION_SCALE_FACTOR;
   bool m_isEnableAABBCollisionScaleFactor = true; // enable by default
 
-private:
   glm::vec3
       m_position; // (x, y) position, z is control on draw, stored z offset
   glm::vec3 m_rotation; // X and Z rotation
   float m_rotationY = 0.0f;
   bool m_includeYInAABB = false;
 
+private:
   glm::vec3 m_scale;
   mutable bool m_isDirty = true;
   mutable float m_lastZ = 0.0f;

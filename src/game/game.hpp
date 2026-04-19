@@ -57,6 +57,7 @@ public:
   void startGame();
 
   void moveForward();
+  void moveBackward();
   void moveLeft(double delta_time);
   void moveRight(double delta_time);
 

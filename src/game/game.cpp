@@ -99,7 +99,7 @@ void Game::setup() {
   // 1. "Sun" Light (Directional, casts shadows)
   LightingManager::addLight({.type = LightType::DIRECTIONAL,
                              .position = glm::vec3(0.3f, -1.0f, 0.1f),
-                             .color = glm::vec3(11.0f, 9.0f, 8.0f) * .8f,
+                             .color = glm::vec3(14.0f, 9.0f, 8.0f),
                              .castsShadows = true});
 
   // 2. Sky Blue Fill Light (Directional)
@@ -144,9 +144,8 @@ void Game::startGame() {
 void Game::update(double delta_time) {
   m_currentTime += static_cast<float>(delta_time);
 
-  // --- PBR DEBUG: Rotate Sun ---
-  float sun_speed = 0.3f;
-  float sun_radius = 1.0f;
+  const float sun_speed = 0.01f;
+  const float sun_radius = 1.0f;
   glm::vec3 sun_dir = glm::normalize(
       glm::vec3(std::cos(m_currentTime * sun_speed) * sun_radius, -1.0f,
                 std::sin(m_currentTime * sun_speed) * sun_radius));
@@ -154,7 +153,6 @@ void Game::update(double delta_time) {
   Light sun = LightingManager::getShadowCaster();
   sun.position = sun_dir;
   LightingManager::setLight(0, sun);
-  // -----------------------------
 
   if (m_state != GameState::GAME_OVER) {
     m_map.update(delta_time);
@@ -311,12 +309,29 @@ void Game::render(double delta_time) {
 }
 
 void Game::moveForward() {
-  if (m_state == GameState::PLAYING && m_player && m_player->canJumpForward()) {
-    m_player->jumpForward(++m_playerRowIdx);
-    m_map.updatePlayerRowIdx(m_playerRowIdx);
+  if (m_state == GameState::PLAYING && m_player && m_player->canJump()) {
+    uint32_t nextRowIdx = m_playerRowIdx + 1;
+    if (RowQueue::get().exists(nextRowIdx)) {
+      m_playerRowIdx = nextRowIdx;
+      m_player->jumpForward(m_playerRowIdx);
+      m_map.updatePlayerRowIdx(m_playerRowIdx);
 
-    if (m_playerRowIdx > m_maxRowReached) {
-      m_maxRowReached = m_playerRowIdx;
+      if (m_playerRowIdx > m_maxRowReached) {
+        m_maxRowReached = m_playerRowIdx;
+      }
+    }
+  }
+}
+
+void Game::moveBackward() {
+  if (m_state == GameState::PLAYING && m_player && m_player->canJump()) {
+    if (m_playerRowIdx > 0) {
+      uint32_t prevRowIdx = m_playerRowIdx - 1;
+      if (RowQueue::get().exists(prevRowIdx)) {
+        m_playerRowIdx = prevRowIdx;
+        m_player->jumpBackward(m_playerRowIdx);
+        m_map.updatePlayerRowIdx(m_playerRowIdx);
+      }
     }
   }
 }

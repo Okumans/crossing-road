@@ -403,11 +403,13 @@ void App::_updateUIElements(double delta_time) {
 }
 
 void App::_handleProcessInput(double delta_time) {
-  if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {
+  if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS ||
+      glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
     m_game.moveLeft(delta_time);
   }
 
-  if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS) {
+  if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS ||
+      glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
     m_game.moveRight(delta_time);
   }
 }
@@ -416,7 +418,7 @@ void App::_handleKeyCallback(int key, int scancode, int action, int mods) {
   if (action != GLFW_PRESS)
     return;
 
-  if (key == GLFW_KEY_SPACE) {
+  if (key == GLFW_KEY_SPACE || key == GLFW_KEY_W || key == GLFW_KEY_UP) {
     switch (m_game.getState()) {
     case GameState::START_MENU:
       m_game.startGame();
@@ -429,6 +431,10 @@ void App::_handleKeyCallback(int key, int scancode, int action, int mods) {
       break;
     case GameState::LOADING:
       break;
+    }
+  } else if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN) {
+    if (m_game.getState() == GameState::PLAYING) {
+      m_game.moveBackward();
     }
   }
 }

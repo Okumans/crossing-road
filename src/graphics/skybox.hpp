@@ -1,8 +1,6 @@
 #pragma once
 
-#include "graphics/camera.hpp"
 #include "graphics/idrawable.hpp"
-#include "graphics/shader.hpp"
 #include "graphics/texture.hpp"
 #include <glad/gl.h>
 #include <memory>

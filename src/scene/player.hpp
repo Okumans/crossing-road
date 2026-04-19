@@ -24,10 +24,10 @@ public:
   Player(RowObject &&player_base_object, uint32_t curr_row_idx = 0)
       : RowObject(std::move(player_base_object)), m_currRowIdx(curr_row_idx) {}
 
-  bool canJumpForward() { return !m_isJumping; }
+  bool canJump() { return !m_isJumping; }
 
   void jumpForward(uint32_t target_row_idx) {
-    if (!canJumpForward())
+    if (!canJump())
       return;
 
     if (!RowQueue::get().exists(target_row_idx))
@@ -36,6 +36,29 @@ public:
     m_isJumping = true;
     m_jumpTimer = 0.0f;
     m_startPos = getPosition();
+    setRotationY(-90.0f);
+
+    const Row *target_row = RowQueue::get().getRow(target_row_idx);
+
+    m_targetPos.x = m_startPos.x;
+    m_targetPos.z =
+        RowQueue::get().getZ(target_row_idx) - (target_row->getDepth() / 2.0f);
+    m_targetPos.y = target_row->getHeight();
+
+    m_currRowIdx = target_row_idx;
+  }
+
+  void jumpBackward(uint32_t target_row_idx) {
+    if (!canJump())
+      return;
+
+    if (!RowQueue::get().exists(target_row_idx))
+      return;
+
+    m_isJumping = true;
+    m_jumpTimer = 0.0f;
+    m_startPos = getPosition();
+    setRotationY(90.0f);
 
     const Row *target_row = RowQueue::get().getRow(target_row_idx);
 
@@ -89,8 +112,10 @@ public:
 
     m_currRowIdx = row_idx;
 
-    m_z = RowQueue::get().getZ(m_currRowIdx) -
-          (RowQueue::get().getRow(m_currRowIdx)->getDepth() / 2.0f);
+    const Row *curr_row = RowQueue::get().getRow(m_currRowIdx);
+
+    m_z = RowQueue::get().getZ(m_currRowIdx) - (curr_row->getDepth() / 2.0f);
+    m_position.y = curr_row->getHeight();
   }
 
   const glm::vec3 getRotation() const { return RowObject::getRotation(); }
@@ -112,5 +137,11 @@ public:
     object.setPosition({0.25f, 0.0f});
 
     return Player(std::move(object));
+  }
+
+private:
+  void draw(const RenderContext &ctx, float z) override {
+    (void)ctx;
+    (void)z;
   }
 };
